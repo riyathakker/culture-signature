@@ -1,0 +1,193 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+
+import { SectionHeader } from "@/components/ui/SectionHeader";
+
+export default function SettingsPage() {
+  const { data: session, update } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    mobileNo: "",
+  });
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (session?.user) {
+      setFormData({
+        name: session.user.name || "",
+        email: session.user.email || "",
+        mobileNo: (session.user as any).mobileNo || "",
+      });
+    }
+  }, [session]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/user/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          mobileNo: formData.mobileNo,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Something went wrong");
+      }
+
+      await update({
+        name: formData.name,
+        mobileNo: formData.mobileNo,
+      }); // Update the session with new data
+      toast.success("Profile updated successfully");
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/delete-account", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete account");
+      }
+
+      toast.success("Account deleted successfully. Farewell.");
+      
+      // Sign out and redirect
+      window.location.href = "/api/auth/signout";
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
+  return (
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="space-y-2">
+        <h2 className="text-3xl font-heading">Account Settings</h2>
+        <p className="text-muted-foreground font-serif italic">Preferences and security for your Inner Circle membership.</p>
+      </div>
+
+      {/* Security Section */}
+      <section className="space-y-6">
+        <SectionHeader>Personal Information</SectionHeader>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label className="text-[10px] uppercase tracking-widest font-bold">Full Name</Label>
+              <Input 
+                value={formData.name} 
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="rounded-none border-border/50 h-10" 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] uppercase tracking-widest font-bold">Email Address</Label>
+              <Input value={formData.email} disabled className="rounded-none bg-secondary/20 h-10" />
+            </div>
+             <div className="space-y-2">
+              <Label className="text-[10px] uppercase tracking-widest font-bold">Mobile Number</Label>
+              <Input 
+                value={formData.mobileNo} 
+                onChange={(e) => setFormData({ ...formData, mobileNo: e.target.value })}
+                placeholder="+91 99999 99999"
+                className="rounded-none border-border/50 h-10" 
+              />
+            </div>
+          </div>
+          <Button 
+            type="submit" 
+            disabled={isLoading}
+            className="text-[10px] uppercase tracking-widest h-10 px-8"
+          >
+            {isLoading && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
+            Save Changes
+          </Button>
+        </form>
+      </section>
+
+      <Separator />
+
+      {/* Notifications Section */}
+      <section className="space-y-6">
+        <SectionHeader>Notifications</SectionHeader>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm">
+            <div className="space-y-0.5">
+              <p className="text-sm font-bold uppercase tracking-widest">New Collection Updates</p>
+              <p className="text-xs text-muted-foreground font-serif italic">Receive notifications when we release new artisanal pieces.</p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+          <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm">
+            <div className="space-y-0.5">
+              <p className="text-sm font-bold uppercase tracking-widest">Boutique Event Invitations</p>
+              <p className="text-xs text-muted-foreground font-serif italic">Priority access to private viewings and exhibitions.</p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+        </div>
+      </section>
+
+      <Separator />
+
+      {/* Danger Zone */}
+      <section className="space-y-6 pt-4">
+        <SectionHeader className="text-destructive">Danger Zone</SectionHeader>
+        <div className="p-6 border border-destructive/20 rounded-sm bg-destructive/5 space-y-4">
+          <div className="space-y-1">
+            <p className="text-sm font-bold uppercase tracking-widest text-destructive">Deactivate Account</p>
+            <p className="text-xs text-muted-foreground font-serif italic">This will permanently remove your Inner Circle membership and order history.</p>
+          </div>
+          <Button 
+            variant="destructive" 
+            className="uppercase tracking-widest text-[10px] h-10"
+            onClick={() => setIsDeleteDialogOpen(true)}
+            disabled={isLoading}
+          >
+            {isLoading && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
+            Permanently Delete Account
+          </Button>
+        </div>
+      </section>
+
+      <ConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleDeleteAccount}
+        title="Farewell, Member?"
+        description="Are you absolutely sure? This action is permanent and will delete your entire account"
+        confirmText="Delete Account"
+        variant="destructive"
+        isLoading={isLoading}
+      />
+    </div>
+  );
+}

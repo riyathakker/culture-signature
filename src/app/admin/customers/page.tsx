@@ -1,0 +1,150 @@
+"use client";
+
+import {
+  Filter,
+  MoreVertical,
+  Mail,
+  UserCheck,
+  ShieldAlert,
+  Trash2
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState, useEffect, useMemo } from "react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+import { useCustomerStore } from "@/store/customerStore";
+import { AdminTable, Column } from "@/components/admin/AdminTable";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
+import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
+
+export default function AdminCustomers() {
+  const { customers, isLoading, fetchCustomers } = useCustomerStore();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeRole, setActiveRole] = useState("");
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  const filteredCustomers = useMemo(() => {
+    return customers.filter((customer) => {
+      const matchesSearch = 
+        customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.email?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesRole = !activeRole || customer.role === activeRole;
+
+      return matchesSearch && matchesRole;
+    });
+  }, [customers, searchQuery, activeRole]);
+
+  const columns: Column<any>[] = [
+    {
+      header: "Connoisseur",
+      render: (customer) => (
+        <div className="flex items-center gap-4 py-2">
+          <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold text-xs">
+            {customer.name?.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="font-bold text-sm tracking-tight">{customer.name}</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{customer.email}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Role",
+      render: (customer) => (
+        <Badge 
+          variant="outline" 
+          className={cn(
+            "text-[9px] tracking-widest font-bold h-5 uppercase rounded-none px-2",
+            customer.role === "ADMIN" ? "border-primary text-primary bg-primary/5" : "border-muted-foreground/30 text-muted-foreground bg-muted/5"
+          )}
+        >
+          {customer.role}
+        </Badge>
+      ),
+    },
+    {
+      header: "Joined",
+      className: "text-muted-foreground text-xs",
+      render: (customer) => format(new Date(customer.createdAt), "MMM dd, yyyy"),
+    },
+    {
+      header: "Total Orders",
+      headerClassName: "text-center",
+      className: "text-center font-medium",
+      render: (customer) => customer.orders?.length || 0,
+    },
+    {
+      header: "",
+      className: "text-right",
+      render: (customer) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreVertical className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem className="gap-2 cursor-pointer">
+              <Mail className="w-4 h-4" /> Send Invitation
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 cursor-pointer">
+              <UserCheck className="w-4 h-4" /> View Purchase History
+            </DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer">
+              <Trash2 className="w-4 h-4" /> Deactivate Account
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <AdminPageHeader 
+        title="Customers"
+        description="Manage your community of luxury connoisseurs."
+      />
+
+      <AdminFilterBar 
+        searchPlaceholder="Search by name or email..."
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+      >
+        <AdminFilterDropdown 
+          label="Role"
+          icon={Filter}
+          options={[
+            { label: "Admin", value: "ADMIN" },
+            { label: "User", value: "USER" }
+          ]}
+          selectedValue={activeRole}
+          onSelect={setActiveRole}
+          allLabel="All Roles"
+        />
+      </AdminFilterBar>
+
+      <AdminTable 
+        columns={columns}
+        data={filteredCustomers}
+        isLoading={isLoading}
+        emptyMessage="No customers found matching your criteria."
+        rowKey={(c) => c.id}
+      />
+    </div>
+  );
+}

@@ -1,0 +1,43 @@
+"use client";
+
+import { ProductCard } from "@/components/ui/ProductCard";
+import { useEffect } from "react";
+import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
+import { useProductStore } from "@/store/productStore";
+import { HomePageContainer } from "@/components/common/HomePageContainer";
+
+export default function NewArrivalsPage() {
+  const { newArrivals, isLoading, fetchNewArrivals } = useProductStore();
+
+  useEffect(() => {
+    fetchNewArrivals();
+  }, []);
+
+  return (
+    <HomePageContainer label="New Arrivals" heading="New Arrivals" description="The latest masterpieces to join the Culture Signature house.">
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[...Array(4)].map((_, i) => (
+            <ProductSkeleton key={i} />
+          ))}
+        </div>
+      ) : newArrivals.length === 0 ? (
+        <div className="py-20 text-center">
+          <p className="text-muted-foreground font-serif italic text-lg">New masterpieces are being curated as we speak.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 animate-in fade-in duration-700">
+          {newArrivals.map((product) => (
+            <ProductCard key={product.id} product={{
+              ...product,
+              name: product.title,
+              image: product.images?.[0] || "/placeholder.jpg",
+              category: product.category?.name || "Uncategorized"
+            }} />
+          ))}
+        </div>
+      )}
+    </HomePageContainer>
+  );
+}
