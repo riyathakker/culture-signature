@@ -60,10 +60,17 @@ npx prisma generate
 npx prisma migrate dev --name init
 ```
 
+**D. Run Seed File**
+```bash
+npx prisma db seed
+```
+
 **D. Open Prisma Studio**
 ```bash
 npx prisma studio
 ```
+
+
 
 ---
 
