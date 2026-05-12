@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Plus, MapPin, Edit2, Trash2, Home, Briefcase, MapPinned } from "lucide-react";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { AddressDialog } from "@/components/account/AddressDialog";
+import { AddressActions } from "@/components/account/AddressActions";
 
 export default async function AddressesPage() {
   const session = await auth();
@@ -12,64 +12,51 @@ export default async function AddressesPage() {
   }
 
   const addresses = await prisma.address.findMany({
-    where: { userId: (session.user as any).id },
+    where: { 
+      userId: (session.user as any).id,
+      isDeleted: false
+    },
     orderBy: { isDefault: "desc" },
   });
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div className="space-y-2">
           <h2 className="text-3xl font-heading">Saved Addresses</h2>
-          <p className="text-muted-foreground font-serif italic">Manage your delivery and billing locations.</p>
+          <p className="text-muted-foreground font-serif italic">Manage your delivery and billing locations for a seamless checkout.</p>
         </div>
-        <Button className="uppercase tracking-widest text-[10px] font-bold h-10 gap-2">
-          <Plus className="w-4 h-4" /> Add New
-        </Button>
+        <AddressDialog />
       </div>
 
       {addresses.length === 0 ? (
-        <div className="py-20 text-center border-2 border-dashed rounded-sm">
-          <p className="text-muted-foreground font-serif italic">No addresses found. Add one for a faster checkout experience.</p>
+        <div className="py-24 text-center border border-dashed rounded-sm bg-secondary/10">
+          <div className="max-w-xs mx-auto space-y-6">
+            <p className="text-muted-foreground font-serif italic">Your address book is empty. Curate your delivery locations for faster acquisition of masterpieces.</p>
+            <AddressDialog />
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {addresses.map((addr) => (
-            <div key={addr.id} className="border rounded-sm p-6 space-y-4 hover:border-primary transition-colors group">
-              <div className="flex justify-between items-start">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    {addr.isDefault ? (
-                      <span className="text-[9px] uppercase tracking-widest font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-full">
-                        Default
-                      </span>
-                    ) : (
-                      <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded-full">
-                        Secondary
-                      </span>
-                    )}
+            <div 
+              key={addr.id} 
+              className="relative border border-border/50 rounded-sm p-6 md:p-8 space-y-6 hover:border-primary/50 transition-all duration-500 group bg-card shadow-sm hover:shadow-md"
+            >
+              <div className="flex justify-between items-start pr-16 md:pr-0">
+                <div className="space-y-4 flex-1">
+                  <div className="space-y-1">
+                    <h3 className="font-heading text-xl">{session.user?.name}</h3>
+                    <div className="space-y-0.5 text-sm text-muted-foreground font-serif italic leading-relaxed">
+                      <p>{addr.street}</p>
+                      <p>{addr.city}, {addr.state} {addr.zipCode}</p>
+                      <p className="uppercase tracking-[0.2em] text-[10px] font-sans font-bold opacity-60 mt-1">{addr.country}</p>
+                    </div>
                   </div>
-                  <h3 className="font-heading text-xl pt-1">{session.user?.name}</h3>
-                </div>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button className="p-2 hover:bg-secondary rounded-sm transition-colors"><Edit2 className="w-3 h-3" /></button>
-                  <button className="p-2 hover:bg-secondary rounded-sm transition-colors text-destructive"><Trash2 className="w-3 h-3" /></button>
+                  
+                  <AddressActions address={addr} />
                 </div>
               </div>
-              
-              <div className="space-y-1 text-sm text-muted-foreground font-serif italic">
-                <p>{addr.street}</p>
-                <p>{addr.city}, {addr.state} {addr.zipCode}</p>
-                <p>{addr.country}</p>
-              </div>
-
-              {!addr.isDefault && (
-                <div className="pt-2">
-                  <button className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-colors">
-                    <MapPin className="w-3 h-3" /> Set as Default
-                  </button>
-                </div>
-              )}
             </div>
           ))}
         </div>

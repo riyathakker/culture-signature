@@ -43,7 +43,7 @@ export default function CategoryPage() {
 
   return (
     <HomePageContainer 
-      label={category?.name || "Collection"} 
+      label={[{ label: "Collections", href: "/collections" }]}
       heading={category?.name || "The Collection"} 
       description={category?.description || `Explore our curated selection of handcrafted ${category?.name?.toLowerCase() || 'pieces'} that celebrate heritage and style.`}
     >
@@ -87,12 +87,7 @@ export default function CategoryPage() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 animate-in fade-in duration-1000">
                 {products.map((product) => (
-                  <ProductCard key={product.id} product={{
-                    ...product,
-                    name: product.title,
-                    image: product.images?.[0] || "/placeholder.jpg",
-                    category: product.category?.name || "Uncategorized"
-                  }} />
+                  <ProductCard product={product} />
                 ))}
               </div>
             )}

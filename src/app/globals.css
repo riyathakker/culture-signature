@@ -73,7 +73,7 @@
   --chart-3: #737373;
   --chart-4: #E5E1DA;
   --chart-5: #F3F1ED;
-  --radius: 0.125rem;
+  --radius: 0.5rem;
   --sidebar: #FAF9F6;
   --sidebar-foreground: #1A1A1A;
   --sidebar-primary: #95473D;
@@ -132,11 +132,11 @@
 
 @layer components {
   .btn-luxury {
-    @apply py-7 px-10 uppercase tracking-[0.2em] text-xs h-auto bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.98] shadow-lg shadow-primary/10 rounded-full inline-flex items-center justify-center font-bold;
+    @apply py-7 px-10 uppercase tracking-[0.2em] text-xs h-auto bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.98] shadow-lg shadow-primary/10 rounded-lg inline-flex items-center justify-center font-bold cursor-pointer;
   }
 
   .input-luxury {
-    @apply h-12 bg-secondary/30 border-transparent focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all rounded-full px-6 text-sm placeholder:text-muted-foreground/50;
+    @apply h-12 bg-secondary/30 border-transparent focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all rounded-lg px-6 text-sm placeholder:text-muted-foreground/50;
   }
 
   .label-luxury {

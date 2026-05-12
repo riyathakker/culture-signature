@@ -13,7 +13,7 @@ export default function BagPage() {
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <HomePageContainer label="Shopping Bag" heading="Shopping Bag" description="Review your selection of artisanal masterpieces.">
+    <HomePageContainer label={[{ label: "Shopping Bag" }]} heading="Shopping Bag" description="Review your selection of artisanal masterpieces.">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center space-y-8">
             <div className="w-24 h-24 rounded-full bg-secondary/50 flex items-center justify-center relative">
@@ -36,9 +36,8 @@ export default function BagPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
             {/* Cart Items List */}
             <div className="lg:col-span-2 space-y-8">
-              <div className="flex justify-between items-end border-b pb-4">
+              <div className="flex  border-b pb-4">
                 <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Product Selection ({itemCount})</span>
-                <span className="text-[10px] uppercase tracking-[0.3em] font-bold hidden md:block">Total Price</span>
               </div>
               <div className="flex flex-col">
                 {items.map((item) => (

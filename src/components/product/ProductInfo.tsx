@@ -6,39 +6,37 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useCartStore, CartItem } from "@/store/cartStore";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 
 interface ProductInfoProps {
   product: {
     id: string;
     name: string;
     price: number;
-    originalPrice?: number;
+    discount: number;
     category: string;
-    rating: number;
-    reviewCount: number;
     description: string;
-    image: string;
-    materials: string[];
-    sizes: string[];
+    images: string[];
+    stock: number;
   };
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const [selectedMaterial, setSelectedMaterial] = useState(product.materials[0]);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
   const [quantity, setQuantity] = useState(1);
 
+  const { data: session } = useSession();
+  const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem } = useCartStore();
 
   const handleAddToCart = () => {
     const item: CartItem = {
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: product.price - (product.discount || 0),
       quantity: quantity,
-      image: product.image,
+      image: product.images[0],
+      stock: product.stock,
     };
     addItem(item);
   };
@@ -50,26 +48,32 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <div className="flex items-center justify-between">
           <p className="text-luxury italic opacity-60 uppercase">{product.category}</p>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full"><Heart className="w-5 h-5" /></Button>
-            <Button variant="ghost" size="icon" className="rounded-full"><Share2 className="w-5 h-5" /></Button>
+            {!isAdmin && (
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Heart className="w-5 h-5" />
+              </Button>
+            )}
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Share2 className="w-5 h-5" />
+            </Button>
           </div>
         </div>
         <h1 className="text-4xl lg:text-5xl font-heading tracking-tight">{product.name}</h1>
         <div className="flex items-center gap-4">
-          <div className="flex items-center text-primary">
+          {/* <div className="flex items-center text-primary">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className={cn("w-4 h-4", i < Math.floor(product.rating) ? "fill-current" : "opacity-30")} />
+              <Star key={i} className={cn("w-4 h-4", i < Math.floor(product.rating || 5) ? "fill-current" : "opacity-30")} />
             ))}
-            <span className="ml-2 text-sm font-sans text-muted-foreground">({product.reviewCount} Reviews)</span>
-          </div>
+            <span className="ml-2 text-sm font-sans text-muted-foreground">({product.reviewCount || 0} Reviews)</span>
+          </div> */}
         </div>
       </div>
 
       {/* Price */}
       <div className="flex items-center gap-4">
-        <span className="text-3xl font-medium">₹{product.price.toLocaleString()}</span>
-        {product.originalPrice && (
-          <span className="text-xl text-muted-foreground line-through opacity-50">₹{product.originalPrice.toLocaleString()}</span>
+        <span className="text-3xl font-medium">₹{(product.price - (product.discount || 0)).toLocaleString()}</span>
+        {product.discount > 0 && (
+          <span className="text-xl text-muted-foreground line-through opacity-50">₹{product.price.toLocaleString()}</span>
         )}
       </div>
 
@@ -77,75 +81,30 @@ export function ProductInfo({ product }: ProductInfoProps) {
         {product.description}
       </p>
 
-      {/* Variants */}
-      <div className="space-y-6 pt-6 border-t">
-        {/* Materials */}
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <span className="text-[10px] uppercase tracking-widest font-bold">Material: <span className="text-muted-foreground font-medium">{selectedMaterial}</span></span>
-          </div>
-          <RadioGroup value={selectedMaterial} onValueChange={setSelectedMaterial} className="flex gap-3">
-            {product.materials.map((mat) => (
-              <div key={mat}>
-                <RadioGroupItem value={mat} id={mat} className="peer sr-only" />
-                <Label
-                  htmlFor={mat}
-                  className="px-4 py-2 border rounded-sm cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 transition-all text-xs uppercase tracking-widest"
-                >
-                  {mat}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
-
-        {/* Sizes */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] uppercase tracking-widest font-bold">Size: <span className="text-muted-foreground font-medium">{selectedSize}</span></span>
-            <button className="text-[10px] uppercase tracking-widest font-bold text-primary flex items-center gap-1">
-              <Ruler className="w-3 h-3" /> Size Guide
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {product.sizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={cn(
-                  "w-12 h-12 flex items-center justify-center border text-xs transition-all",
-                  selectedSize === size ? "border-primary bg-primary/5 font-bold" : "border-border hover:border-primary/50"
-                )}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Quantity & Actions */}
-      <div className="space-y-4 pt-6">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center border rounded-sm h-14">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 h-full hover:bg-secondary transition-colors"><Minus className="w-4 h-4" /></button>
-            <span className="px-6 font-medium">{quantity}</span>
-            <button onClick={() => setQuantity(quantity + 1)} className="px-4 h-full hover:bg-secondary transition-colors"><Plus className="w-4 h-4" /></button>
+      {!isAdmin && (
+        <div className="space-y-4 pt-6">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center border rounded-sm h-14">
+              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 h-full hover:bg-secondary transition-colors"><Minus className="w-4 h-4" /></button>
+              <span className="px-6 font-medium">{quantity}</span>
+              <button onClick={() => setQuantity(quantity + 1)} className="px-4 h-full hover:bg-secondary transition-colors"><Plus className="w-4 h-4" /></button>
+            </div>
+            <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
+              Add to Collection
+            </Button>
           </div>
-          <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
-            Add to Collection
+          <Button variant="outline" className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+            Buy Now
           </Button>
         </div>
-        <Button variant="outline" className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-          Buy Now
-        </Button>
-      </div>
+      )}
 
       {/* Info Grid */}
       <div className="grid grid-cols-2 gap-4 pt-8 border-t">
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
           <Truck className="w-5 h-5 text-primary opacity-60" />
-          <span>Complimentary <br /> Shipping</span>
+          <span>Premium <br /> Shipping</span>
         </div>
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
           <ShieldCheck className="w-5 h-5 text-primary opacity-60" />

@@ -25,7 +25,7 @@ export function AdminFilterBar({
           placeholder={searchPlaceholder} 
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10 h-12 bg-background border-border/50 focus-visible:ring-primary rounded-none uppercase text-[10px] tracking-widest font-bold"
+          className="pl-10 h-12 bg-background border-border/50 focus-visible:ring-primary uppercase text-[10px] tracking-widest font-bold"
         />
       </div>
       <div className="flex gap-2">

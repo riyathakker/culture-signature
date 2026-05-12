@@ -11,7 +11,6 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("query") || "";
-  const status = searchParams.get("status") || "";
 
   try {
     const discounts = await prisma.discount.findMany({
@@ -19,7 +18,7 @@ export async function GET(req: Request) {
         OR: [
           { code: { contains: query, mode: "insensitive" } },
         ],
-        status: status ? status : undefined,
+        isDeleted: false,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -47,8 +46,8 @@ export async function POST(req: Request) {
     }
 
     // Check if code already exists
-    const existing = await prisma.discount.findUnique({
-      where: { code }
+    const existing = await prisma.discount.findFirst({
+      where: { code, isDeleted: false }
     });
 
     if (existing) {

@@ -138,7 +138,7 @@ export default function AdminOverview() {
                       <Package className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] uppercase tracking-widest font-bold truncate">{product.title}</p>
+                      <p className="text-[10px] uppercase tracking-widest font-bold truncate">{product.name}</p>
                       <p className="text-xs text-muted-foreground font-serif italic">
                         {isOutOfStock ? "Out of stock" : `Low stock: ${product.stock} units left`}
                       </p>

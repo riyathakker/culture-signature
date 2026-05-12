@@ -23,6 +23,7 @@ import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { Switch } from "@/components/ui/switch";
 
 import { useCategoryStore } from "@/store/categoryStore";
 import { useProductStore } from "@/store/productStore";
@@ -38,7 +39,6 @@ export default function AdminProducts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeStatus, setActiveStatus] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  console.log("hewiuefbewfe", products);
   useEffect(() => {
     fetchProducts();
     fetchCategories();
@@ -46,15 +46,15 @@ export default function AdminProducts() {
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      const matchesSearch = 
-        product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch =
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesCategory = !selectedCategoryId || product.categoryId === selectedCategoryId;
-      
+
       const matchesStatus = !activeStatus || (
         activeStatus === "OUT_OF_STOCK" ? product.stock === 0 :
-        activeStatus === "LOW_STOCK" ? (product.stock > 0 && product.stock < 5) : true
+          activeStatus === "LOW_STOCK" ? (product.stock > 0 && product.stock < 5) : true
       );
 
       return matchesSearch && matchesCategory && matchesStatus;
@@ -92,6 +92,24 @@ export default function AdminProducts() {
     }
   };
 
+  const toggleFeatured = async (id: string, currentFeatured: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/products/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isFeatured: !currentFeatured }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update status");
+
+      const updatedProduct = await response.json();
+      useProductStore.getState().updateProduct(updatedProduct);
+      toast.success(updatedProduct.isFeatured ? "Marked as Featured" : "Removed from Featured");
+    } catch (error) {
+      toast.error("Failed to update status");
+    }
+  };
+
   const columns: Column<any>[] = [
     {
       header: "Product",
@@ -99,7 +117,7 @@ export default function AdminProducts() {
         <div className="flex items-center gap-4 py-2">
           <div className="w-12 h-16 bg-secondary/20 rounded-sm overflow-hidden flex-shrink-0">
             {product.images?.[0] ? (
-              <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover" />
+              <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <Package className="w-4 h-4 text-muted-foreground/40" />
@@ -107,7 +125,7 @@ export default function AdminProducts() {
             )}
           </div>
           <div className="flex flex-col text-left">
-            <span className="font-bold text-sm tracking-tight">{product.title}</span>
+            <span className="font-bold text-sm tracking-tight">{product.name}</span>
             <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{product.category?.name || "Uncategorized"}</span>
           </div>
         </div>
@@ -118,6 +136,12 @@ export default function AdminProducts() {
       headerClassName: "text-right",
       className: "text-right font-medium",
       render: (product) => `₹${product.price.toLocaleString()}`,
+    },
+    {
+      header: "Discount",
+      headerClassName: "text-right",
+      className: "text-right font-medium",
+      render: (product) => `${product.discount.toLocaleString()}`,
     },
     {
       header: "Stock",
@@ -136,12 +160,25 @@ export default function AdminProducts() {
       },
     },
     {
+      header: "Featured",
+      headerClassName: "text-center",
+      className: "text-center",
+      render: (product) => (
+        <div className="flex justify-center">
+          <Switch
+            checked={product.isFeatured}
+            onCheckedChange={() => toggleFeatured(product.id, product.isFeatured)}
+          />
+        </div>
+      ),
+    },
+    {
       header: "Status",
       render: (product) => {
         const isOutOfStock = product.stock === 0;
         return (
-          <Badge 
-            variant="outline" 
+          <Badge
+            variant="outline"
             className={cn(
               "text-[9px] tracking-[0.15em] font-bold h-5 uppercase rounded-none px-2",
               isOutOfStock ? "border-destructive text-destructive bg-destructive/5" : "border-primary/30 text-primary bg-primary/5"
@@ -173,7 +210,7 @@ export default function AdminProducts() {
                 <Edit2 className="w-4 h-4" /> Edit
               </DropdownMenuItem>
             </Link>
-            <DropdownMenuItem 
+            <DropdownMenuItem
               className="gap-2 text-destructive focus:text-destructive cursor-pointer"
               onClick={() => handleDeleteClick(product.id)}
             >
@@ -187,7 +224,7 @@ export default function AdminProducts() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <AdminPageHeader 
+      <AdminPageHeader
         title="Artisanal Catalog"
         description="Curate and manage your collection of timeless masterpieces."
         action={
@@ -199,12 +236,12 @@ export default function AdminProducts() {
         }
       />
 
-      <AdminFilterBar 
+      <AdminFilterBar
         searchPlaceholder="Search masterpieces..."
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       >
-        <AdminFilterDropdown 
+        <AdminFilterDropdown
           label="Categories"
           icon={Filter}
           options={categories.map(c => ({ label: c.name, value: c.id }))}
@@ -212,7 +249,7 @@ export default function AdminProducts() {
           onSelect={setSelectedCategoryId}
           allLabel="All Categories"
         />
-        <AdminFilterDropdown 
+        <AdminFilterDropdown
           label="Stock Status"
           icon={Activity}
           options={[
@@ -225,7 +262,7 @@ export default function AdminProducts() {
         />
       </AdminFilterBar>
 
-      <AdminTable 
+      <AdminTable
         columns={columns}
         data={filteredProducts}
         isLoading={isLoading}

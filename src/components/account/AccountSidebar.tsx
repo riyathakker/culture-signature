@@ -12,7 +12,7 @@ import {
   LogOut,
   ChevronRight
 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
@@ -26,13 +26,22 @@ const navItems = [
 ];
 
 export function AccountSidebar() {
+  const { data: session } = useSession();
+  const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const pathname = usePathname();
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+
+  const filteredNavItems = navItems.filter(item => {
+    if (isAdmin) {
+      return !["Order History", "My Wishlist", "Saved Addresses"].includes(item.label);
+    }
+    return true;
+  });
 
   return (
     <aside className="w-full lg:w-64 space-y-8">
       <div className="hidden lg:block space-y-1">
-        {navItems.map((item) => {
+        {filteredNavItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
@@ -81,7 +90,7 @@ export function AccountSidebar() {
       {/* Mobile Horizontal Nav */}
       <div className="lg:hidden relative">
         <div className="flex overflow-x-auto no-scrollbar gap-2 pb-4 px-1 scroll-smooth">
-          {navItems.map((item) => {
+          {filteredNavItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link

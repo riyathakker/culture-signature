@@ -146,7 +146,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch("/api/products?limit=4");
+      const response = await fetch("/api/products?isFeatured=true");
 
       if (!response.ok) {
         throw new Error("Failed to fetch featured products");
