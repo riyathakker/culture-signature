@@ -101,7 +101,7 @@ export default function AdminOrders() {
               title={item.product.name}
             >
               <img
-                src={item.product.images?.[0] || "/Logo.png"}
+                src={item.product.images?.[0]}
                 alt={item.product.name}
                 className="h-full w-full object-cover"
               />
@@ -250,7 +250,7 @@ export default function AdminOrders() {
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-20 bg-muted relative overflow-hidden group">
                             <img
-                              src={item.product.images?.[0] || "/Logo.png"}
+                              src={item.product.images?.[0]}
                               alt={item.product.name}
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Container } from "@/components/layout/Container";
 import { useEffect } from "react";
 import { useCategoryStore } from "@/store/categoryStore";
 import { CommonLoader } from "../common/Loader";
