@@ -38,7 +38,7 @@ export function MobileMenu() {
             <IconButton icon={Menu} className="lg:hidden" aria-label="Menu" />
           }
         />
-        <SheetContent side="right" className="w-full sm:max-w-sm flex flex-col p-0">
+        <SheetContent side="left" className="w-full sm:max-w-sm flex flex-col p-0">
           <SheetHeader className="p-6 border-b">
             <div className="flex items-center justify-between">
               <SheetTitle className="font-heading text-2xl tracking-tighter uppercase">

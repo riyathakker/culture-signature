@@ -44,7 +44,7 @@ export function QuickViewModal({ product, open, onOpenChange }: any) {
         <div className="relative w-full md:w-1/2 bg-secondary/30 h-[220px] md:h-auto shrink-0">
           <div className="absolute inset-0 bg-luxury-gradient opacity-10" />
           <img
-            src={product.images?.[0] || "/Logo.png"}
+            src={product.images?.[0]}
             alt={product.name}
             className="w-full h-full object-cover"
           />

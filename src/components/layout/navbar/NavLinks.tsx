@@ -10,7 +10,7 @@ export function NavLinks() {
 
   return (
     <nav className="hidden lg:block mt-4">
-      <ul className="flex items-center px-4 sm:px-6 lg:px-8 space-x-10">
+      <ul className="flex items-center justify-center px-4 sm:px-6 lg:px-8 space-x-10">
         {navigationLinks.map((item) => {
           const isActive = pathname === item.href;
 
