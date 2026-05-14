@@ -3,14 +3,17 @@
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
 import { TranslationProvider } from "@/context/TranslationContext";
+import { Suspense } from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <SessionProvider>
       <TranslationProvider>
         {children}
         <Toaster position="top-right" richColors closeButton />
       </TranslationProvider>
     </SessionProvider>
+    </Suspense>
   );
 }

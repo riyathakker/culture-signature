@@ -112,7 +112,7 @@ export default function NewDiscountPage() {
                   <Label className="text-[10px] uppercase tracking-widest font-bold">Discount Type</Label>
                   <Select
                     value={formData.type}
-                    onValueChange={(val) => setFormData({ ...formData, type: val })}
+                    onValueChange={(val) => val && setFormData({ ...formData, type: val })}
                   >
                     <SelectTrigger className="h-12 rounded-none border-border/50">
                       <SelectValue />
@@ -196,7 +196,7 @@ export default function NewDiscountPage() {
               <Label className="text-[10px] uppercase tracking-widest font-bold">Initial Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(val) => setFormData({ ...formData, status: val })}
+                onValueChange={(val) => val && setFormData({ ...formData, status: val })}
               >
                 <SelectTrigger className="h-12 rounded-none border-border/50">
                   <SelectValue />

@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 export async function PATCH(
   req: Request,
-  context:{ params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session || (session.user as any).role !== "ADMIN") {
@@ -37,7 +37,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session || (session.user as any).role !== "ADMIN") {
@@ -45,7 +45,7 @@ export async function DELETE(
   }
 
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     
     // Soft delete
     await prisma.discount.update({

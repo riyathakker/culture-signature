@@ -91,7 +91,7 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         {trigger || (
           <Button className="uppercase tracking-widest text-[10px] font-bold h-10 gap-2">
             <Plus className="w-4 h-4" /> Add New

@@ -224,7 +224,7 @@ export function ProductForm({ productId }: ProductFormProps) {
               </div>
               <Select
                 value={formData.categoryId}
-                onValueChange={(val) => setFormData({ ...formData, categoryId: val })}
+                onValueChange={(val) => setFormData({ ...formData, categoryId: val || "" })}
                 required
               >
                 <SelectTrigger className="h-12 border-border/50 uppercase text-[10px] tracking-widest font-bold">
