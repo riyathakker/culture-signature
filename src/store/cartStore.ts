@@ -34,7 +34,8 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
   setIsAuthenticated: (status: boolean) => set({ isAuthenticated: status }),
 
-  fetchCart: async () => {
+  fetchCart: async (force = false) => {
+    if (!get().isAuthenticated && !force) return;
     set({ isLoading: true });
     try {
       const response = await fetch("/api/cart");

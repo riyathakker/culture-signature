@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/store/cartStore";
 import { useCheckoutStore } from "@/store/checkoutStore";
+import { useProductStore } from "@/store/productStore";
+import { useOrderStore } from "@/store/orderStore";
 import { Truck, ShieldCheck, ArrowRight, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -19,6 +21,8 @@ interface OrderSummaryProps {
 export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   const { items, appliedPromo, setAppliedPromo, getDiscountAmount, clearCart } = useCartStore();
   const { shippingAddress, resetCheckout } = useCheckoutStore();
+  const { fetchFeaturedProducts, fetchNewArrivals } = useProductStore();
+  const { fetchOrders } = useOrderStore();
   const [promoCode, setPromoCode] = useState("");
   const [isApplying, setIsApplying] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
@@ -89,7 +93,13 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       // Clear cart and reset checkout
       await clearCart();
       resetCheckout();
+
+      // Refresh products to update stock levels (force bypass cache)
+      fetchFeaturedProducts(true);
+      fetchNewArrivals(true);
+      fetchOrders(true);
       
+      router.refresh();
       // Redirect to success page
       router.push(`/bag/checkout/success?id=${order.id}`);
     } catch (error) {

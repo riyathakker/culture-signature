@@ -19,11 +19,6 @@ export async function GET(
       return NextResponse.json({ error: "Invalid promotional code" }, { status: 404 });
     }
 
-    // Check status
-    if (discount.status !== "ACTIVE") {
-      return NextResponse.json({ error: "This promotional code is not active" }, { status: 400 });
-    }
-
     // Check expiry
     if (discount.expiryDate && new Date(discount.expiryDate) < new Date()) {
       return NextResponse.json({ error: "This promotional code has expired" }, { status: 400 });
@@ -31,7 +26,12 @@ export async function GET(
 
     // Check usage limit
     if (discount.usageLimit && discount.usedCount >= discount.usageLimit) {
-      return NextResponse.json({ error: "This promotional code has reached its usage limit" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid promotional code" }, { status: 400 });
+    }
+
+    // Check status
+    if (discount.status !== "ACTIVE") {
+      return NextResponse.json({ error: "Invalid promotional code" }, { status: 400 });
     }
 
     return NextResponse.json(discount);

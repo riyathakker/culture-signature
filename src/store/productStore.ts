@@ -18,9 +18,9 @@ interface ProductState {
   deleteProduct: (id: string) => void;
   addProduct: (product: any) => void;
 
-  fetchProducts: (query?: string, categoryId?: string) => Promise<void>;
-  fetchNewArrivals: () => Promise<void>;
-  fetchFeaturedProducts: () => Promise<void>;
+  fetchProducts: (force?: boolean) => Promise<void>;
+  fetchNewArrivals: (force?: boolean) => Promise<void>;
+  fetchFeaturedProducts: (force?: boolean) => Promise<void>;
 }
 
 export const useProductStore = create<ProductState>((set, get) => ({
@@ -69,11 +69,12 @@ export const useProductStore = create<ProductState>((set, get) => ({
       products: [product, ...state.products],
     })),
 
-  fetchProducts: async () => {
+  fetchProducts: async (force = false) => {
     const state = get();
 
     // Cache for 5 minutes
     if (
+      !force &&
       state.products.length > 0 &&
       state.lastFetched &&
       Date.now() - state.lastFetched < 300000
@@ -103,11 +104,11 @@ export const useProductStore = create<ProductState>((set, get) => ({
     }
   },
 
-  fetchNewArrivals: async () => {
+  fetchNewArrivals: async (force = false) => {
     const state = get();
 
     // Cache for 5 minutes
-    if (state.newArrivals.length > 0 && state.lastFetchedNewArrivals && (Date.now() - state.lastFetchedNewArrivals < 300000)) {
+    if (!force && state.newArrivals.length > 0 && state.lastFetchedNewArrivals && (Date.now() - state.lastFetchedNewArrivals < 300000)) {
       return;
     }
 
@@ -135,11 +136,11 @@ export const useProductStore = create<ProductState>((set, get) => ({
     }
   },
 
-  fetchFeaturedProducts: async () => {
+  fetchFeaturedProducts: async (force = false) => {
     const state = get();
 
     // Cache for 5 minutes
-    if (state.featuredProducts.length > 0 && state.lastFetchedFeatured && (Date.now() - state.lastFetchedFeatured < 300000)) {
+    if (!force && state.featuredProducts.length > 0 && state.lastFetchedFeatured && (Date.now() - state.lastFetchedFeatured < 300000)) {
       return;
     }
 

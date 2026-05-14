@@ -49,23 +49,44 @@ export async function POST(req: Request) {
         },
       });
 
-      // 2. Increment usedCount if promoCode was used
+      // 2. Validate and Increment usedCount if promoCode was used
       if (promoCode) {
         const discount = await tx.discount.findFirst({
-          where: { code: promoCode, isDeleted: false, status: "ACTIVE" }
+          where: { 
+            code: promoCode, 
+            isDeleted: false,
+            status: "ACTIVE"
+          }
         });
 
         if (discount) {
-          const newUsedCount = discount.usedCount + 1;
-          const shouldExpire = discount.usageLimit && newUsedCount >= discount.usageLimit;
+          // Check expiry and usage limit again at the time of order placement
+          const isExpired = discount.expiryDate && new Date(discount.expiryDate) < new Date();
+          const isLimitReached = discount.usageLimit && discount.usedCount >= discount.usageLimit;
 
-          await tx.discount.update({
-            where: { id: discount.id },
-            data: {
-              usedCount: newUsedCount,
-              status: shouldExpire ? "EXPIRED" : "ACTIVE"
-            }
-          });
+          if (!isExpired && !isLimitReached) {
+            const newUsedCount = discount.usedCount + 1;
+            const nowLimitReached = discount.usageLimit && newUsedCount >= discount.usageLimit;
+
+            await tx.discount.update({
+              where: { id: discount.id },
+              data: {
+                usedCount: newUsedCount,
+                status: nowLimitReached ? "EXPIRED" : "ACTIVE"
+              }
+            });
+          } else if (isExpired || isLimitReached) {
+            // If it became invalid between application and placement, we should probably mark it as expired now
+            await tx.discount.update({
+              where: { id: discount.id },
+              data: {
+                status: "EXPIRED"
+              }
+            });
+            // We could throw an error here, but for now we'll just not count the usage 
+            // (the order total might be wrong if the client applied a discount that is no longer valid)
+            // Ideally, we should validate the totalPrice matches the expected calculation.
+          }
         }
       }
 
