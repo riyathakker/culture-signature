@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Loader2, Checkbox } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { en } from "@/locales/en";
 
 const t = en.admin.categories.dialog;
@@ -100,7 +100,7 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         {trigger || (
           <Button className="btn-luxury px-6 gap-2">
             <Plus className="w-4 h-4" /> {en.admin.categories.newCategory}

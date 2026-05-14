@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -13,7 +13,7 @@ export async function GET(
   }
 
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const product = await prisma.product.findUnique({
       where: { id },
       include: { category: true },
@@ -32,7 +32,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -41,7 +41,7 @@ export async function PATCH(
   }
 
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const body = await req.json();
     const { title: name, description, price, discount, stock, categoryId, images, isFeatured } = body;
 
@@ -71,7 +71,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -80,7 +80,7 @@ export async function DELETE(
   }
 
   try {
-    const { id } = await params;
+    const { id } = await context.params;
 
     const orderCount = await prisma.orderItem.count({
       where: { productId: id }

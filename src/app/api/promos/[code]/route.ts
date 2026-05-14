@@ -3,10 +3,10 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   req: Request,
-  { params }: { params: { code: string } }
+  context: { params: Promise<{ code: string }> }
 ) {
   try {
-    const { code } = await params;
+    const { code } = await context.params;
 
     const discount = await prisma.discount.findFirst({
       where: { 

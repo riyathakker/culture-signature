@@ -1,7 +1,10 @@
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button, buttonVariants, ButtonProps } from "@/components/ui/button";
+import { VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-interface IconButtonProps extends Omit<ButtonProps, "children"> {
+interface IconButtonProps
+  extends Omit<ButtonProps, "children">,
+    VariantProps<typeof buttonVariants> {
   icon: any;
   iconClassName?: string;
 }

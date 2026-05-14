@@ -138,7 +138,7 @@ export default function DiscountsPage() {
       render: (discount) => (
         <div className="flex justify-end gap-2">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary">
                 <MoreVertical className="w-4 h-4" />
               </Button>
