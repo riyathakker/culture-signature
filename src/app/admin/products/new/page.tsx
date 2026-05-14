@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { useSearchParams } from "next/navigation";
 import { CommonLoader } from "@/components/common/Loader";
