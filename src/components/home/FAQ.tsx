@@ -29,7 +29,7 @@ const faqs = [
 export function FAQ() {
   return (
     <section className="py-24 bg-secondary/50 border-t border-border/50">
-      <Container size="small">
+      <Container>
         <SectionTitle
           title="Frequent Inquiries"
           subtitle="Concierge Support"

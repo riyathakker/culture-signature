@@ -34,33 +34,7 @@ export function FilterSidebar() {
       <div>
         <h3 className="text-luxury mb-6 font-heading text-2xl">Filter By</h3>
 
-        <Accordion defaultValue={["categories", "price"]} className="w-full">
-          {/* Categories */}
-          <AccordionItem value="categories" className="border-b border-muted-foreground/10">
-            <AccordionTrigger className="font-heading text-lg py-3 hover:no-underline uppercase tracking-widest text-sm">
-              Categories
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-4 pt-2">
-                {Array.isArray(categories) && categories.map((category) => (
-                  <div key={category.id} className="flex items-center space-x-3 group cursor-pointer">
-                    <Checkbox
-                      id={`cat-${category.id}`}
-                      checked={currentCategoryId === category.id}
-                      onCheckedChange={() => handleCategoryChange(category.id)}
-                      className="border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <Label
-                      htmlFor={`cat-${category.id}`}
-                      className="text-xs uppercase tracking-widest font-medium cursor-pointer group-hover:text-primary transition-colors"
-                    >
-                      {category.name}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+        <Accordion defaultValue={["price"]} className="w-full">
 
           {/* Price Range */}
           <AccordionItem value="price" className="border-b border-muted-foreground/10">
@@ -77,35 +51,10 @@ export function FilterSidebar() {
               </div>
             </AccordionContent>
           </AccordionItem>
-
-          {/* Materials */}
-          <AccordionItem value="materials" className="border-none">
-            <AccordionTrigger className="font-heading text-lg py-3 hover:no-underline uppercase tracking-widest text-sm">
-              Materials
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-4 pt-2">
-                {materials.map((material) => (
-                  <div key={material} className="flex items-center space-x-3 group cursor-pointer">
-                    <Checkbox
-                      id={`mat-${material}`}
-                      className="border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <Label
-                      htmlFor={`mat-${material}`}
-                      className="text-xs uppercase tracking-widest font-medium cursor-pointer group-hover:text-primary transition-colors"
-                    >
-                      {material}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
         </Accordion>
       </div>
 
-      <div className="pt-8 border-t border-muted-foreground/10">
+      <div className="pt-4 border-muted-foreground/10">
         <button
           onClick={() => router.push("/shop")}
           className="text-[10px] uppercase tracking-[0.2em] font-bold text-primary hover:opacity-70 transition-opacity border-b border-primary/30 pb-1"

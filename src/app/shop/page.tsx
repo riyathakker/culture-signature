@@ -38,7 +38,7 @@ export default function ShopPage() {
   }, [categoryIdParam]);
 
   return (
-    <HomePageContainer label={[{ label: "Shop All" }]} heading="The Collection" description="Explore our curated selection of handcrafted jewels, bags, and home decor that celebrate Indian heritage.">
+    <HomePageContainer label={[{ label: "Categories", href: "/collections" }, { label: "Collections" }]} heading="The Collection" description="Explore our curated selection of handcrafted jewels, bags, and home decor that celebrate Indian heritage.">
 
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Desktop Sidebar */}

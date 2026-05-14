@@ -15,7 +15,7 @@ export default function CollectionsPage() {
   }, []);
 
   return (
-    <HomePageContainer label={[{ label: "Collections" }]} heading="Our Collections" description="Curated anthologies of heritage and style.">
+    <HomePageContainer label={[{ label: "Categories" }]} heading="Our Categories" description="Curated anthologies of heritage and style.">
       {isLoading ? (
         <CommonLoader />
       ) : categories.length === 0 ? (
