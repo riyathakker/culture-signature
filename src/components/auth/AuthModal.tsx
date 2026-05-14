@@ -52,7 +52,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         if (result?.error) {
           toast.error("Invalid email or password");
         } else {
-          toast.success("Welcome back to Culture Signature");
+          toast.success("Welcome back to Culture Signature!");
           onOpenChange(false);
           router.refresh();
         }
@@ -69,8 +69,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           throw new Error(data.message || "Something went wrong");
         }
 
-        toast.success("Welcome to the Inner Circle!");
-        
+        toast.success("Welcome to the Culture Signature!");
+
         // Auto-login after signup
         const loginResult = await signIn("credentials", {
           email,
@@ -95,25 +95,25 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden border-none bg-background rounded-2xl shadow-2xl">
+      <DialogContent className="sm:max-w-[450px] p-0 border-none bg-background rounded-2xl shadow-2xl [&>button]:text-white [&>button]:opacity-100">
         {/* Banner */}
-        <div className="relative h-24 bg-primary flex items-center justify-center overflow-hidden">
+        <div className="relative h-18 bg-primary flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-luxury-gradient opacity-20" />
           <h2 className="text-primary-foreground font-heading text-xl tracking-widest uppercase relative z-10">
             Culture Signature
           </h2>
         </div>
-        
+
         <div className="p-8 space-y-6">
           <div className="text-center space-y-2">
             <h3 className="text-2xl font-bold tracking-tight text-foreground">
               {view === "login" && "Great to have you back!"}
-              {view === "signup" && "Join the Inner Circle"}
+              {view === "signup" && "Join Our Community"}
               {view === "forgot-password" && "Reset Password"}
             </h3>
             <p className="text-sm text-muted-foreground font-serif italic">
               {view === "login" && "Enter your details to access your account."}
-              {view === "signup" && "Create an account to save your favorite pieces."}
+              {view === "signup" && "Create your account for exclusive collection updates."}
               {view === "forgot-password" && "Enter your email to receive a reset link."}
             </p>
           </div>
@@ -121,16 +121,18 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           <form onSubmit={handleSubmit} className="space-y-5">
             {view === "signup" && (
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Full Name</Label>
+                <Label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Full Name {view === "signup" && <span className="text-primary">*</span>}
+                </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                   <Input 
-                    id="name" 
-                    placeholder="Enter your name" 
+                  <Input
+                    id="name"
+                    placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required={view === "signup"}
-                    className="pl-10 h-12 rounded-full bg-secondary/30 border-transparent focus:border-primary transition-all"
+                    className="pl-10 input-luxury"
                   />
                 </div>
               </div>
@@ -139,7 +141,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Username or email <span className="text-primary">*</span>
+                  Email <span className="text-primary">*</span>
                 </Label>
                 {view === "login" && (
                   <div className="flex items-center space-x-2">
@@ -150,14 +152,14 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               </div>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                 <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="name@example.com" 
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="name@example.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-11 input-luxury"
+                  className="pl-11 input-luxury w-full"
                 />
               </div>
             </div>
@@ -169,7 +171,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                     Password <span className="text-primary">*</span>
                   </Label>
                   {view === "login" && (
-                    <button 
+                    <button
                       type="button"
                       onClick={() => setView("forgot-password")}
                       className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
@@ -180,16 +182,16 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                   <Input 
-                    id="password" 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="••••••••" 
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-11 pr-12 input-luxury"
+                    className="pl-11 pr-12 input-luxury w-full"
                   />
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
@@ -200,8 +202,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               </div>
             )}
 
-             <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isLoading}
               className="w-full btn-luxury"
             >
@@ -220,11 +222,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             </Button>
           </form>
 
-          <div className="pt-4 text-center space-y-4">
+          <div className="text-center">
             {view === "login" ? (
               <p className="text-sm text-muted-foreground font-serif italic">
-                New to Culture Signature?{" "}
-                <button 
+                New to Culture Signature?{"  "}
+                <button
                   onClick={() => setView("signup")}
                   className="text-primary font-sans font-bold not-italic hover:underline"
                 >
@@ -232,7 +234,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 </button>
               </p>
             ) : (
-              <button 
+              <button
                 onClick={() => setView("login")}
                 className="text-sm text-primary font-bold hover:underline"
               >

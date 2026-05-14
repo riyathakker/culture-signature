@@ -3,11 +3,19 @@ import { PaymentSelector } from "@/components/checkout/PaymentSelector";
 import { CheckoutSummary } from "@/components/checkout/CheckoutSummary";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 
-export default function CheckoutPage() {
+export default async function CheckoutPage() {
+  const session = await auth();
+
+  if (session?.user && (session.user as any).role === "ADMIN") {
+    redirect("/admin");
+  }
+
   return (
-    <HomePageContainer label="Shopping Bag" heading="Shopping Bag" description="Complete your order to begin the artisanal creation process.">
+    <HomePageContainer label={[{ label: "Shopping Bag", href: "/bag" }, { label: "Checkout" }]} heading="Checkout" description="Complete your order to begin the artisanal creation process.">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-24">
           {/* Main Checkout Flow */}
           <div className="lg:col-span-2 space-y-12">

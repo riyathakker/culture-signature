@@ -17,13 +17,8 @@ import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
 import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
-
-const navigation = [
-  { name: "New Arrivals", href: "/new-arrivals" },
-  { name: "Collections", href: "/collections" },
-  { name: "About Us", href: "/about-us" },
-  { name: "Contact Us", href: "/contact-us" },
-];
+import { navigationLinks } from "@/constants/constants";
+import { useCartStore } from "@/store/cartStore";
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
@@ -32,6 +27,8 @@ export function MobileMenu() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
   const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const { items } = useCartStore();
+  const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <>
@@ -41,7 +38,7 @@ export function MobileMenu() {
             <IconButton icon={Menu} className="lg:hidden" aria-label="Menu" />
           }
         />
-        <SheetContent side="left" className="w-full sm:max-w-sm flex flex-col p-0">
+        <SheetContent side="right" className="w-full sm:max-w-sm flex flex-col p-0">
           <SheetHeader className="p-6 border-b">
             <div className="flex items-center justify-between">
               <SheetTitle className="font-heading text-2xl tracking-tighter uppercase">
@@ -53,7 +50,7 @@ export function MobileMenu() {
           <ScrollArea className="flex-1">
             <div className="p-6 space-y-6">
               <nav className="space-y-4">
-                {navigation.map((item) => (
+                {navigationLinks.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
@@ -73,10 +70,17 @@ export function MobileMenu() {
                 <Link
                   href="/bag"
                   onClick={() => setOpen(false)}
-                  className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center justify-between group"
                 >
-                  <ShoppingBag className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">Shopping Bag</span>
+                  <div className="flex items-center space-x-3 text-muted-foreground group-hover:text-foreground transition-colors">
+                    <ShoppingBag className="w-5 h-5" />
+                    <span className="text-sm uppercase tracking-widest">Shopping Bag</span>
+                  </div>
+                  {itemCount > 0 && (
+                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {itemCount}
+                    </span>
+                  )}
                 </Link>
                 <Link
                   href="/wishlist"
@@ -99,7 +103,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <LayoutDashboard className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">Admin Dashboard</span>
+                  <span className="text-sm uppercase tracking-widest">Admin Panel</span>
                 </Link>
               )}
               {isLoggedIn ? (

@@ -38,7 +38,7 @@ export default function ShopPage() {
   }, [categoryIdParam]);
 
   return (
-    <HomePageContainer label="Shop All" heading="The Collection" description="Explore our curated selection of handcrafted jewels, bags, and home decor that celebrate Indian heritage.">
+    <HomePageContainer label={[{ label: "Shop All" }]} heading="The Collection" description="Explore our curated selection of handcrafted jewels, bags, and home decor that celebrate Indian heritage.">
 
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Desktop Sidebar */}
@@ -77,12 +77,7 @@ export default function ShopPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-in fade-in duration-700">
               {products.map((product) => (
-                <ProductCard key={product.id} product={{
-                  ...product,
-                  name: product.title,
-                  image: product.images?.[0] || "/placeholder.jpg",
-                  category: product.category?.name || "Uncategorized"
-                }} />
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           )}

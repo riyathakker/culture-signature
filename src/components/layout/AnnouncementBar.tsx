@@ -8,7 +8,7 @@ export function AnnouncementBar({ onClose }: { onClose: () => void }) {
     <div className="bg-primary text-primary-foreground">
       <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center relative">
         <p className="text-xs md:text-sm font-medium tracking-wider uppercase text-center">
-          Complimentary Shipping on all orders over ₹50,000 • New Collection Available Now
+          Complimentary Shipping on all orders over ₹5,000 • New Collection Available Now
         </p>
         <IconButton 
           icon={X} 

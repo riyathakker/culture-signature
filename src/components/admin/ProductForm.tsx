@@ -4,14 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  Upload,
   Plus,
-  X,
-  Save,
-  Image as ImageIcon,
-  Loader2,
-  Trash2
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,20 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 import { useProductStore } from "@/store/productStore";
 import { useCategoryStore } from "@/store/categoryStore";
 import { CommonLoader } from "../common/Loader";
+import { CategoryDialog } from "./CategoryDialog";
+import { ImageUpload } from "./ImageUpload";
 
 interface ProductFormProps {
   productId?: string;
@@ -45,25 +33,45 @@ interface ProductFormProps {
 export function ProductForm({ productId }: ProductFormProps) {
   const router = useRouter();
   const isEdit = !!productId;
-  console.log("product id", productId);
   const { addProduct, updateProduct } = useProductStore();
   const { categories, fetchCategories, addCategory: storeAddCategory } = useCategoryStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(isEdit);
 
-  const [isAddingCategory, setIsAddingCategory] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
+
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
-    stock: "",
+    discount: "0",
+    stock: "1",
     categoryId: "",
     images: [] as string[],
+    isFeatured: false,
   });
+
+  // Persist form to localStorage
+  useEffect(() => {
+    if (!isEdit && !isFetching) {
+      const saved = localStorage.getItem("product_draft");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setFormData((prev) => ({ ...prev, ...parsed }));
+        } catch (e) {
+          console.error("Failed to load draft", e);
+        }
+      }
+    }
+  }, [isEdit, isFetching]);
+
+  useEffect(() => {
+    if (!isEdit && !isFetching) {
+      localStorage.setItem("product_draft", JSON.stringify(formData));
+    }
+  }, [formData, isEdit, isFetching]);
 
   useEffect(() => {
     fetchInitialData();
@@ -80,12 +88,14 @@ export function ProductForm({ productId }: ProductFormProps) {
         const prod = await prodRes.json();
 
         setFormData({
-          title: prod.title || "",
+          title: prod.name || "",
           description: prod.description || "",
           price: prod.price?.toString() || "",
-          stock: prod.stock?.toString() || "",
+          discount: prod.discount?.toString() || "0",
+          stock: prod.stock?.toString() || "1",
           categoryId: prod.categoryId || "",
           images: prod.images || [],
+          isFeatured: prod.isFeatured || false,
         });
       }
     } catch (error) {
@@ -95,32 +105,10 @@ export function ProductForm({ productId }: ProductFormProps) {
     }
   };
 
-  const handleAddCategory = async () => {
-    if (!newCategoryName.trim()) return;
-    setIsSubmittingCategory(true);
-    try {
-      const response = await fetch("/api/admin/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newCategoryName }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to create category");
-      }
-
-      const data = await response.json();
-      storeAddCategory(data);
-      setFormData((prev) => ({ ...prev, categoryId: data.id }));
-      setNewCategoryName("");
-      setIsAddingCategory(false);
-      toast.success("Category added and selected.");
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setIsSubmittingCategory(false);
-    }
+  const handleCategoryCreated = (data: any) => {
+    storeAddCategory(data);
+    setFormData((prev) => ({ ...prev, categoryId: data.id }));
+    toast.success("Category added and selected.");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,6 +134,7 @@ export function ProductForm({ productId }: ProductFormProps) {
         }
 
         toast.success(isEdit ? "Masterpiece updated successfully" : "Masterpiece added to collection successfully");
+        if (!isEdit) localStorage.removeItem("product_draft");
         router.push("/admin/products");
       } else {
         const errorData = await response.json().catch(() => ({}));
@@ -191,7 +180,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                 <Label className="text-[10px] uppercase tracking-widest font-bold">Product Name</Label>
                 <Input
                   placeholder="e.g., Aurelia Diamond Ring"
-                  className="h-12 rounded-none border-border/50"
+                  className="h-12 border-border/50"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
@@ -201,48 +190,21 @@ export function ProductForm({ productId }: ProductFormProps) {
                 <Label className="text-[10px] uppercase tracking-widest font-bold">Description</Label>
                 <Textarea
                   placeholder="Describe the inspiration, materials, and craftsmanship..."
-                  className="min-h-[200px] rounded-none border-border/50 resize-none"
+                  className="min-h-[200px] border-border/50 resize-none"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  required
                 />
               </div>
             </div>
           </div>
 
-          <div className="bg-background border border-border/50 p-8 rounded-sm space-y-6">
+          <div className="bg-background border border-border/50 p-8 rounded-lg space-y-6">
             <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold border-b border-border/30 pb-4">Media Assets</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {formData.images.map((img, idx) => (
-                <div key={idx} className="aspect-[3/4] relative border border-border/30 rounded-sm overflow-hidden group">
-                  <img src={img} alt={`Product ${idx}`} className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })}
-                    className="absolute top-2 right-2 p-1 bg-background/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-3 h-3 text-destructive" />
-                  </button>
-                </div>
-              ))}
-              <div
-                onClick={() => {
-                  const url = prompt("Enter image URL:");
-                  if (url) setFormData({ ...formData, images: [...formData.images, url] });
-                }}
-                className="aspect-[3/4] border-2 border-dashed border-border/50 rounded-sm flex flex-col items-center justify-center gap-2 hover:bg-secondary/20 transition-colors cursor-pointer group"
-              >
-                <Upload className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                <span className="text-[8px] uppercase tracking-widest font-bold text-muted-foreground">
-                  {isEdit ? "Add Image" : "Upload Image"}
-                </span>
-              </div>
-              {formData.images.length === 0 && [1, 2, 3].map((i) => (
-                <div key={i} className="aspect-[3/4] bg-secondary/10 border border-border/30 rounded-sm flex items-center justify-center">
-                  <ImageIcon className="w-4 h-4 text-muted-foreground/30" />
-                </div>
-              ))}
-            </div>
+            <ImageUpload
+              value={formData.images}
+              onChange={(urls) => setFormData({ ...formData, images: urls })}
+              maxFiles={4}
+            />
           </div>
         </div>
 
@@ -251,48 +213,21 @@ export function ProductForm({ productId }: ProductFormProps) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-[10px] uppercase tracking-widest font-bold">Category</Label>
-                <Dialog open={isAddingCategory} onOpenChange={setIsAddingCategory}>
-                  <DialogTrigger>
+                <CategoryDialog
+                  onSuccess={handleCategoryCreated}
+                  trigger={
                     <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-secondary/50">
                       <Plus className="w-3 h-3" />
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Add New Category</DialogTitle>
-                      <DialogDescription className="font-serif italic text-base pt-2">
-                        Create a new curated grouping for your masterpieces.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] uppercase tracking-widest font-bold">Category Name</Label>
-                        <Input
-                          placeholder="e.g., Diamond Essentials"
-                          value={newCategoryName}
-                          onChange={(e) => setNewCategoryName(e.target.value)}
-                          className="h-12 rounded-none border-border/50 uppercase text-[10px] tracking-widest font-bold"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button
-                        onClick={handleAddCategory}
-                        disabled={isSubmittingCategory || !newCategoryName.trim()}
-                        className="w-full h-12 uppercase tracking-[0.2em] text-[10px] font-bold"
-                      >
-                        {isSubmittingCategory ? "Saving..." : "Save Category"}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                  }
+                />
               </div>
               <Select
                 value={formData.categoryId}
                 onValueChange={(val) => setFormData({ ...formData, categoryId: val })}
                 required
               >
-                <SelectTrigger className="h-12 rounded-none border-border/50 uppercase text-[10px] tracking-widest font-bold">
+                <SelectTrigger className="h-12 border-border/50 uppercase text-[10px] tracking-widest font-bold">
                   <SelectValue placeholder="Select Category">
                     {categories.find(c => c.id === formData.categoryId)?.name}
                   </SelectValue>
@@ -309,10 +244,21 @@ export function ProductForm({ productId }: ProductFormProps) {
                 <Input
                   type="number"
                   placeholder="0.00"
-                  className="h-12 rounded-none border-border/50"
+                  className="h-12 border-border/50"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest font-bold">Discount (₹)</Label>
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  className="h-12 border-border/50"
+                  value={formData.discount}
+                  onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
                 />
               </div>
 
@@ -322,11 +268,23 @@ export function ProductForm({ productId }: ProductFormProps) {
                 </Label>
                 <Input
                   type="number"
-                  placeholder="0"
-                  className="h-12 rounded-none border-border/50"
+                  placeholder="1"
+                  className="h-12 border-border/50"
                   value={formData.stock}
                   onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                   required
+                  min={0}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm bg-secondary/5">
+                <div className="space-y-1">
+                  <Label className="text-[10px] uppercase tracking-widest font-bold">Featured Product</Label>
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-widest">Show in featured collection</p>
+                </div>
+                <Switch
+                  checked={formData.isFeatured}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
                 />
               </div>
             </div>

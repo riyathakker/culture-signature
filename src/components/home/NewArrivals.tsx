@@ -15,15 +15,12 @@ export function NewArrivals() {
     fetchNewArrivals();
   }, []);
 
-  const formatProduct = (product: any) => ({
-    ...product,
-    name: product.title,
-    image: product.images?.[0] || "/placeholder.jpg",
-    category: product.category?.name || "Uncategorized",
-  });
+  if (!isLoading && (!newArrivals || newArrivals.length === 0)) {
+    return null;
+  }
 
   return (
-    <section className="pt-12 pb-16 bg-secondary/10">
+    <section className="py-24 border-t border-border/50">
       <Container>
         <SectionTitle title={en.home.newArrivals.title} subtitle={en.home.newArrivals.subtitle} align="center" />
         {isLoading ? (
@@ -35,7 +32,7 @@ export function NewArrivals() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {newArrivals.map((product) => (
-              <ProductCard key={product.id} product={formatProduct(product)} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}

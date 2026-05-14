@@ -29,7 +29,7 @@ export default function AboutPage() {
     },
   ];
   return (
-    <HomePageContainer label="About Us" heading="Crafting Legacy Since 2013" description="Where elegance and functionality intertwine to create timeless artisanal masterpieces.">
+    <HomePageContainer label={[{ label: "About Us" }]} heading="Crafting Legacy Since 2013" description="Where elegance and functionality intertwine to create timeless artisanal masterpieces.">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 mb-16">
 
           <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">

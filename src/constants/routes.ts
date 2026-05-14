@@ -13,6 +13,8 @@ export const ROUTES = {
     CUSTOMERS: "/admin/customers",
     DISCOUNTS: "/admin/discounts",
     DISCOUNTS_NEW: "/admin/discounts/new",
+    CATEGORIES: "/admin/categories",
+    
   },
   ACCOUNT: {
     ORDERS: "/account/orders",

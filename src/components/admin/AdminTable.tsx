@@ -25,6 +25,10 @@ interface AdminTableProps<T> {
   isLoading?: boolean;
   emptyMessage?: string;
   rowKey: (item: T) => string;
+  expandable?: {
+    expandedRows: string[];
+    renderExpanded: (item: T) => ReactNode;
+  };
 }
 
 export function AdminTable<T>({
@@ -33,12 +37,15 @@ export function AdminTable<T>({
   isLoading = false,
   emptyMessage = "No records found.",
   rowKey,
+  expandable,
 }: AdminTableProps<T>) {
   return (
     <div className="bg-background border border-border/50 rounded-sm overflow-hidden relative min-h-[400px]">
       {isLoading && (
         <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <svg className="w-8 h-8 animate-spin text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+          </svg>
         </div>
       )}
       <Table>
@@ -62,22 +69,38 @@ export function AdminTable<T>({
               </TableCell>
             </TableRow>
           ) : (
-            data.map((item) => (
-              <TableRow key={rowKey(item)} className="hover:bg-secondary/5 transition-colors">
-                {columns.map((column, idx) => (
-                  <TableCell key={idx} className={column.className}>
-                    {column.render 
-                      ? column.render(item) 
-                      : column.accessor 
-                        ? (item[column.accessor] as ReactNode) 
-                        : null}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            data.map((item) => {
+              const key = rowKey(item);
+              const isExpanded = expandable?.expandedRows.includes(key);
+
+              return (
+                <React.Fragment key={key}>
+                  <TableRow className={`hover:bg-secondary/5 transition-colors ${isExpanded ? 'bg-secondary/10' : ''}`}>
+                    {columns.map((column, idx) => (
+                      <TableCell key={idx} className={column.className}>
+                        {column.render 
+                          ? column.render(item) 
+                          : column.accessor 
+                            ? (item[column.accessor] as ReactNode) 
+                            : null}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {isExpanded && expandable && (
+                    <TableRow className="hover:bg-transparent border-none">
+                      <TableCell colSpan={columns.length} className="p-0 border-none">
+                        {expandable.renderExpanded(item)}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              );
+            })
           )}
         </TableBody>
       </Table>
     </div>
   );
 }
+
+import React from "react";

@@ -78,7 +78,6 @@ export default function SettingsPage() {
 
       toast.success("Account deleted successfully. Farewell.");
       
-      // Sign out and redirect
       window.location.href = "/api/auth/signout";
     } catch (error: any) {
       toast.error(error.message);

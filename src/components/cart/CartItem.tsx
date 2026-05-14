@@ -25,7 +25,19 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
         variant === "page" ? "w-24 h-32 md:w-32 md:h-40" : "w-20 h-28"
       )}>
         <div className="absolute inset-0 bg-luxury-gradient opacity-10" />
-        <div className="w-full h-full bg-muted animate-pulse" />
+        {item.image ? (
+          <Image
+            src={item.image}
+            alt={item.name}
+            fill
+            className="object-cover transition-transform duration-700 hover:scale-105"
+            sizes="(max-width: 768px) 80vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="w-full h-full bg-muted flex items-center justify-center">
+            <span className="text-muted-foreground font-serif text-xs">No Image</span>
+          </div>
+        )}
       </div>
 
       <div className="flex-1 flex flex-col justify-between py-1">
@@ -37,7 +49,7 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
             )}>
               {item.name}
             </h4>
-            <button 
+            <button
               onClick={() => removeItem(item.id)}
               className="text-muted-foreground hover:text-primary transition-all p-1 rounded-full hover:bg-secondary/50 group"
             >
@@ -50,7 +62,7 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <QuantitySelector 
+          <QuantitySelector
             quantity={item.quantity}
             onUpdate={(newQty) => updateQuantity(item.id, newQty)}
             size="sm"

@@ -60,7 +60,7 @@ export function ProductTabs({ details }: ProductTabsProps) {
 
         <TabsContent value="shipping" className="max-w-3xl animate-in fade-in duration-500">
           <div className="space-y-6 text-muted-foreground leading-relaxed">
-            <h4 className="font-heading text-xl text-foreground">Complimentary Shipping</h4>
+            <h4 className="font-heading text-xl text-foreground">Premium Shipping</h4>
             <p className="font-serif italic text-lg">
               Every Culture Signature piece is delivered in our signature lacquered box, wrapped in silk ribbon, and accompanied by a certificate of authenticity.
             </p>

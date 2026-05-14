@@ -1,16 +1,14 @@
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { OrderRow } from "@/components/account/OrderRow";
 
 export default async function OrdersPage() {
   const session = await auth();
@@ -21,6 +19,13 @@ export default async function OrdersPage() {
 
   const orders = await prisma.order.findMany({
     where: { userId: (session.user as any).id },
+    include: {
+      items: {
+        include: {
+          product: true
+        }
+      }
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -49,36 +54,7 @@ export default async function OrdersPage() {
             </TableHeader>
             <TableBody>
               {orders.map((order) => (
-                <TableRow key={order.id} className="hover:bg-secondary/5 transition-colors">
-                  <TableCell className="font-medium text-sm py-6">
-                    #{order.id.slice(-8).toUpperCase()}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {new Date(order.createdAt).toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    <Badge 
-                      variant="outline" 
-                      className={
-                        order.status === "DELIVERED" 
-                          ? "border-green-500 text-green-500" 
-                          : order.status === "PENDING"
-                          ? "border-amber-500 text-amber-500"
-                          : "border-primary text-primary"
-                      }
-                    >
-                      {order.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-medium">₹{order.totalPrice.toLocaleString()}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-[10px] uppercase tracking-widest">Details</Button>
-                  </TableCell>
-                </TableRow>
+                <OrderRow key={order.id} order={order} />
               ))}
             </TableBody>
           </Table>
