@@ -31,7 +31,7 @@ export default function ProductPage() {
         
         setProduct({
           ...foundProduct,
-          name: foundProduct.title,
+          name: foundProduct.name,
           image: foundProduct.images?.[0] || "/placeholder.jpg",
           category: foundProduct.category?.name || "Uncategorized",
           categoryId: foundProduct.categoryId,
@@ -101,14 +101,7 @@ export default function ProductPage() {
           <SectionTitle title="Complete the Look" subtitle="You May Also Desire" align="center" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             {relatedProducts.map((p) => (
-              <ProductCard key={p.id} product={{
-                ...p,
-                name: p.title,
-                image: p.images?.[0] || "/placeholder.jpg",
-                category: p.category?.name || "Uncategorized",
-                rating: 5, // Mock rating if not in DB
-                description: p.description
-              }} />
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </div>

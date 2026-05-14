@@ -20,7 +20,7 @@ export async function GET(req: Request) {
         AND: [
           query ? {
             OR: [
-              { title: { contains: query, mode: "insensitive" } },
+              { name: { contains: query, mode: "insensitive" } },
               { description: { contains: query, mode: "insensitive" } },
             ],
           } : {},
@@ -53,20 +53,21 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { title, description, price, stock, categoryId, images } = body;
+    const { title: name, description, price, stock, categoryId, images, isFeatured } = body;
 
-    if (!title || !description || !price || !stock || !categoryId) {
+    if (!name || !price || !stock || !categoryId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     const product = await prisma.product.create({
       data: {
-        title,
+        name,
         description,
         price: parseFloat(price),
         stock: parseInt(stock),
         categoryId,
         images: images || [],
+        isFeatured: isFeatured || false,
       },
       include: {
         category: true,

@@ -15,19 +15,17 @@ const celebImages = [
 
 export function CelebSpotting() {
   return (
-    <section className="py-16 bg-background overflow-hidden border-t border-muted-foreground/10">
-      <div className="container mx-auto px-4">
-        <SectionTitle title={en.home.celebSpotting.title} subtitle={en.home.celebSpotting.subtitle} align="center" />
-      </div>
-      
+    <section className="py-24 bg-secondary/50 overflow-hidden border-t border-border/50">
+      <SectionTitle title={en.home.celebSpotting.title} subtitle={en.home.celebSpotting.subtitle} align="center" />
+
       <div className="relative mt-10 w-full flex overflow-x-hidden">
         <div className="flex animate-marquee whitespace-nowrap gap-4 px-2 w-max">
           {[...celebImages, ...celebImages].map((src, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className="relative w-64 md:w-80 h-[400px] flex-shrink-0 rounded-sm overflow-hidden group cursor-pointer"
             >
-              <img 
+              <img
                 src={src}
                 alt="Celebrity Spotting"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -35,7 +33,7 @@ export function CelebSpotting() {
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
                 <span className="text-white font-heading text-xl opacity-0 group-hover:opacity-100 transition-opacity delay-100">
                   @culturesignature
-                </span> 
+                </span>
               </div>
             </div>
           ))}

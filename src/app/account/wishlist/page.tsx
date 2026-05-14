@@ -43,19 +43,12 @@ export default async function WishlistPage() {
           <p className="text-muted-foreground font-serif italic">Your wishlist is currently empty.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-3 md:grid-cols-4 gap-8">
           {wishlist.map((item: any) => (
-            <ProductCard 
-              key={item.id} 
-              product={{
-                id: item.product.id,
-                name: item.product.title,
-                price: item.product.price,
-                category: item.product.category.name,
-                image: item.product.images[0] || "/placeholder.jpg",
-                description: item.product.description,
-                rating: 5, // Default or fetch from reviews if needed
-              }} 
+            <ProductCard
+              key={item.id}
+              product={item.product}
+              variant="wishlist"
             />
           ))}
         </div>

@@ -5,6 +5,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const categoryId = searchParams.get("categoryId");
   const isNew = searchParams.get("isNew") === "true";
+  const isFeatured = searchParams.get("isFeatured") === "true";
   const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : undefined;
 
   try {
@@ -16,6 +17,7 @@ export async function GET(req: Request) {
             gte: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) // Last 10 days
           }
         }),
+        ...(isFeatured && { isFeatured: true }),
       },
       include: {
         category: true,

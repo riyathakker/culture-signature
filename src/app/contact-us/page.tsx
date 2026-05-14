@@ -66,7 +66,7 @@ import { socialLinks } from "@/constants/constants";
 export default function ContactPage() {
   return (
     <HomePageContainer
-      label="Contact Us"
+      label={[{ label: "Contact Us" }]}
       heading="Get in Touch"
       description="Our concierge team is at your service for inquiries, bespoke orders, and artisanal consultations."
     >

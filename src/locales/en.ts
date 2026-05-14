@@ -6,6 +6,7 @@ export const en = {
       orders: "Orders",
       customers: "Customers",
       discounts: "Discounts",
+      categories: "Categories",
       home: "Home",
     },
     products: {
@@ -43,6 +44,78 @@ export const en = {
         amount: "Amount",
       }
     },
+    discounts: {
+      title: "Privileges & Offers",
+      description: "Curate exclusive experiences for your clientele.",
+      newOffer: "New Offer",
+      searchPlaceholder: "Search coupon codes...",
+      filters: {
+        status: "Status",
+        all: "All Status",
+        active: "Active",
+        expired: "Expired"
+      },
+      table: {
+        code: "Coupon Code",
+        type: "Type",
+        value: "Value",
+        usage: "Usage",
+        expires: "Expires",
+        status: "Status"
+      },
+      empty: "No promotional offers match your criteria.",
+      delete: {
+        title: "Deactivate Privilege",
+        description: "Are you sure you want to revoke the exclusive offer \"{code}\"? This action will prevent patrons from utilizing this coupon code."
+      },
+      dialog: {
+        titleCreate: "Create New Privilege",
+        titleEdit: "Modify Privilege",
+        descCreate: "Design an exclusive offer for your most valued patrons.",
+        descEdit: "Refine the terms of this exclusive offer.",
+        labels: {
+          code: "Coupon Code",
+          type: "Type",
+          value: "Value",
+          usageLimit: "Usage Limit",
+          expiryDate: "Expiry Date",
+          status: "Status"
+        },
+        buttons: {
+          create: "Curate Offer",
+          edit: "Update Offer"
+        }
+      }
+    },
+    categories: {
+      title: "Collection Clusters",
+      description: "Organize your catalog into curated collections.",
+      newCategory: "New Category",
+      searchPlaceholder: "Search categories...",
+      table: {
+        collection: "Collection",
+        slug: "Slug",
+        description: "Description",
+        products: "Products",
+        status: "Status"
+      },
+      empty: "No collections match your search.",
+      dialog: {
+        titleCreate: "Initiate Collection",
+        titleEdit: "Refine Collection",
+        descCreate: "Establish a new category for your artisanal masterpieces.",
+        descEdit: "Update the thematic details of this curated collection.",
+        labels: {
+          name: "Collection Name",
+          slug: "Slug",
+          description: "Thematic Description"
+        },
+        buttons: {
+          create: "Establish Collection",
+          edit: "Update Collection"
+        }
+      }
+    },
     common: {
       loading: "Loading...",
       save: "Save",
@@ -57,7 +130,7 @@ export const en = {
       title: "Order Summary",
       subtotal: "Subtotal",
       shipping: "Shipping",
-      shippingValue: "Complimentary",
+      shippingValue: "Calculated at checkout",
       estimatedTax: "Estimated Tax (18% GST)",
       total: "Total",
       discount: "Discount",
@@ -65,7 +138,7 @@ export const en = {
       codePlaceholder: "CODE",
       apply: "Apply",
       proceedToCheckout: "Proceed to Checkout",
-      footerNote: "Complimentary shipping on all orders. <br/> Secure payment processed via Stripe.",
+      footerNote: "Complimentary shipping on orders above ₹5,000. <br/> Secure payment processed via Stripe.",
       badges: {
         expressDelivery: "Express Delivery",
         securePayment: "Secure Payment"
@@ -133,7 +206,7 @@ export const en = {
         },
         {
           question: "Do you offer international shipping?",
-          answer: "Yes, we ship globally. Complimentary shipping is provided on all orders to ensure your masterpieces reach you safely."
+          answer: "Yes, we ship globally. Complimentary shipping is provided on orders above ₹5,000 to ensure your masterpieces reach you safely."
         },
         {
           question: "Are the bags made from genuine leather?",

@@ -26,7 +26,7 @@ export function QuantitySelector({
       <button
         onClick={() => onUpdate(Math.max(1, quantity - 1))}
         className={cn(
-          "hover:bg-secondary transition-colors flex items-center justify-center",
+          "hover:bg-secondary transition-colors flex items-center justify-center h-full",
           isSm ? "w-8" : isLg ? "w-12" : "w-10"
         )}
         aria-label="Decrease quantity"
@@ -35,8 +35,8 @@ export function QuantitySelector({
       </button>
       
       <span className={cn(
-        "font-medium text-center",
-        isSm ? "px-2 text-xs min-w-[2rem]" : isLg ? "px-4 text-base min-w-[3rem]" : "px-3 text-sm min-w-[2.5rem]"
+        "font-medium text-center flex-1",
+        isSm ? "text-xs" : isLg ? "text-base" : "text-sm"
       )}>
         {quantity}
       </span>
@@ -44,7 +44,7 @@ export function QuantitySelector({
       <button
         onClick={() => onUpdate(quantity + 1)}
         className={cn(
-          "hover:bg-secondary transition-colors flex items-center justify-center",
+          "hover:bg-secondary transition-colors flex items-center justify-center h-full",
           isSm ? "w-8" : isLg ? "w-12" : "w-10"
         )}
         aria-label="Increase quantity"

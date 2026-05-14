@@ -36,7 +36,7 @@ export function AdminFilterDropdown({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Button variant="outline" className="h-12 px-6 uppercase tracking-widest text-[10px] font-bold border-border/50 gap-2 min-w-[140px]">
           <Icon className="w-4 h-4" /> 
           {selectedOption ? selectedOption.label : label}

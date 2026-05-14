@@ -14,7 +14,7 @@ export default function NewArrivalsPage() {
   }, []);
 
   return (
-    <HomePageContainer label="New Arrivals" heading="New Arrivals" description="The latest masterpieces to join the Culture Signature house.">
+    <HomePageContainer label={[{ label: "New Arrivals" }]} heading="New Arrivals" description="The latest masterpieces to join the Culture Signature house.">
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -29,12 +29,7 @@ export default function NewArrivalsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 animate-in fade-in duration-700">
           {newArrivals.map((product) => (
-            <ProductCard key={product.id} product={{
-              ...product,
-              name: product.title,
-              image: product.images?.[0] || "/placeholder.jpg",
-              category: product.category?.name || "Uncategorized"
-            }} />
+            <ProductCard product={product} />
           ))}
         </div>
       )}

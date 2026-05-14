@@ -3,23 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { ROUTES } from "@/constants/routes";
+import { navigationLinks } from "@/constants/constants";
 
 export function NavLinks() {
   const pathname = usePathname();
 
-  const links = [
-    { label: "Home", href: ROUTES.HOME },
-    { label: "New Arrivals", href: ROUTES.NEW_ARRIVALS },
-    { label: "Collections", href: ROUTES.COLLECTIONS },
-    { label: "About Us", href: ROUTES.ABOUT_US },
-    { label: "Contact Us", href: ROUTES.CONTACT_US },
-  ];
-
   return (
     <nav className="hidden lg:block mt-4">
-      <ul className="flex items-center justify-center space-x-10">
-        {links.map((item) => {
+      <ul className="flex items-center px-4 sm:px-6 lg:px-8 space-x-10">
+        {navigationLinks.map((item) => {
           const isActive = pathname === item.href;
 
           return (
@@ -34,7 +26,7 @@ export function NavLinks() {
                   }
                 `}
               >
-                {item.label}
+                {item.name}
 
                 <span
                   className={`

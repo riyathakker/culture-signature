@@ -29,7 +29,6 @@ export function FilterSidebar() {
     }
     router.push(`/shop?${params.toString()}`);
   };
-  console.log("Rvgregvregv", categories)
   return (
     <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
       <div>
@@ -45,13 +44,13 @@ export function FilterSidebar() {
               <div className="space-y-4 pt-2">
                 {Array.isArray(categories) && categories.map((category) => (
                   <div key={category.id} className="flex items-center space-x-3 group cursor-pointer">
-                    <Checkbox 
-                      id={`cat-${category.id}`} 
+                    <Checkbox
+                      id={`cat-${category.id}`}
                       checked={currentCategoryId === category.id}
                       onCheckedChange={() => handleCategoryChange(category.id)}
                       className="border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                    <Label 
+                    <Label
                       htmlFor={`cat-${category.id}`}
                       className="text-xs uppercase tracking-widest font-medium cursor-pointer group-hover:text-primary transition-colors"
                     >
@@ -88,11 +87,11 @@ export function FilterSidebar() {
               <div className="space-y-4 pt-2">
                 {materials.map((material) => (
                   <div key={material} className="flex items-center space-x-3 group cursor-pointer">
-                    <Checkbox 
-                      id={`mat-${material}`} 
+                    <Checkbox
+                      id={`mat-${material}`}
                       className="border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                    <Label 
+                    <Label
                       htmlFor={`mat-${material}`}
                       className="text-xs uppercase tracking-widest font-medium cursor-pointer group-hover:text-primary transition-colors"
                     >
@@ -107,7 +106,7 @@ export function FilterSidebar() {
       </div>
 
       <div className="pt-8 border-t border-muted-foreground/10">
-        <button 
+        <button
           onClick={() => router.push("/shop")}
           className="text-[10px] uppercase tracking-[0.2em] font-bold text-primary hover:opacity-70 transition-opacity border-b border-primary/30 pb-1"
         >
