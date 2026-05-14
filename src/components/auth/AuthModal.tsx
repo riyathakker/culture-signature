@@ -25,6 +25,8 @@ interface AuthModalProps {
 
 type AuthView = "login" | "signup" | "forgot-password";
 
+import { en } from "@/locales/en";
+
 export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [view, setView] = useState<AuthView>("login");
   const [showPassword, setShowPassword] = useState(false);
@@ -50,9 +52,9 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         });
 
         if (result?.error) {
-          toast.error("Invalid email or password");
+          toast.error(en.auth.login.error);
         } else {
-          toast.success("Welcome back to Culture Signature!");
+          toast.success(en.auth.login.success);
           onOpenChange(false);
           router.refresh();
         }
@@ -66,10 +68,10 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || "Something went wrong");
+          throw new Error(data.message || en.auth.signup.error);
         }
 
-        toast.success("Welcome to the Culture Signature!");
+        toast.success(en.auth.signup.success);
 
         // Auto-login after signup
         const loginResult = await signIn("credentials", {
@@ -79,7 +81,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         });
 
         if (loginResult?.error) {
-          toast.error("Account created, but there was an error signing you in. Please login manually.");
+          toast.error(en.auth.signup.autoLoginError);
           setView("login");
         } else {
           onOpenChange(false);
@@ -107,14 +109,14 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         <div className="p-8 space-y-6">
           <div className="text-center space-y-2">
             <h3 className="text-2xl font-bold tracking-tight text-foreground">
-              {view === "login" && "Great to have you back!"}
-              {view === "signup" && "Join Our Community"}
-              {view === "forgot-password" && "Reset Password"}
+              {view === "login" && en.auth.login.title}
+              {view === "signup" && en.auth.signup.title}
+              {view === "forgot-password" && en.auth.forgotPassword.title}
             </h3>
             <p className="text-sm text-muted-foreground font-serif italic">
-              {view === "login" && "Enter your details to access your account."}
-              {view === "signup" && "Create your account for exclusive collection updates."}
-              {view === "forgot-password" && "Enter your email to receive a reset link."}
+              {view === "login" && en.auth.login.description}
+              {view === "signup" && en.auth.signup.description}
+              {view === "forgot-password" && en.auth.forgotPassword.description}
             </p>
           </div>
 
@@ -122,13 +124,13 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             {view === "signup" && (
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Full Name {view === "signup" && <span className="text-primary">*</span>}
+                  {en.auth.signup.fullName} {view === "signup" && <span className="text-primary">*</span>}
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="name"
-                    placeholder="Enter your name"
+                    placeholder={en.auth.signup.fullNamePlaceholder}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required={view === "signup"}
@@ -141,12 +143,12 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Email <span className="text-primary">*</span>
+                  {en.auth.common.email} <span className="text-primary">*</span>
                 </Label>
                 {view === "login" && (
                   <div className="flex items-center space-x-2">
                     <Checkbox id="remember" className="rounded-sm border-muted-foreground/30" />
-                    <Label htmlFor="remember" className="text-xs font-medium text-muted-foreground cursor-pointer">Remember</Label>
+                    <Label htmlFor="remember" className="text-xs font-medium text-muted-foreground cursor-pointer">{en.auth.login.remember}</Label>
                   </div>
                 )}
               </div>
@@ -155,7 +157,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder={en.auth.common.emailPlaceholder}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -168,7 +170,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               <div className="space-y-2">
                 <div className="flex justify-between items-center px-1">
                   <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                    Password <span className="text-primary">*</span>
+                    {en.auth.common.password} <span className="text-primary">*</span>
                   </Label>
                   {view === "login" && (
                     <button
@@ -176,7 +178,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                       onClick={() => setView("forgot-password")}
                       className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
                     >
-                      Lost?
+                      {en.auth.login.forgotPassword}
                     </button>
                   )}
                 </div>
@@ -210,13 +212,13 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               {isLoading ? (
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                  <span>Processing...</span>
+                  <span>{en.auth.common.processing}</span>
                 </div>
               ) : (
                 <>
-                  {view === "login" && "Sign in to your account"}
-                  {view === "signup" && "Create account"}
-                  {view === "forgot-password" && "Send Reset Link"}
+                  {view === "login" && en.auth.login.submit}
+                  {view === "signup" && en.auth.signup.submit}
+                  {view === "forgot-password" && en.auth.forgotPassword.submit}
                 </>
               )}
             </Button>
@@ -225,12 +227,12 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           <div className="text-center">
             {view === "login" ? (
               <p className="text-sm text-muted-foreground font-serif italic">
-                New to Culture Signature?{"  "}
+                {en.auth.login.newToBrand}{"  "}
                 <button
                   onClick={() => setView("signup")}
                   className="text-primary font-sans font-bold not-italic hover:underline"
                 >
-                  Create an Account
+                  {en.auth.login.createAccount}
                 </button>
               </p>
             ) : (
@@ -238,7 +240,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 onClick={() => setView("login")}
                 className="text-sm text-primary font-bold hover:underline"
               >
-                Back to Sign In
+                {en.auth.forgotPassword.backToLogin}
               </button>
             )}
           </div>

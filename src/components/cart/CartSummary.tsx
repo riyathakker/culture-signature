@@ -13,7 +13,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-
+import { en } from "@/locales/en";
 interface OrderSummaryProps {
   variant?: "cart" | "checkout";
 }
@@ -34,7 +34,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) {
-      toast.error("Please enter a valid promotional code.");
+      toast.error(en.cart.summary.messages.invalidCode);
       return;
     }
 
@@ -43,14 +43,14 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       const response = await fetch(`/api/promos/${promoCode.toUpperCase()}`);
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "Invalid promo code");
+        throw new Error(data.error || en.cart.summary.messages.invalidOrExpiredCode);
       }
 
       setAppliedPromo(data);
-      toast.success(`Promotional code ${promoCode.toUpperCase()} applied!`);
+      toast.success(en.cart.summary.messages.codeApplied.replace("{code}", promoCode.toUpperCase()));
       setPromoCode("");
     } catch (error: any) {
-      toast.error(error.message || "Invalid or expired promotional code.");
+      toast.error(error.message || en.cart.summary.messages.invalidOrExpiredCode);
       setAppliedPromo(null);
     } finally {
       setIsApplying(false);
@@ -59,13 +59,11 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
   const removePromo = () => {
     setAppliedPromo(null);
-    toast.info("Promotional code removed.");
   };
 
   const handleFinalize = async () => {
     if (!shippingAddress.firstName || !shippingAddress.lastName || !shippingAddress.street || !shippingAddress.city || !shippingAddress.phone) {
-      toast.error("Please complete your shipping information.");
-      // Scroll to top to see errors if needed, but for now just toast
+      toast.error(en.cart.summary.messages.completeShipping);
       return;
     }
 
@@ -88,7 +86,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       }
 
       const order = await response.json();
-      toast.success("Order finalized successfully!");
+      toast.success(en.cart.summary.messages.orderSuccess);
       
       // Clear cart and reset checkout
       await clearCart();
@@ -104,7 +102,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       router.push(`/bag/checkout/success?id=${order.id}`);
     } catch (error) {
       console.error("Finalize error:", error);
-      toast.error("Something went wrong while finalizing your order.");
+      toast.error(en.cart.summary.messages.orderError);
     } finally {
       setIsFinalizing(false);
     }
@@ -123,7 +121,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   return (
     <div className="bg-secondary/30 p-8 rounded-sm space-y-8 sticky top-32 border border-border/10 shadow-luxury">
       <h3 className="text-2xl font-heading">
-        {variant === "checkout" ? "Order Review" : "Order Summary"}
+        {variant === "checkout" ? en.cart.summary.reviewTitle : en.cart.summary.title}
       </h3>
 
       {variant === "checkout" && (
@@ -136,7 +134,9 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-heading truncate">{item.name}</p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Qty: {item.quantity}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                  {en.cart.summary.qty.replace("{count}", item.quantity.toString())}
+                </p>
               </div>
               <p className="text-sm font-medium">₹{(item.price * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
             </div>
@@ -147,7 +147,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
       <div className="space-y-4">
         <div className="flex justify-between text-sm uppercase tracking-widest">
-          <span className="text-muted-foreground">Value (excl. GST)</span>
+          <span className="text-muted-foreground">{en.cart.summary.subtotal}</span>
           <span className="font-medium">₹{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
         </div>
 
@@ -166,22 +166,22 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         )}
 
         <div className="flex justify-between text-sm uppercase tracking-widest">
-          <span className="text-muted-foreground">Shipping</span>
+          <span className="text-muted-foreground">{en.cart.summary.shipping}</span>
           {shippingCost === 0 ? (
-            <span className="text-primary font-bold">Complimentary</span>
+            <span className="text-primary font-bold">{en.cart.summary.shippingComplimentary}</span>
           ) : (
             <span className="font-medium">₹{shippingCost.toLocaleString()}</span>
           )}
         </div>
 
         <div className="flex justify-between text-sm uppercase tracking-widest">
-          <span className="text-muted-foreground">Estimated GST (18%)</span>
+          <span className="text-muted-foreground">{en.cart.summary.estimatedTax}</span>
           <span className="font-medium">₹{gstAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
         </div>
 
         <Separator className="bg-border/50" />
         <div className="flex justify-between text-xl font-heading text-primary">
-          <span>{variant === "checkout" ? "Final Total" : "Total Amount"}</span>
+          <span>{variant === "checkout" ? en.cart.summary.finalTotal : en.cart.summary.total}</span>
           <span>₹{total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </div>
       </div>
@@ -189,10 +189,10 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       {/* Coupon Section - Only for Cart */}
       {variant === "cart" && (
         <div className="space-y-3 pt-4 border-t border-border/20">
-          <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Promotional Privilege</p>
+          <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{en.cart.summary.promotionalCode}</p>
           <div className="flex gap-2">
             <Input
-              placeholder="ENTER CODE"
+              placeholder={en.cart.summary.codePlaceholder}
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
               className="h-11 text-xs tracking-widest bg-background border-none shadow-inner uppercase"
@@ -204,7 +204,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
               variant="outline"
               className="h-11 px-6 uppercase tracking-widest text-[10px] border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500"
             >
-              {isApplying ? <Loader2 className="w-3 h-3 animate-spin" /> : "Apply"}
+              {isApplying ? <Loader2 className="w-3 h-3 animate-spin" /> : en.cart.summary.apply}
             </Button>
           </div>
         </div>
@@ -215,7 +215,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
           variant === "cart" ? (
             <Link href="/bag/checkout" className="block">
               <Button className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20">
-                Proceed to Checkout <ArrowRight className="ml-2 w-4 h-4" />
+                {en.cart.summary.proceedToCheckout} <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
           ) : (
@@ -225,14 +225,14 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
               className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20"
             >
               {isFinalizing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Finalize Acquisition <ArrowRight className="ml-2 w-4 h-4" />
+              {en.cart.summary.finalizeAcquisition} <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           )
         ) : (
           <div className="p-4 bg-primary/5 border border-primary/20 rounded-sm text-center">
-            <p className="text-[10px] uppercase tracking-widest font-bold text-primary">Admin Preview Mode</p>
+            <p className="text-[10px] uppercase tracking-widest font-bold text-primary">{en.cart.summary.adminPreview.title}</p>
             <p className="text-[9px] text-muted-foreground mt-1 uppercase tracking-widest leading-relaxed">
-              Transactional features are disabled for administrative accounts.
+              {en.cart.summary.adminPreview.description}
             </p>
           </div>
         )}
@@ -240,8 +240,8 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         {!isAdmin && (
           <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest leading-relaxed mt-2 px-4">
             {variant === "cart"
-              ? `Complimentary shipping above ₹${shippingThreshold.toLocaleString()}. Securely processed via Stripe.`
-              : "By finalizing, you agree to our Terms of Acquisition & Service."}
+              ? en.cart.summary.footerNote.replace("{threshold}", shippingThreshold.toLocaleString())
+              : en.cart.summary.footerNoteCheckout}
           </p>
         )}
       </div>
@@ -250,11 +250,11 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
         <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
           <Truck className="w-4 h-4 text-primary opacity-60" />
-          <span>White Glove <br /> Delivery</span>
+          <span>{en.cart.summary.badges.expressDelivery.split(' ').slice(0, 2).join(' ')} <br /> {en.cart.summary.badges.expressDelivery.split(' ').slice(2).join(' ')}</span>
         </div>
         <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
           <ShieldCheck className="w-4 h-4 text-primary opacity-60" />
-          <span>Authenticity <br /> Guaranteed</span>
+          <span>{en.cart.summary.badges.securePayment.split(' ').slice(0, 1).join(' ')} <br /> {en.cart.summary.badges.securePayment.split(' ').slice(1).join(' ')}</span>
         </div>
       </div>
     </div>

@@ -20,6 +20,8 @@ import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 import { navigationLinks } from "@/constants/constants";
 import { useCartStore } from "@/store/cartStore";
 
+import { en } from "@/locales/en";
+
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -74,7 +76,7 @@ export function MobileMenu() {
                 >
                   <div className="flex items-center space-x-3 text-muted-foreground group-hover:text-foreground transition-colors">
                     <ShoppingBag className="w-5 h-5" />
-                    <span className="text-sm uppercase tracking-widest">Shopping Bag</span>
+                    <span className="text-sm uppercase tracking-widest">{en.cart.page.title}</span>
                   </div>
                   {itemCount > 0 && (
                     <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -88,7 +90,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <Heart className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">Wishlist</span>
+                  <span className="text-sm uppercase tracking-widest">{en.nav.wishlist}</span>
                 </Link>
               </div>
             </div>
@@ -103,7 +105,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <LayoutDashboard className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">Admin Panel</span>
+                  <span className="text-sm uppercase tracking-widest">{en.nav.account.adminPanel}</span>
                 </Link>
               )}
               {isLoggedIn ? (
@@ -113,7 +115,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <User className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">My Account</span>
+                  <span className="text-sm uppercase tracking-widest">{en.nav.account.myAccount}</span>
                 </Link>
               ) : (
                 <button
@@ -124,7 +126,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors w-full text-left"
                 >
                   <User className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">Sign In</span>
+                  <span className="text-sm uppercase tracking-widest">{en.nav.account.signIn}</span>
                 </button>
               )}
               {isLoggedIn && (
@@ -133,7 +135,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-destructive hover:text-destructive/80 transition-colors w-full text-left pt-4 border-t border-border/50"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold">Sign Out</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold">{en.nav.account.signOut}</span>
                 </button>
               )}
             </div>
@@ -149,11 +151,11 @@ export function MobileMenu() {
         onConfirm={() => {
           setOpen(false);
           signOut();
-          toast.success("Successfully signed out");
+          toast.success(en.nav.account.signOutSuccess);
         }}
-        title="Sign Out"
-        description="Are you sure you want to end your current session?"
-        confirmText="Sign Out"
+        title={en.nav.account.signOut}
+        description={en.nav.account.signOutConfirm}
+        confirmText={en.nav.account.signOut}
         variant="destructive"
       />
     </>

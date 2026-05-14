@@ -35,6 +35,8 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
 
+import { en } from "@/locales/en";
+
 const EditableCell = ({
   productId,
   field,
@@ -105,7 +107,7 @@ const EditableCell = ({
         "cursor-pointer relative",
         className
       )}
-      title="Double click to edit"
+      title={en.admin.products.doubleClick}
     >
       <div className="group-hover:text-primary transition-colors">
         {renderValue ? renderValue(initialValue) : (field === 'price' ? `₹${initialValue.toLocaleString()}` : initialValue)}
@@ -137,9 +139,9 @@ export default function AdminProducts() {
 
       const updatedProduct = await response.json();
       useProductStore.getState().updateProduct(updatedProduct);
-      toast.success(`${field.charAt(0).toUpperCase() + field.slice(1)} updated`);
+      toast.success(en.admin.products.messages.updateSuccess.replace("{field}", field.charAt(0).toUpperCase() + field.slice(1)));
     } catch (error) {
-      toast.error("Failed to update");
+      toast.error(en.admin.products.messages.updateError);
       throw error;
     }
   };
@@ -179,11 +181,11 @@ export default function AdminProducts() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Failed to delete product");
+        throw new Error(error.error || en.admin.products.delete.error);
       }
 
       storeDeleteProduct(productToDelete);
-      toast.success("Masterpiece removed from the catalog.");
+      toast.success(en.admin.products.delete.success);
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -204,15 +206,15 @@ export default function AdminProducts() {
 
       const updatedProduct = await response.json();
       useProductStore.getState().updateProduct(updatedProduct);
-      toast.success(updatedProduct.isFeatured ? "Marked as Featured" : "Removed from Featured");
+      toast.success(updatedProduct.isFeatured ? en.admin.products.messages.featuredSuccess : en.admin.products.messages.unfeaturedSuccess);
     } catch (error) {
-      toast.error("Failed to update status");
+      toast.error(en.admin.products.messages.updateError);
     }
   };
 
   const columns: Column<any>[] = [
     {
-      header: "Product",
+      header: en.admin.products.columns.product,
       render: (product) => (
         <div className="flex items-center gap-4 py-2">
           <div className="w-12 h-16 bg-secondary/20 rounded-sm overflow-hidden flex-shrink-0">
@@ -232,7 +234,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: "Price (₹)",
+      header: `${en.admin.products.columns.price} (₹)`,
       headerClassName: "text-right",
       className: "text-right",
       render: (product) => (
@@ -246,7 +248,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: "Discount (₹)",
+      header: `${en.admin.products.columns.discount} (₹)`,
       headerClassName: "text-right",
       className: "text-right",
       render: (product) => (
@@ -260,7 +262,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: "Stock",
+      header: en.admin.products.columns.stock,
       headerClassName: "text-center",
       className: "text-center",
       render: (product) => (
@@ -287,7 +289,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: "Featured",
+      header: en.admin.products.columns.featured,
       headerClassName: "text-center",
       className: "text-center",
       render: (product) => (
@@ -300,7 +302,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: "Status",
+      header: en.admin.products.columns.status,
       render: (product) => {
         const isOutOfStock = product.stock === 0;
         const isLowStock = product.stock > 0 && product.stock <= 5;
@@ -313,13 +315,13 @@ export default function AdminProducts() {
               isLowStock ? "border-amber-500 text-amber-500 bg-amber-500/5" : "border-success text-success bg-success/5"
             )}
           >
-            {isOutOfStock ? "Out of Stock" : isLowStock ? "Low Stock" : "In Stock"}
+            {isOutOfStock ? en.admin.products.status.outOfStock : isLowStock ? en.admin.products.status.lowStock : en.admin.products.status.inStock}
           </Badge>
         );
       },
     },
     {
-      header: "Created",
+      header: en.admin.products.columns.created,
       className: "text-muted-foreground text-xs",
       render: (product) => format(new Date(product.createdAt), "MMM dd, yyyy"),
     },
@@ -336,14 +338,14 @@ export default function AdminProducts() {
           <DropdownMenuContent align="end" className="w-40">
             <Link href={ROUTES.ADMIN.PRODUCTS_EDIT(product.id)}>
               <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Edit2 className="w-4 h-4" /> Edit
+                <Edit2 className="w-4 h-4" /> {en.admin.products.actions.edit}
               </DropdownMenuItem>
             </Link>
             <DropdownMenuItem
               className="gap-2 text-destructive focus:text-destructive cursor-pointer"
               onClick={() => handleDeleteClick(product.id)}
             >
-              <Trash2 className="w-4 h-4" /> Remove
+              <Trash2 className="w-4 h-4" /> {en.admin.products.actions.remove}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -354,40 +356,40 @@ export default function AdminProducts() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <AdminPageHeader
-        title="Artisanal Catalog"
-        description="Curate and manage your collection of timeless masterpieces."
+        title={en.admin.products.title}
+        description={en.admin.products.description}
         action={
           <Link href={ROUTES.ADMIN.PRODUCTS_NEW}>
             <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
-              <Plus className="w-4 h-4 mr-2" /> New Product
+              <Plus className="w-4 h-4 mr-2" /> {en.admin.products.newProduct}
             </Button>
           </Link>
         }
       />
 
       <AdminFilterBar
-        searchPlaceholder="Search masterpieces..."
+        searchPlaceholder={en.admin.products.searchPlaceholder}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       >
         <AdminFilterDropdown
-          label="Categories"
+          label={en.admin.products.categories.label}
           icon={Filter}
           options={categories.map(c => ({ label: c.name, value: c.id }))}
           selectedValue={selectedCategoryId}
           onSelect={setSelectedCategoryId}
-          allLabel="All Categories"
+          allLabel={en.admin.products.categories.all}
         />
         <AdminFilterDropdown
-          label="Stock Status"
+          label={en.admin.products.columns.status}
           icon={Activity}
           options={[
-            { label: "Low Stock", value: "LOW_STOCK" },
-            { label: "Out of Stock", value: "OUT_OF_STOCK" }
+            { label: en.admin.products.status.lowStock, value: "LOW_STOCK" },
+            { label: en.admin.products.status.outOfStock, value: "OUT_OF_STOCK" }
           ]}
           selectedValue={activeStatus}
           onSelect={setActiveStatus}
-          allLabel="All Stock"
+          allLabel={en.admin.products.status.allStock}
         />
       </AdminFilterBar>
 
@@ -395,7 +397,7 @@ export default function AdminProducts() {
         columns={columns}
         data={filteredProducts}
         isLoading={isLoading}
-        emptyMessage="No masterpieces match your current search criteria."
+        emptyMessage={en.admin.products.noResults}
         rowKey={(p) => p.id}
       />
 
@@ -403,9 +405,9 @@ export default function AdminProducts() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={deleteProduct}
-        title="Remove Masterpiece"
-        description="Are you sure you want to remove this product from the catalog? This action cannot be undone."
-        confirmText="Remove"
+        title={en.admin.products.delete.title}
+        description={en.admin.products.delete.description}
+        confirmText={en.admin.products.delete.confirm}
         variant="destructive"
       />
     </div>

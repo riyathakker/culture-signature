@@ -9,6 +9,8 @@ import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
 import { UserMenu } from "./UserMenu";
 
+import { en } from "@/locales/en";
+
 export function NavbarActions() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
@@ -39,13 +41,13 @@ export function NavbarActions() {
             <IconButton
               icon={Heart}
               className="hidden md:flex"
-              aria-label="Wishlist"
+              aria-label={en.nav.wishlist}
             />
           </Link>
 
           <Link href="/bag" className="hidden md:block">
             <div className="relative group">
-              <IconButton icon={ShoppingBag} aria-label="Shopping bag" />
+              <IconButton icon={ShoppingBag} aria-label={en.nav.bag} />
               {mounted && itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                   {itemCount}

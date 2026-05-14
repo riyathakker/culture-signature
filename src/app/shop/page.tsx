@@ -9,6 +9,8 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 
+import { en } from "@/locales/en";
+
 export default function ShopPage() {
   const searchParams = useSearchParams();
   const categoryIdParam = searchParams.get("categoryId");
@@ -28,7 +30,7 @@ export default function ShopPage() {
         const data = await response.json();
         setProducts(data);
       } catch (error) {
-        toast.error("Could not load the collection.");
+        toast.error(en.shop.loadError);
       } finally {
         setLoading(false);
       }
@@ -38,7 +40,11 @@ export default function ShopPage() {
   }, [categoryIdParam]);
 
   return (
-    <HomePageContainer label={[{ label: "Categories", href: "/collections" }, { label: "Collections" }]} heading="The Collection" description="Explore our curated selection of handcrafted jewels, bags, and home decor that celebrate Indian heritage.">
+    <HomePageContainer
+      label={[{ label: en.shop.categories, href: "/collections" }, { label: en.shop.subtitle }]}
+      heading={en.shop.title}
+      description={en.shop.description}
+    >
 
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Desktop Sidebar */}
@@ -52,7 +58,7 @@ export default function ShopPage() {
             <div className="flex items-center gap-4">
               <FilterDrawer />
               <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
-                Showing {products.length} pieces
+                {en.shop.showing.replace("{count}", products.length.toString())}
               </p>
             </div>
             <ShopControls />
@@ -66,12 +72,12 @@ export default function ShopPage() {
             </div>
           ) : products.length === 0 ? (
             <div className="py-32 text-center space-y-4">
-              <p className="text-muted-foreground font-serif italic text-lg">No matches found in the current collection.</p>
+              <p className="text-muted-foreground font-serif italic text-lg">{en.shop.noMatches}</p>
               <button
                 onClick={() => window.location.href = "/shop"}
                 className="text-primary underline text-sm uppercase tracking-widest font-bold"
               >
-                Clear all filters
+                {en.shop.clearFilters}
               </button>
             </div>
           ) : (

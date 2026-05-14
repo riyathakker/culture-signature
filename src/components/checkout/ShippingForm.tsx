@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
+import { en } from "@/locales/en";
+
 export function ShippingForm() {
   const { shippingAddress, setShippingAddress } = useCheckoutStore();
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
@@ -59,9 +61,9 @@ export function ShippingForm() {
     // @ts-ignore
     if (window.toast) {
       // @ts-ignore
-      window.toast.success("Address applied to form");
+      window.toast.success(en.cart.checkout.shipping.addressApplied);
     } else {
-      import("sonner").then(({ toast }) => toast.success("Address applied to form"));
+      import("sonner").then(({ toast }) => toast.success(en.cart.checkout.shipping.addressApplied));
     }
   };
 
@@ -87,8 +89,8 @@ export function ShippingForm() {
     <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-4">
-          <h3 className="text-2xl font-heading">Shipping Information</h3>
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Where should we deliver your masterpiece?</p>
+          <h3 className="text-2xl font-heading">{en.cart.checkout.shipping.title}</h3>
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">{en.cart.checkout.shipping.subtitle}</p>
         </div>
 
         {savedAddresses.length > 0 && (
@@ -96,11 +98,11 @@ export function ShippingForm() {
             <DropdownMenuTrigger>
               <Button variant="outline" className="h-10 text-[10px] uppercase tracking-widest font-bold gap-2 border-primary/20 hover:border-primary">
                 {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
-                Use Saved Address <ChevronDown className="w-3 h-3" />
+                {en.cart.checkout.shipping.useSavedAddress} <ChevronDown className="w-3 h-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-72 bg-background border border-border/50 shadow-luxury p-2 z-[100]">
-              <p className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground px-2 py-1.5 border-b border-border/50 mb-1">Your Curated Addresses</p>
+              <p className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground px-2 py-1.5 border-b border-border/50 mb-1">{en.cart.checkout.shipping.curatedAddresses}</p>
               {savedAddresses.map((addr) => (
                 <DropdownMenuItem
                   key={addr.id}
@@ -116,7 +118,7 @@ export function ShippingForm() {
                   </div>
                   <p className="text-[10px] text-primary font-medium">{addr.street}</p>
                   <p className="text-[9px] text-muted-foreground italic">{addr.city}, {addr.state} {addr.zipCode}</p>
-                  {addr.isDefault && <span className="text-[8px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold">DEFAULT</span>}
+                  {addr.isDefault && <span className="text-[8px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-bold">{en.cart.checkout.shipping.default}</span>}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -126,20 +128,20 @@ export function ShippingForm() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
         <div className="space-y-2">
-          <Label htmlFor="first-name" className="text-[10px] uppercase tracking-widest font-bold opacity-60">First Name</Label>
+          <Label htmlFor="first-name" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{en.cart.checkout.shipping.firstName}</Label>
           <Input
             id="first-name"
-            placeholder="John"
+            placeholder={en.cart.checkout.shipping.placeholders.firstName}
             value={shippingAddress.firstName || ""}
             onChange={handleChange}
             className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="last-name" className="text-[10px] uppercase tracking-widest font-bold opacity-60">Last Name</Label>
+          <Label htmlFor="last-name" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{en.cart.checkout.shipping.lastName}</Label>
           <Input
             id="last-name"
-            placeholder="Doe"
+            placeholder={en.cart.checkout.shipping.placeholders.lastName}
             value={shippingAddress.lastName || ""}
             onChange={handleChange}
             className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
@@ -147,10 +149,10 @@ export function ShippingForm() {
         </div>
 
         <div className="md:col-span-2 space-y-2">
-          <Label htmlFor="address" className="text-[10px] uppercase tracking-widest font-bold opacity-60">Street Address</Label>
+          <Label htmlFor="address" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{en.cart.checkout.shipping.streetAddress}</Label>
           <Input
             id="address"
-            placeholder="123 Luxury Lane"
+            placeholder={en.cart.checkout.shipping.placeholders.street}
             value={shippingAddress.street || ""}
             onChange={handleChange}
             className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
@@ -158,10 +160,10 @@ export function ShippingForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="city" className="text-[10px] uppercase tracking-widest font-bold opacity-60">City</Label>
+          <Label htmlFor="city" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{en.cart.checkout.shipping.city}</Label>
           <Input
             id="city"
-            placeholder="New York"
+            placeholder={en.cart.checkout.shipping.placeholders.city}
             value={shippingAddress.city || ""}
             onChange={handleChange}
             className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
@@ -169,20 +171,20 @@ export function ShippingForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="state" className="text-[10px] uppercase tracking-widest font-bold opacity-60">State / Province</Label>
+          <Label htmlFor="state" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{en.cart.checkout.shipping.state}</Label>
           <Input
             id="state"
-            placeholder="NY"
+            placeholder={en.cart.checkout.shipping.placeholders.state}
             value={shippingAddress.state || ""}
             onChange={handleChange}
             className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="zip" className="text-[10px] uppercase tracking-widest font-bold opacity-60">ZIP / Postal Code</Label>
+          <Label htmlFor="zip" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{en.cart.checkout.shipping.zipCode}</Label>
           <Input
             id="zip"
-            placeholder="10001"
+            placeholder={en.cart.checkout.shipping.placeholders.zip}
             value={shippingAddress.zipCode || ""}
             onChange={handleChange}
             className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
@@ -190,10 +192,10 @@ export function ShippingForm() {
         </div>
 
         <div className="md:col-span-2 space-y-2">
-          <Label htmlFor="phone" className="text-[10px] uppercase tracking-widest font-bold opacity-60">Phone Number (For Delivery Updates)</Label>
+          <Label htmlFor="phone" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{en.cart.checkout.shipping.phone}</Label>
           <Input
             id="phone"
-            placeholder="+1 212 555 0123"
+            placeholder={en.cart.checkout.shipping.placeholders.phone}
             value={shippingAddress.phone || ""}
             onChange={handleChange}
             className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
@@ -204,7 +206,7 @@ export function ShippingForm() {
       <div className="flex items-center space-x-2 pt-4">
         <Checkbox id="billing-same" defaultChecked className="border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
         <Label htmlFor="billing-same" className="text-xs text-muted-foreground font-serif italic cursor-pointer">
-          Billing address is same as shipping
+          {en.cart.checkout.shipping.billingSame}
         </Label>
       </div>
     </div>
