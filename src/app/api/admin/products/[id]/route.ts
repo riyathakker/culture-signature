@@ -50,9 +50,9 @@ export async function PATCH(
       data: {
         name,
         description,
-        discount: discount ? parseFloat(discount) : 0,
-        price: price ? parseFloat(price) : undefined,
-        stock: stock ? parseInt(stock) : undefined,
+        discount: discount !== undefined ? parseFloat(discount) : undefined,
+        price: price !== undefined ? parseFloat(price) : undefined,
+        stock: stock !== undefined ? parseInt(stock) : undefined,
         categoryId,
         images,
         isFeatured,
