@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Heart, Eye, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, CartItem } from "@/store/cartStore";
@@ -18,10 +19,12 @@ import { useTranslation } from "@/context/TranslationContext";
 
 
 export function ProductCard({ product, variant = "default" }: { product: any, variant?: "default" | "wishlist" }) {
+  const pathname = usePathname();
+  const from = pathname.startsWith("/collections") ? "collections" : pathname.startsWith("/categories") ? "categories" : null;
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
-  const { items, addItem, updateQuantity } = useCartStore();
+  const { items, addItem, updateQuantity, removeItem } = useCartStore();
   const { t } = useTranslation();
 
   const cartItem = items.find((item) => item.id === product.id);
@@ -59,6 +62,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
 
   return (
     <>
+    <Link href={`/product/${product.id}${from ? `?from=${from}` : ""}`}>
       <div className={cn(
         "group relative bg-background rounded-lg overflow-hidden transition-all duration-500",
         isOutOfStock && "grayscale-[0.5]"
@@ -76,7 +80,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           {/* Badges */}
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
             {discountPercentage && !isOutOfStock && (
-              <span className="text-[10px] uppercase tracking-widest bg-destructive text-destructive-foreground px-2 py-1 font-bold">
+              <span className="text-[10px] uppercase tracking-widest bg-destructive/60 text-white px-2 py-1 font-bold">
                 -{discountPercentage}% {t("shop.product.off")}
               </span>
             )}
@@ -94,15 +98,27 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           )}>
             {!isAdmin ? (
               cartItem ? (
-                <QuantitySelector
-                  quantity={cartItem.quantity}
-                  onUpdate={(newQty) => updateQuantity(product.id, newQty)}
-                  className="flex-1 bg-background/90 backdrop-blur-sm border-none h-10"
-                  size="sm"
-                />
+                <div className="flex-1" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
+                  <QuantitySelector
+                    quantity={cartItem.quantity}
+                    onUpdate={(newQty) => {
+                      if (newQty === 0) {
+                        removeItem(product.id);
+                      } else {
+                        updateQuantity(product.id, newQty);
+                      }
+                    }}
+                    className="w-full bg-background/90 backdrop-blur-sm border-none h-10"
+                    size="sm"
+                  />
+                </div>
               ) : (
                 <Button
-                  onClick={handleAddToCart}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleAddToCart();
+                  }}
                   disabled={isOutOfStock}
                   className="flex-1 bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground border-none backdrop-blur-sm uppercase text-[10px] tracking-widest h-10"
                 >
@@ -115,7 +131,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => setIsQuickViewOpen(true)}
+                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); setIsQuickViewOpen(true); }}
                   className={cn(
                     "bg-background/90 border-none backdrop-blur-sm hover:text-primary h-10 w-10 rounded-full",
                     isAdmin && "flex-1 w-auto px-4 gap-2 text-[10px] uppercase tracking-widest font-bold"
@@ -128,7 +144,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={toggleWishlist}
+                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); toggleWishlist(e); }}
                     className={cn(
                       "bg-background/90 border-none backdrop-blur-sm h-10 w-10 rounded-full transition-colors",
                       isWishlisted ? "text-primary fill-primary" : "hover:text-primary"
@@ -177,9 +193,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           </div>
 
           <h3 className="font-heading text-lg group-hover:text-primary transition-colors">
-            <Link href={`/product/${product.id}`}>
               {product.name}
-            </Link>
           </h3>
 
           <div className="flex items-center justify-between">
@@ -200,6 +214,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           </div>
         </div>
       </div>
+      </Link>
 
       <QuickViewModal
         product={product}

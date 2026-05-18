@@ -9,9 +9,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { FilterSidebar } from "./FilterSidebar";
+import { FilterSidebar, FilterSidebarProps } from "./FilterSidebar";
 
-export function FilterDrawer() {
+export function FilterDrawer(props: FilterSidebarProps) {
   return (
     <Sheet>
       <SheetTrigger
@@ -26,7 +26,7 @@ export function FilterDrawer() {
           <SheetTitle className="font-heading text-2xl">Filter Selection</SheetTitle>
         </SheetHeader>
         <div className="p-6 flex-1 overflow-y-auto">
-          <FilterSidebar />
+          <FilterSidebar {...props}/>
         </div>
         <div className="p-6 border-t">
           <Button className="w-full py-6 uppercase tracking-[0.2em] text-xs h-auto">

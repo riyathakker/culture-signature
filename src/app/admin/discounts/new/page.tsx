@@ -154,7 +154,7 @@ export default function NewDiscountPage() {
               <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold">Validity & Scope</h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid-split">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase tracking-widest font-bold">Usage Limit</Label>
                 <div className="relative">

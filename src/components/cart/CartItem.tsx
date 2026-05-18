@@ -64,7 +64,13 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
         <div className="flex items-center justify-between mt-4">
           <QuantitySelector
             quantity={item.quantity}
-            onUpdate={(newQty) => updateQuantity(item.id, newQty)}
+            onUpdate={(newQty) => {
+              if (newQty === 0) {
+                removeItem(item.id);
+              } else {
+                updateQuantity(item.id, newQty);
+              }
+            }}
             size="sm"
           />
           <div className="text-right">

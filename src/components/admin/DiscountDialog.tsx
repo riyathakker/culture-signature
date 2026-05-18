@@ -148,7 +148,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
           </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto px-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2 md:col-span-2">
               <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.code")}</Label>

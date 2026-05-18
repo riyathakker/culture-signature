@@ -3,7 +3,8 @@ import prisma from "@/lib/prisma";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const categoryId = searchParams.get("categoryId");
+  const categoryParam = searchParams.get("categoryId");
+  const categoryIds = categoryParam ? categoryParam.split(",") : [];
   const isNew = searchParams.get("isNew") === "true";
   const isFeatured = searchParams.get("isFeatured") === "true";
   const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : undefined;
@@ -11,7 +12,9 @@ export async function GET(req: Request) {
   try {
     const products = await prisma.product.findMany({
       where: {
-        ...(categoryId && { categoryId }),
+        ...(categoryIds.length > 0
+          ? { categoryId: { in: categoryIds } }
+          : {}),
         ...(isNew && {
           createdAt: {
             gte: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) // Last 10 days

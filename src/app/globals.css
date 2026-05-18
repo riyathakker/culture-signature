@@ -153,6 +153,18 @@
   .section-title {
     @apply text-4xl md:text-5xl font-heading text-primary leading-tight mb-4;
   }
+
+  .grid-gallery {
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8;
+  }
+
+  .grid-split {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  }
+
+  .text-spaced-bold {
+    @apply text-[10px] uppercase tracking-widest font-bold;
+  }
 }
 
 @layer utilities {

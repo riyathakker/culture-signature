@@ -9,7 +9,7 @@ import { ProductReviews } from "@/components/product/ProductReviews";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,6 +17,8 @@ import { useTranslation } from "@/context/TranslationContext";
 
 export default function ProductPage() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
@@ -29,9 +31,9 @@ export default function ProductPage() {
         const response = await fetch(`/api/products`);
         const allProducts = await response.json();
         const foundProduct = allProducts.find((p: any) => p.id === id);
-        
+
         if (!foundProduct) throw new Error("Product not found");
-        
+
         setProduct({
           ...foundProduct,
           name: foundProduct.name,
@@ -76,42 +78,54 @@ export default function ProductPage() {
     </div>
   );
 
+  console.log("Efrwefwef", product)
   return (
     <div className="bg-background min-h-screen pb-20">
       <Container className="py-8">
-        <Breadcrumbs items={[
-          { label: t("collections.subtitle"), href: "/collections" },
-          { label: product.category, href: `/shop?categoryId=${product.categoryId}` },
-          { label: product.name }
-        ]} />
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mt-10">
-          {/* Gallery */}
-          <ProductGallery images={product.images || [product.image]} />
+        <Breadcrumbs
+          items={[
+            from === "categories"
+              ? { label: "Categories", href: "/categories" }
+              : { label: "Collections", href: "/collections" },
 
-          {/* Info */}
+            ...(from === "categories"
+              ? [
+                {
+                  label: product.category,
+                  href: `/categories/${product.categoryId}`,
+                },
+              ]
+              : []),
+
+            { label: product.name },
+          ]}
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mt-10">
+          <ProductGallery images={product.images || [product.image]} />
           <ProductInfo product={product} />
         </div>
 
-        {/* Details & Reviews */}
         <div className="mt-20">
-          <ProductTabs details={product.details} />
           <ProductReviews />
         </div>
 
         {/* Related Products */}
-        <div className="mt-32">
-          <SectionTitle 
-            title={t("shop.product.details.relatedTitle")} 
-            subtitle={t("shop.product.details.relatedSubtitle")} 
-            align="center" 
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-            {relatedProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+        {relatedProducts.length > 0 && (
+          <div className="mt-32">
+            <SectionTitle
+              title={t("shop.product.details.relatedTitle")}
+              subtitle={t("shop.product.details.relatedSubtitle")}
+              align="center"
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+              {relatedProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
       </Container>
     </div>
   );

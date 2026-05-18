@@ -20,9 +20,9 @@ export function AdminMobileNav() {
   ];
 
   return (
-    <div className="lg:hidden bg-background border-b border-border/50 sticky top-20 z-20">
+    <div className="lg:hidden bg-background/80 backdrop-blur-md border-b border-border/50 sticky top-20 z-20">
       <div className="relative">
-        <div className="flex overflow-x-auto no-scrollbar gap-2 py-4 px-4 scroll-smooth">
+        <div className="flex overflow-x-auto no-scrollbar gap-3 py-4 px-4 scroll-smooth">
           {allItems.map((item) => {
             const isActive = item.href === "/admin" 
               ? pathname === "/admin" 
@@ -34,13 +34,13 @@ export function AdminMobileNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 px-6 py-2.5 whitespace-nowrap rounded-sm transition-all border",
+                  "flex items-center gap-2 px-5 py-2 whitespace-nowrap rounded-full transition-all duration-300",
                   isActive 
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm" 
-                    : "bg-secondary/10 border-border/50 text-muted-foreground hover:text-foreground"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
+                    : "bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary/70"
                 )}
               >
-                <item.icon className={cn("w-3.5 h-3.5", isActive ? "" : "text-primary opacity-60")} />
+                <item.icon className={cn("w-3.5 h-3.5", isActive ? "" : "text-primary opacity-70")} />
                 <span className="text-[10px] uppercase tracking-[0.2em] font-bold">{item.label}</span>
               </Link>
             );

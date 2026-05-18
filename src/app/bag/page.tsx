@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { ROUTES } from "@/constants/routes";
 
 export default function BagPage() {
   const { items } = useCartStore();
@@ -33,7 +34,7 @@ export default function BagPage() {
                 {t("cart.page.emptyDescription")}
               </p>
             </div>
-            <Link href="/shop">
+            <Link href={ROUTES.COLLECTIONS}>
               <Button className="px-10 py-7 h-auto uppercase tracking-[0.3em] text-xs">
                 {t("cart.page.browseCollection")}
               </Button>
@@ -55,11 +56,11 @@ export default function BagPage() {
               </div>
               
               <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <Link href="/shop" className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors">
+                <Link href={ROUTES.COLLECTIONS} className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors">
                   <ArrowLeft className="w-4 h-4" /> {t("cart.page.continueShopping")}
                 </Link>
                 <div className="flex items-center gap-4">
-                  <Link href="/wishlist">
+                  <Link href={ROUTES.WISHLIST}>
                     <Button variant="ghost" className="gap-2 text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
                       <Heart className="w-4 h-4" /> {t("cart.page.moveToWishlist")}
                     </Button>

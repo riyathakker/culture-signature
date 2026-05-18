@@ -25,7 +25,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   return (
     <main className={cn(
       "flex-grow transition-all duration-500",
-      (!isAdminPanel) && "pt-[120px]",
+      (!isAdminPanel) && "pt-[160px]",
     )}>
       {children}
     </main>

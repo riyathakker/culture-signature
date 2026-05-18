@@ -98,7 +98,7 @@ export default function SettingsPage() {
       <section className="space-y-6">
         <SectionHeader>Personal Information</SectionHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid-split">
             <div className="space-y-2">
               <Label className="text-[10px] uppercase tracking-widest font-bold">Full Name</Label>
               <Input 

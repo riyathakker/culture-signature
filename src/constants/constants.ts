@@ -32,6 +32,7 @@ export const navigationLinks = [
   { name: "Home", href: ROUTES.HOME },
   { name: "New Arrivals", href: ROUTES.NEW_ARRIVALS },
   { name: "Collections", href: ROUTES.COLLECTIONS },
+  { name: "Categories", href: ROUTES.CATEGORIES },
   { name: "About Us", href: ROUTES.ABOUT_US },
   { name: "Contact Us", href: ROUTES.CONTACT_US },
 ];

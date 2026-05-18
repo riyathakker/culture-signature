@@ -61,17 +61,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
           </div>
         </div>
         <h1 className="text-4xl lg:text-5xl font-heading tracking-tight">{product.name}</h1>
-        <div className="flex items-center gap-4">
-          {/* <div className="flex items-center text-primary">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={cn("w-4 h-4", i < Math.floor(product.rating || 5) ? "fill-current" : "opacity-30")} />
-            ))}
-            <span className="ml-2 text-sm font-sans text-muted-foreground">({product.reviewCount || 0} Reviews)</span>
-          </div> */}
-        </div>
       </div>
 
-      {/* Price */}
       <div className="flex items-center gap-4">
         <span className="text-3xl font-medium">₹{(product.price - (product.discount || 0)).toLocaleString()}</span>
         {product.discount > 0 && (
@@ -83,7 +74,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
         {product.description}
       </p>
 
-      {/* Quantity & Actions */}
       {!isAdmin && (
         <div className="space-y-4 pt-6">
           <div className="flex items-center gap-4">
@@ -106,11 +96,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
       <div className="grid grid-cols-2 gap-4 pt-8 border-t">
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
           <Truck className="w-5 h-5 text-primary opacity-60" />
-          <span>{t("shop.product.details.premiumShipping").split(' ').join(' <br /> ')}</span>
+          <span>{t("shop.product.details.premiumShipping")}</span>
         </div>
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
           <ShieldCheck className="w-5 h-5 text-primary opacity-60" />
-          <span>{t("shop.product.details.lifetimeWarranty").split(' ').join(' <br /> ')}</span>
+          <span>{t("shop.product.details.lifetimeWarranty")}</span>
         </div>
       </div>
     </div>

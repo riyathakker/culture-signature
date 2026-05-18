@@ -10,6 +10,7 @@ interface ProductGalleryProps {
 }
 
 export function ProductGallery({ images }: ProductGalleryProps) {
+  console.log("hereee are my gallery imagess", images)
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
@@ -25,13 +26,11 @@ export function ProductGallery({ images }: ProductGalleryProps) {
               activeIndex === idx ? "border-primary" : "border-transparent opacity-60 hover:opacity-100"
             )}
           >
-            <div className="absolute inset-0 bg-muted animate-pulse" />
-            <div className="w-full h-full bg-luxury-gradient opacity-10" />
+            <img src={img} alt="" />
           </button>
         ))}
       </div>
 
-      {/* Main Image */}
       <div className="flex-1 relative aspect-square bg-secondary/30 rounded-sm overflow-hidden group">
         <AnimatePresence mode="wait">
           <motion.div
@@ -42,10 +41,8 @@ export function ProductGallery({ images }: ProductGalleryProps) {
             transition={{ duration: 0.5 }}
             className="w-full h-full relative"
           >
-            <div className="absolute inset-0 bg-luxury-gradient opacity-10" />
-            <div className="w-full h-full bg-muted animate-pulse" />
+            <img src={images[activeIndex]} alt="" />
             
-            {/* Zoom Hint */}
             <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
               <Button variant="outline" size="icon" className="bg-background/80 border-none backdrop-blur-sm">
                 <Maximize2 className="w-4 h-4" />

@@ -66,7 +66,7 @@ export default function AdminOverview() {
         <p className="text-muted-foreground font-serif italic">Real-time pulse of the Culture Signature house.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid-split lg:grid-cols-4">
         <StatCard label="Total Revenue" value={formatPrice(data.revenue)} trend="+12.5%" trendType="up" icon={IndianRupee} />
         <StatCard label="Active Orders" value={data.activeOrders.toString()} trend="+4.2%" trendType="up" icon={ShoppingBag} />
         <StatCard label="Total Customers" value={data.customers.toString()} trend="+8.1%" trendType="up" icon={Users} />

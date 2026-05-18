@@ -6,7 +6,7 @@ import { en, Translations } from "../locales/en";
 type Locale = "en"; // Add more as needed
 
 interface TranslationContextType {
-  t: (key: string, params?: Record<string, string | number>) => string;
+  t: (key: string, params?: Record<string, string | number>) => any;
   locale: Locale;
   setLocale: (locale: Locale) => void;
 }
@@ -20,7 +20,7 @@ const translations: Record<Locale, Translations> = {
 export const TranslationProvider = ({ children }: { children: ReactNode }) => {
   const [locale, setLocale] = useState<Locale>("en");
 
-  const t = (key: string, params?: Record<string, string | number>): string => {
+  const t = (key: string, params?: Record<string, string | number>): any => {
     const keys = key.split(".");
     let value: any = translations[locale];
 
@@ -33,12 +33,12 @@ export const TranslationProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    if (typeof value !== "string") return key;
-
-    if (params) {
+    if (typeof value === "string" && params) {
+      let stringValue = value;
       Object.entries(params).forEach(([k, v]) => {
-        value = value.replace(`{${k}}`, String(v));
+        stringValue = stringValue.replace(`{${k}}`, String(v));
       });
+      return stringValue;
     }
 
     return value;

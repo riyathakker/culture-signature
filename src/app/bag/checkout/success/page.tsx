@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { ROUTES } from "@/constants/routes";
 
 function SuccessContent() {
   const { t } = useTranslation();
@@ -43,12 +44,12 @@ function SuccessContent() {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-          <Link href="/account/orders">
+          <Link href={ROUTES.ACCOUNT.ORDERS}>
             <Button variant="outline" className="h-14 px-8 uppercase tracking-widest text-[10px] font-bold border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 min-w-[200px]">
               {t("cart.checkout.success.trackOrder")} <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
-          <Link href="/shop">
+          <Link href={ROUTES.COLLECTIONS}>
             <Button className="h-14 px-8 uppercase tracking-widest text-[10px] font-bold min-w-[200px] shadow-xl shadow-primary/20">
               {t("cart.checkout.success.continueExploring")} <ShoppingBag className="ml-2 w-4 h-4" />
             </Button>

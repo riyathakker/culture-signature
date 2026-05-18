@@ -7,7 +7,7 @@ import { useTranslation } from "@/context/TranslationContext";
 export default function AboutPage() {
   const { t } = useTranslation();
   const ourValues = t("about.pillars.list") as unknown as any[];
-
+  console.log("ourValues", ourValues);  
   const aboutCards = [
     {
       title: t("about.cards.vision.title"),
@@ -98,7 +98,7 @@ export default function AboutPage() {
             <h3 className="text-4xl font-heading">{t("about.pillars.title")}</h3>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+          <div className="grid-split lg:grid-cols-3 gap-x-12 gap-y-16">
             {Array.isArray(ourValues) && ourValues.map((value, i) => (
               <div key={i} className="space-y-3 border-l border-primary/20 pl-6">
                 <h5 className="font-heading text-xl text-primary">{value.title}</h5>

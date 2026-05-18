@@ -78,7 +78,7 @@ export default function ContactPage() {
           <div>
             <SectionHeader>{t("contact.channels.header")}</SectionHeader>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-6">
               {contactInfo.map((item, index) => {
                 const Icon = item.icon;
 
@@ -144,7 +144,7 @@ export default function ContactPage() {
 
           <form className="space-y-6">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid-split">
 
               <div className="space-y-2">
                 <label className="text-[11px] uppercase tracking-[0.2em] font-semibold">

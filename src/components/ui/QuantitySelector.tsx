@@ -24,7 +24,7 @@ export function QuantitySelector({
       className
     )}>
       <button
-        onClick={() => onUpdate(Math.max(1, quantity - 1))}
+        onClick={() => onUpdate(quantity - 1)}
         className={cn(
           "hover:bg-secondary transition-colors flex items-center justify-center h-full",
           isSm ? "w-8" : isLg ? "w-12" : "w-10"

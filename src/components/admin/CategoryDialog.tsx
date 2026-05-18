@@ -99,7 +99,7 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         {trigger || (
           <Button className="btn-luxury px-6 gap-2">
             <Plus className="w-4 h-4" /> {t("admin.categories.newCategory")}
@@ -116,7 +116,7 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
           </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto px-2">
           <div className="space-y-4">
             <div className="space-y-2">
               <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.categories.dialog.labels.name")}</Label>

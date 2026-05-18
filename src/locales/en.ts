@@ -65,7 +65,7 @@ export const en = {
       }
     },
     categories: {
-      title: "Collection Clusters",
+      title: "Categories Clusters",
       description: "Organize your catalog into curated collections.",
       newCategory: "New Category",
       searchPlaceholder: "Search categories...",
@@ -199,6 +199,7 @@ export const en = {
       home: "Home",
       newArrivals: "New Arrivals",
       collections: "Collections",
+      categories: "Categories",
       aboutUs: "About Us",
       contactUs: "Contact Us",
     }
@@ -287,7 +288,7 @@ export const en = {
         breadcrumb: "Success",
       }
     },
-  }, 
+  },
   home: {
     hero: {
       established: "Established 2013",
@@ -391,7 +392,7 @@ export const en = {
           outOfStock: "Out of Stock"
         },
         shippingNote: "Complimentary worldwide shipping on all orders over ₹10,000.",
-        addToCollection: "Add to Collection",
+        addToCollection: "Add to Cart",
         buyNow: "Buy Now",
         premiumShipping: "Premium Shipping",
         lifetimeWarranty: "Lifetime Warranty",
@@ -433,7 +434,7 @@ export const en = {
     }
   },
   collections: {
-    title: "Collection clusters",
+    title: "Categories clusters",
     subtitle: "Categories",
     description: "Curated anthologies of heritage and style.",
     empty: "Our curations are being prepared for your view.",
