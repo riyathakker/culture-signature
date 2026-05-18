@@ -35,7 +35,7 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
 
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 const EditableCell = ({
   productId,
@@ -52,6 +52,7 @@ const EditableCell = ({
   className?: string;
   renderValue?: (value: any) => React.ReactNode;
 }) => {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialValue);
   const [isLoading, setIsLoading] = useState(false);
@@ -107,7 +108,7 @@ const EditableCell = ({
         "cursor-pointer relative",
         className
       )}
-      title={en.admin.products.doubleClick}
+      title={t("admin.products.doubleClick")}
     >
       <div className="group-hover:text-primary transition-colors">
         {renderValue ? renderValue(initialValue) : (field === 'price' ? `₹${initialValue.toLocaleString()}` : initialValue)}
@@ -117,6 +118,7 @@ const EditableCell = ({
 };
 
 export default function AdminProducts() {
+  const { t } = useTranslation();
   const { products, isLoading, fetchProducts, deleteProduct: storeDeleteProduct } = useProductStore();
   const { categories, fetchCategories } = useCategoryStore();
   const [searchQuery, setSearchQuery] = useState("");
@@ -139,9 +141,9 @@ export default function AdminProducts() {
 
       const updatedProduct = await response.json();
       useProductStore.getState().updateProduct(updatedProduct);
-      toast.success(en.admin.products.messages.updateSuccess.replace("{field}", field.charAt(0).toUpperCase() + field.slice(1)));
+      toast.success(t("admin.products.messages.updateSuccess", { field: field.charAt(0).toUpperCase() + field.slice(1) }));
     } catch (error) {
-      toast.error(en.admin.products.messages.updateError);
+      toast.error(t("admin.products.messages.updateError"));
       throw error;
     }
   };
@@ -181,11 +183,11 @@ export default function AdminProducts() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || en.admin.products.delete.error);
+        throw new Error(error.error || t("admin.products.delete.error"));
       }
 
       storeDeleteProduct(productToDelete);
-      toast.success(en.admin.products.delete.success);
+      toast.success(t("admin.products.delete.success"));
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -206,15 +208,15 @@ export default function AdminProducts() {
 
       const updatedProduct = await response.json();
       useProductStore.getState().updateProduct(updatedProduct);
-      toast.success(updatedProduct.isFeatured ? en.admin.products.messages.featuredSuccess : en.admin.products.messages.unfeaturedSuccess);
+      toast.success(updatedProduct.isFeatured ? t("admin.products.messages.featuredSuccess") : t("admin.products.messages.unfeaturedSuccess"));
     } catch (error) {
-      toast.error(en.admin.products.messages.updateError);
+      toast.error(t("admin.products.messages.updateError"));
     }
   };
 
   const columns: Column<any>[] = [
     {
-      header: en.admin.products.columns.product,
+      header: t("admin.products.columns.product"),
       render: (product) => (
         <div className="flex items-center gap-4 py-2">
           <div className="w-12 h-16 bg-secondary/20 rounded-sm overflow-hidden flex-shrink-0">
@@ -234,7 +236,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: `${en.admin.products.columns.price} (₹)`,
+      header: `${t("admin.products.columns.price")} (₹)`,
       headerClassName: "text-right",
       className: "text-right",
       render: (product) => (
@@ -248,7 +250,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: `${en.admin.products.columns.discount} (₹)`,
+      header: `${t("admin.products.columns.discount")} (₹)`,
       headerClassName: "text-right",
       className: "text-right",
       render: (product) => (
@@ -262,7 +264,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: en.admin.products.columns.stock,
+      header: t("admin.products.columns.stock"),
       headerClassName: "text-center",
       className: "text-center",
       render: (product) => (
@@ -289,7 +291,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: en.admin.products.columns.featured,
+      header: t("admin.products.columns.featured"),
       headerClassName: "text-center",
       className: "text-center",
       render: (product) => (
@@ -302,7 +304,7 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: en.admin.products.columns.status,
+      header: t("admin.products.columns.status"),
       render: (product) => {
         const isOutOfStock = product.stock === 0;
         const isLowStock = product.stock > 0 && product.stock <= 5;
@@ -315,13 +317,13 @@ export default function AdminProducts() {
               isLowStock ? "border-amber-500 text-amber-500 bg-amber-500/5" : "border-success text-success bg-success/5"
             )}
           >
-            {isOutOfStock ? en.admin.products.status.outOfStock : isLowStock ? en.admin.products.status.lowStock : en.admin.products.status.inStock}
+            {isOutOfStock ? t("admin.products.status.outOfStock") : isLowStock ? t("admin.products.status.lowStock") : t("admin.products.status.inStock")}
           </Badge>
         );
       },
     },
     {
-      header: en.admin.products.columns.created,
+      header: t("admin.products.columns.created"),
       className: "text-muted-foreground text-xs",
       render: (product) => format(new Date(product.createdAt), "MMM dd, yyyy"),
     },
@@ -338,14 +340,14 @@ export default function AdminProducts() {
           <DropdownMenuContent align="end" className="w-40">
             <Link href={ROUTES.ADMIN.PRODUCTS_EDIT(product.id)}>
               <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Edit2 className="w-4 h-4" /> {en.admin.products.actions.edit}
+                <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
               </DropdownMenuItem>
             </Link>
             <DropdownMenuItem
               className="gap-2 text-destructive focus:text-destructive cursor-pointer"
               onClick={() => handleDeleteClick(product.id)}
             >
-              <Trash2 className="w-4 h-4" /> {en.admin.products.actions.remove}
+              <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -356,40 +358,40 @@ export default function AdminProducts() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <AdminPageHeader
-        title={en.admin.products.title}
-        description={en.admin.products.description}
+        title={t("admin.products.title")}
+        description={t("admin.products.description")}
         action={
           <Link href={ROUTES.ADMIN.PRODUCTS_NEW}>
             <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
-              <Plus className="w-4 h-4 mr-2" /> {en.admin.products.newProduct}
+              <Plus className="w-4 h-4 mr-2" /> {t("admin.products.newProduct")}
             </Button>
           </Link>
         }
       />
 
       <AdminFilterBar
-        searchPlaceholder={en.admin.products.searchPlaceholder}
+        searchPlaceholder={t("admin.products.searchPlaceholder")}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       >
         <AdminFilterDropdown
-          label={en.admin.products.categories.label}
+          label={t("admin.products.categories.label")}
           icon={Filter}
           options={categories.map(c => ({ label: c.name, value: c.id }))}
           selectedValue={selectedCategoryId}
           onSelect={setSelectedCategoryId}
-          allLabel={en.admin.products.categories.all}
+          allLabel={t("admin.products.categories.all")}
         />
         <AdminFilterDropdown
-          label={en.admin.products.columns.status}
+          label={t("admin.products.columns.status")}
           icon={Activity}
           options={[
-            { label: en.admin.products.status.lowStock, value: "LOW_STOCK" },
-            { label: en.admin.products.status.outOfStock, value: "OUT_OF_STOCK" }
+            { label: t("admin.products.status.lowStock"), value: "LOW_STOCK" },
+            { label: t("admin.products.status.outOfStock"), value: "OUT_OF_STOCK" }
           ]}
           selectedValue={activeStatus}
           onSelect={setActiveStatus}
-          allLabel={en.admin.products.status.allStock}
+          allLabel={t("admin.products.status.allStock")}
         />
       </AdminFilterBar>
 
@@ -397,7 +399,7 @@ export default function AdminProducts() {
         columns={columns}
         data={filteredProducts}
         isLoading={isLoading}
-        emptyMessage={en.admin.products.noResults}
+        emptyMessage={t("admin.products.noResults")}
         rowKey={(p) => p.id}
       />
 
@@ -405,9 +407,9 @@ export default function AdminProducts() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={deleteProduct}
-        title={en.admin.products.delete.title}
-        description={en.admin.products.delete.description}
-        confirmText={en.admin.products.delete.confirm}
+        title={t("admin.products.delete.title")}
+        description={t("admin.products.delete.description")}
+        confirmText={t("admin.products.delete.confirm")}
         variant="destructive"
       />
     </div>

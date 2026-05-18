@@ -13,11 +13,14 @@ import { useParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { useTranslation } from "@/context/TranslationContext";
+
 export default function ProductPage() {
   const { id } = useParams();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -33,15 +36,15 @@ export default function ProductPage() {
           ...foundProduct,
           name: foundProduct.name,
           image: foundProduct.images?.[0] || "/placeholder.jpg",
-          category: foundProduct.category?.name || "Uncategorized",
+          category: foundProduct.category?.name || t("shop.product.defaultCollection"),
           categoryId: foundProduct.categoryId,
           details: {
             description: foundProduct.description,
             specifications: [
-              { label: "Category", value: foundProduct.category?.name || "Uncategorized" },
-              { label: "Stock", value: foundProduct.stock > 0 ? "In Stock" : "Out of Stock" }
+              { label: t("shop.product.details.specs.category"), value: foundProduct.category?.name || t("shop.product.defaultCollection") },
+              { label: t("shop.product.details.specs.stock"), value: foundProduct.stock > 0 ? t("shop.product.details.specs.inStock") : t("shop.product.details.specs.outOfStock") }
             ],
-            shipping: "Complimentary worldwide shipping on all orders over ₹10,000."
+            shipping: t("shop.product.details.shippingNote")
           }
         });
 
@@ -52,14 +55,14 @@ export default function ProductPage() {
         setRelatedProducts(related);
 
       } catch (error) {
-        toast.error("Could not load product details.");
+        toast.error(t("shop.product.details.loadError"));
       } finally {
         setLoading(false);
       }
     };
 
     if (id) fetchProduct();
-  }, [id]);
+  }, [id, t]);
 
   if (loading) return (
     <div className="h-screen flex items-center justify-center">
@@ -69,7 +72,7 @@ export default function ProductPage() {
 
   if (!product) return (
     <div className="h-screen flex items-center justify-center">
-      <p className="text-xl font-serif italic">Product not found.</p>
+      <p className="text-xl font-serif italic">{t("shop.product.details.notFound")}</p>
     </div>
   );
 
@@ -77,8 +80,8 @@ export default function ProductPage() {
     <div className="bg-background min-h-screen pb-20">
       <Container className="py-8">
         <Breadcrumbs items={[
-          { label: "Collections", href: "/collections" },
-          { label: product.category, href: `/collections/${product.categoryId}` },
+          { label: t("collections.subtitle"), href: "/collections" },
+          { label: product.category, href: `/shop?categoryId=${product.categoryId}` },
           { label: product.name }
         ]} />
         
@@ -98,7 +101,11 @@ export default function ProductPage() {
 
         {/* Related Products */}
         <div className="mt-32">
-          <SectionTitle title="Complete the Look" subtitle="You May Also Desire" align="center" />
+          <SectionTitle 
+            title={t("shop.product.details.relatedTitle")} 
+            subtitle={t("shop.product.details.relatedSubtitle")} 
+            align="center" 
+          />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             {relatedProducts.map((p) => (
               <ProductCard key={p.id} product={p} />

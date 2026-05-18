@@ -9,9 +9,10 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function ShopPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const categoryIdParam = searchParams.get("categoryId");
 
@@ -30,20 +31,20 @@ export default function ShopPage() {
         const data = await response.json();
         setProducts(data);
       } catch (error) {
-        toast.error(en.shop.loadError);
+        toast.error(t("shop.loadError"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [categoryIdParam]);
+  }, [categoryIdParam, t]);
 
   return (
     <HomePageContainer
-      label={[{ label: en.shop.categories, href: "/collections" }, { label: en.shop.subtitle }]}
-      heading={en.shop.title}
-      description={en.shop.description}
+      label={[{ label: t("shop.categories"), href: "/collections" }, { label: t("shop.subtitle") }]}
+      heading={t("shop.title")}
+      description={t("shop.description")}
     >
 
       <div className="flex flex-col lg:flex-row gap-12">
@@ -58,7 +59,7 @@ export default function ShopPage() {
             <div className="flex items-center gap-4">
               <FilterDrawer />
               <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
-                {en.shop.showing.replace("{count}", products.length.toString())}
+                {t("shop.showing").replace("{count}", products.length.toString())}
               </p>
             </div>
             <ShopControls />
@@ -72,12 +73,12 @@ export default function ShopPage() {
             </div>
           ) : products.length === 0 ? (
             <div className="py-32 text-center space-y-4">
-              <p className="text-muted-foreground font-serif italic text-lg">{en.shop.noMatches}</p>
+              <p className="text-muted-foreground font-serif italic text-lg">{t("shop.noMatches")}</p>
               <button
                 onClick={() => window.location.href = "/shop"}
                 className="text-primary underline text-sm uppercase tracking-widest font-bold"
               >
-                {en.shop.clearFilters}
+                {t("shop.clearFilters")}
               </button>
             </div>
           ) : (

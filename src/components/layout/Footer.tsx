@@ -7,32 +7,33 @@ import { IconButton } from "@/components/ui/IconButton";
 import { usePathname } from "next/navigation";
 import { socialLinks } from "@/constants/constants";
 
-import { en } from "@/locales/en";
-
-const footerLinks = [
-  {
-    title: en.shop.footer.sections.explore.title,
-    links: [
-      { name: en.shop.footer.sections.explore.home, href: "/" },
-      { name: en.shop.footer.sections.explore.about, href: "/about-us" },
-      { name: en.shop.footer.sections.explore.contact, href: "/contact-us" },
-      { name: en.shop.footer.sections.explore.faq, href: "/faq" },
-    ],
-  },
-  {
-    title: en.shop.footer.sections.legal.title,
-    links: [
-      { name: en.shop.footer.sections.legal.privacy, href: "/privacy" },
-      { name: en.shop.footer.sections.legal.refund, href: "/refund" },
-      { name: en.shop.footer.sections.legal.shipping, href: "/shipping" },
-      { name: en.shop.footer.sections.legal.terms, href: "/terms" },
-    ],
-  },
-];
+import { useTranslation } from "@/context/TranslationContext";
 
 export function Footer() {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith("/admin");
+  const { t } = useTranslation();
+
+  const footerLinks = [
+    {
+      title: t("shop.footer.sections.explore.title"),
+      links: [
+        { name: t("shop.footer.sections.explore.home"), href: "/" },
+        { name: t("shop.footer.sections.explore.about"), href: "/about-us" },
+        { name: t("shop.footer.sections.explore.contact"), href: "/contact-us" },
+        { name: t("shop.footer.sections.explore.faq"), href: "/faq" },
+      ],
+    },
+    {
+      title: t("shop.footer.sections.legal.title"),
+      links: [
+        { name: t("shop.footer.sections.legal.privacy"), href: "/privacy" },
+        { name: t("shop.footer.sections.legal.refund"), href: "/refund" },
+        { name: t("shop.footer.sections.legal.shipping"), href: "/shipping" },
+        { name: t("shop.footer.sections.legal.terms"), href: "/terms" },
+      ],
+    },
+  ];
 
   if (isAdminPage) return null;
   return (
@@ -55,16 +56,26 @@ export function Footer() {
             </Link>
 
             <p className="text-sm text-muted-foreground leading-relaxed font-serif italic max-w-md">
-              {en.shop.footer.brand.description}
+              {t("shop.footer.brand.description")}
             </p>
 
             <div className="flex items-center flex-wrap gap-2">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
                 return (
-                  <Link href={social.href} key={index}>
-                    <IconButton icon={Icon} aria-label={social.label} />
-                  </Link>
+                  <a
+                    key={index}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    // className="flex items-center justify-center w-11 h-11 rounded-full border border-border text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:border-primary hover:text-primary hover:-translate-y-1"
+                  >
+                     <IconButton icon={Icon} aria-label={social.label} />
+                  </a>
+                  // <Link href={social.href} key={index}>
+                  //   <IconButton icon={Icon} aria-label={social.label} />
+                  // </Link>
                 );
               })}
             </div>
@@ -98,7 +109,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 pt-10 border-t border-muted-foreground/10">
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground text-center md:text-left">
-            © {new Date().getFullYear()} Culture Signature. {en.shop.footer.brand.rights}
+            © {new Date().getFullYear()} Culture Signature. {t("shop.footer.brand.rights")}
           </p>
 
           <div className="flex items-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">

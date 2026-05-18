@@ -205,11 +205,6 @@ export default function AdminOrders() {
       <AdminPageHeader
         title="Orders"
         description="Track and fulfill artisanal orders."
-        action={
-          <Button variant="outline" className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 border-border/50">
-            <Download className="w-4 h-4 mr-2" /> Export Orders
-          </Button>
-        }
       />
 
       <AdminFilterBar
@@ -310,7 +305,7 @@ export default function AdminOrders() {
                       </div>
                       {order.discountAmount > 0 && (
                         <div className="flex justify-between text-xs uppercase tracking-widest text-primary">
-                          <span>Privilege ({order.promoCode})</span>
+                          <span>{order.promoCode}</span>
                           <span>-₹{order.discountAmount.toLocaleString()}</span>
                         </div>
                       )}

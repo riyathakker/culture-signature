@@ -7,9 +7,10 @@ import { CheckCircle2, ShoppingBag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 function SuccessContent() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const orderId = searchParams.get("id");
 
@@ -23,33 +24,33 @@ function SuccessContent() {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-4xl font-heading tracking-tight">{en.cart.checkout.success.title}</h2>
+        <h2 className="text-4xl font-heading tracking-tight">{t("cart.checkout.success.title")}</h2>
         <p className="text-muted-foreground font-serif italic text-lg">
-          {en.cart.checkout.success.description}
+          {t("cart.checkout.success.description")}
         </p>
       </div>
 
       {orderId && (
         <div className="bg-secondary/30 border border-border/50 p-6 rounded-sm inline-block">
-          <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground mb-2">{en.cart.checkout.success.orderReference}</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground mb-2">{t("cart.checkout.success.orderReference")}</p>
           <p className="font-mono text-xl tracking-widest text-primary">{orderId}</p>
         </div>
       )}
 
       <div className="space-y-6 pt-6">
         <p className="text-xs text-muted-foreground uppercase tracking-widest leading-relaxed max-w-md mx-auto">
-          {en.cart.checkout.success.emailNote}
+          {t("cart.checkout.success.emailNote")}
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
           <Link href="/account/orders">
             <Button variant="outline" className="h-14 px-8 uppercase tracking-widest text-[10px] font-bold border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500 min-w-[200px]">
-              {en.cart.checkout.success.trackOrder} <ArrowRight className="ml-2 w-4 h-4" />
+              {t("cart.checkout.success.trackOrder")} <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
           <Link href="/shop">
             <Button className="h-14 px-8 uppercase tracking-widest text-[10px] font-bold min-w-[200px] shadow-xl shadow-primary/20">
-              {en.cart.checkout.success.continueExploring} <ShoppingBag className="ml-2 w-4 h-4" />
+              {t("cart.checkout.success.continueExploring")} <ShoppingBag className="ml-2 w-4 h-4" />
             </Button>
           </Link>
         </div>
@@ -59,11 +60,12 @@ function SuccessContent() {
 }
 
 export default function SuccessPage() {
+  const { t } = useTranslation();
   return (
     <HomePageContainer
-      label={[{ label: en.cart.summary.proceedToCheckout, href: "/bag/checkout" }, { label: en.cart.checkout.success.breadcrumb }]}
-      heading={en.cart.checkout.success.pageTitle}
-      description={en.cart.checkout.success.pageSubtitle}
+      label={[{ label: t("cart.summary.proceedToCheckout"), href: "/bag/checkout" }, { label: t("cart.checkout.success.breadcrumb") }]}
+      heading={t("cart.checkout.success.pageTitle")}
+      description={t("cart.checkout.success.pageSubtitle")}
     >
       <Suspense fallback={<div className="h-96 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
         <SuccessContent />

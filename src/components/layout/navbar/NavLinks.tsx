@@ -5,8 +5,22 @@ import { usePathname } from "next/navigation";
 
 import { navigationLinks } from "@/constants/constants";
 
+import { useTranslation } from "@/context/TranslationContext";
+
 export function NavLinks() {
   const pathname = usePathname();
+  const { t } = useTranslation();
+
+  const getTranslatedName = (name: string) => {
+    switch (name) {
+      case "Home": return t("nav.links.home");
+      case "New Arrivals": return t("nav.links.newArrivals");
+      case "Collections": return t("nav.links.collections");
+      case "About Us": return t("nav.links.aboutUs");
+      case "Contact Us": return t("nav.links.contactUs");
+      default: return name;
+    }
+  };
 
   return (
     <nav className="hidden lg:block mt-4">
@@ -26,7 +40,7 @@ export function NavLinks() {
                   }
                 `}
               >
-                {item.name}
+                {getTranslatedName(item.name)}
 
                 <span
                   className={`

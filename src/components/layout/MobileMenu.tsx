@@ -20,7 +20,7 @@ import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 import { navigationLinks } from "@/constants/constants";
 import { useCartStore } from "@/store/cartStore";
 
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
@@ -31,6 +31,18 @@ export function MobileMenu() {
   const isAdmin = (session?.user as any)?.role === "ADMIN";
   const { items } = useCartStore();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
+  const { t } = useTranslation();
+
+  const getTranslatedName = (name: string) => {
+    switch (name) {
+      case "Home": return t("nav.links.home");
+      case "New Arrivals": return t("nav.links.newArrivals");
+      case "Collections": return t("nav.links.collections");
+      case "About Us": return t("nav.links.aboutUs");
+      case "Contact Us": return t("nav.links.contactUs");
+      default: return name;
+    }
+  };
 
   return (
     <>
@@ -60,7 +72,7 @@ export function MobileMenu() {
                     className="flex items-center justify-between group"
                   >
                     <span className="text-lg font-serif group-hover:text-primary transition-colors">
-                      {item.name}
+                      {getTranslatedName(item.name)}
                     </span>
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </Link>
@@ -76,7 +88,7 @@ export function MobileMenu() {
                 >
                   <div className="flex items-center space-x-3 text-muted-foreground group-hover:text-foreground transition-colors">
                     <ShoppingBag className="w-5 h-5" />
-                    <span className="text-sm uppercase tracking-widest">{en.cart.page.title}</span>
+                    <span className="text-sm uppercase tracking-widest">{t("cart.page.title")}</span>
                   </div>
                   {itemCount > 0 && (
                     <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
@@ -90,7 +102,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <Heart className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">{en.nav.wishlist}</span>
+                  <span className="text-sm uppercase tracking-widest">{t("nav.wishlist")}</span>
                 </Link>
               </div>
             </div>
@@ -105,7 +117,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <LayoutDashboard className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">{en.nav.account.adminPanel}</span>
+                  <span className="text-sm uppercase tracking-widest">{t("nav.account.adminPanel")}</span>
                 </Link>
               )}
               {isLoggedIn ? (
@@ -115,7 +127,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <User className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">{en.nav.account.myAccount}</span>
+                  <span className="text-sm uppercase tracking-widest">{t("nav.account.myAccount")}</span>
                 </Link>
               ) : (
                 <button
@@ -126,7 +138,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors w-full text-left"
                 >
                   <User className="w-5 h-5" />
-                  <span className="text-sm uppercase tracking-widest">{en.nav.account.signIn}</span>
+                  <span className="text-sm uppercase tracking-widest">{t("nav.account.signIn")}</span>
                 </button>
               )}
               {isLoggedIn && (
@@ -135,7 +147,7 @@ export function MobileMenu() {
                   className="flex items-center space-x-3 text-destructive hover:text-destructive/80 transition-colors w-full text-left pt-4 border-t border-border/50"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold">{en.nav.account.signOut}</span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-bold">{t("nav.account.signOut")}</span>
                 </button>
               )}
             </div>
@@ -151,11 +163,11 @@ export function MobileMenu() {
         onConfirm={() => {
           setOpen(false);
           signOut();
-          toast.success(en.nav.account.signOutSuccess);
+          toast.success(t("nav.account.signOutSuccess"));
         }}
-        title={en.nav.account.signOut}
-        description={en.nav.account.signOutConfirm}
-        confirmText={en.nav.account.signOut}
+        title={t("nav.account.signOut")}
+        description={t("nav.account.signOutConfirm")}
+        confirmText={t("nav.account.signOut")}
         variant="destructive"
       />
     </>

@@ -8,12 +8,12 @@ import { ROUTES } from "./routes";
 export const socialLinks = [
   {
     icon: InstagramIcon,
-    href: "https://www.instagram.com/culture_signature/",
+    href: "https://www.instagram.com/culture_signature_jalpathakkar/",
     label: "Instagram",
   },
   {
     icon: FacebookIcon,
-    href: "https://www.facebook.com/culturesignature",
+    href: "https://www.facebook.com/culturesignaturejalpathakkar/",
     label: "Facebook",
   },
   {
@@ -23,7 +23,7 @@ export const socialLinks = [
   },
   {
     icon: LinkedInIcon,
-    href: "https://www.linkedin.com/company/culture-signature/",
+    href: "https://in.linkedin.com/in/culture-signature-by-jalpa-thakkar-855302272",
     label: "LinkedIn",
   },
 ];

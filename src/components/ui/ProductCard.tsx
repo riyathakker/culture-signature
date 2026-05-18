@@ -14,7 +14,7 @@ import { QuantitySelector } from "./QuantitySelector";
 import { convertINRToDiscountPercentage } from "@/utils/helper";
 import { useSession } from "next-auth/react";
 
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 
 export function ProductCard({ product, variant = "default" }: { product: any, variant?: "default" | "wishlist" }) {
@@ -22,12 +22,13 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { items, addItem, updateQuantity } = useCartStore();
+  const { t } = useTranslation();
 
   const cartItem = items.find((item) => item.id === product.id);
   const isOutOfStock = product.stock == 0;
   const handleAddToCart = () => {
     if (isOutOfStock) {
-      toast.error(en.shop.product.unavailable);
+      toast.error(t("shop.product.unavailable"));
       return;
     }
     const item: CartItem = {
@@ -48,7 +49,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
     e.preventDefault();
     if (isWishlisted) {
       removeFromWishlist(product.id);
-      toast.info(`${product.name} ${en.shop.product.removedFromWishlist}`);
+      toast.info(`${product.name} ${t("shop.product.removedFromWishlist")}`);
     } else {
       addToWishlist(product);
     }
@@ -67,7 +68,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           {isOutOfStock && (
             <div className="absolute inset-0 bg-background/20 backdrop-blur-[2px] z-20 flex items-center justify-center">
               <div className="bg-background/90 text-foreground px-6 py-3 text-[10px] uppercase tracking-[0.4em] font-bold border border-border shadow-2xl animate-in fade-in zoom-in duration-700">
-                {en.shop.product.outOfStock}
+                {t("shop.product.outOfStock")}
               </div>
             </div>
           )}
@@ -76,12 +77,12 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
             {discountPercentage && !isOutOfStock && (
               <span className="text-[10px] uppercase tracking-widest bg-destructive text-destructive-foreground px-2 py-1 font-bold">
-                -{discountPercentage}% {en.shop.product.off}
+                -{discountPercentage}% {t("shop.product.off")}
               </span>
             )}
             {product.isNew && !isOutOfStock && (
               <span className="text-[10px] uppercase tracking-widest bg-primary text-primary-foreground px-2 py-1 font-bold">
-                {en.shop.product.new}
+                {t("shop.product.new")}
               </span>
             )}
           </div>
@@ -105,7 +106,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
                   disabled={isOutOfStock}
                   className="flex-1 bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground border-none backdrop-blur-sm uppercase text-[10px] tracking-widest h-10"
                 >
-                  {isOutOfStock ? en.shop.product.unavailable : en.shop.product.addToCart}
+                  {isOutOfStock ? t("shop.product.unavailable") : t("shop.product.addToCart")}
                 </Button>
               )
             ) : null}
@@ -121,7 +122,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
                   )}
                 >
                   <Eye className="w-4 h-4" />
-                  {isAdmin && en.shop.product.quickView}
+                  {isAdmin && t("shop.product.quickView")}
                 </Button>
                 {!isAdmin && (
                   <Button
@@ -146,7 +147,6 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           )}>
             <div className={cn(
               "absolute inset-0 transition-all duration-700 ease-in-out group-hover:scale-110",
-              product.images?.[1] ? "group-hover:opacity-0" : ""
             )}>
               {product.images?.[0] ? (
                 <Image
@@ -168,7 +168,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
         )}>
           <div className="flex justify-between items-center">
             <p className="text-luxury italic opacity-60 text-[10px]">
-              {typeof product.category === 'string' ? product.category : product.category?.name || en.shop.product.defaultCollection}
+              {typeof product.category === 'string' ? product.category : product.category?.name || t("shop.product.defaultCollection")}
             </p>
             <div className="flex items-center text-primary/80">
               <Star className="w-3 h-3 fill-current" />
@@ -194,7 +194,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
 
             {isOutOfStock && (
               <span className="text-[8px] uppercase tracking-widest font-bold text-destructive bg-destructive/5 px-2 py-1 border border-destructive/20">
-                {en.shop.product.soldOut}
+                {t("shop.product.soldOut")}
               </span>
             )}
           </div>

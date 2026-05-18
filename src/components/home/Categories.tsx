@@ -5,10 +5,11 @@ import { useEffect } from "react";
 import { useCategoryStore } from "@/store/categoryStore";
 import { CommonLoader } from "../common/Loader";
 import { SectionTitle } from "../ui/SectionTitle";
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 function CategoryCards() {
   const { categories, isLoading, fetchCategories } = useCategoryStore();
+  const { t } = useTranslation();
   useEffect(() => {
     fetchCategories(true);
   }, []);
@@ -35,7 +36,7 @@ function CategoryCards() {
             </div>
             <h4 className="font-heading text-xl group-hover:text-primary-foreground transition-all duration-500 relative z-10 text-center">{cat.name}</h4>
             <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground group-hover:text-primary-foreground/70 transition-colors mt-2 relative z-10">
-              {cat._count?.products || 0} {en.home.categories.pieces}
+              {cat._count?.products || 0} {t("home.categories.pieces")}
             </p>
           </Link>
         ))}
@@ -45,9 +46,10 @@ function CategoryCards() {
 }
 
 export function Categories() {
+  const { t } = useTranslation();
   return (
     <div className="py-24">
-      <SectionTitle title={en.home.categories.title} subtitle={en.home.categories.subtitle} align="center" />
+      <SectionTitle title={t("home.categories.title")} subtitle={t("home.categories.subtitle")} align="center" />
       <CategoryCards />
     </div>
   )

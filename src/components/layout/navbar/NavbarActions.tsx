@@ -9,7 +9,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
 import { UserMenu } from "./UserMenu";
 
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function NavbarActions() {
   const { data: session, status } = useSession();
@@ -19,6 +19,7 @@ export function NavbarActions() {
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const [mounted, setMounted] = useState(false);
+  const { t } = useTranslation();
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -41,13 +42,13 @@ export function NavbarActions() {
             <IconButton
               icon={Heart}
               className="hidden md:flex"
-              aria-label={en.nav.wishlist}
+              aria-label={t("nav.wishlist")}
             />
           </Link>
 
           <Link href="/bag" className="hidden md:block">
             <div className="relative group">
-              <IconButton icon={ShoppingBag} aria-label={en.nav.bag} />
+              <IconButton icon={ShoppingBag} aria-label={t("nav.bag")} />
               {mounted && itemCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                   {itemCount}

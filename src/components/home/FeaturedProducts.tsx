@@ -9,7 +9,7 @@ import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 
 import { useProductStore } from "@/store/productStore";
 
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function FeaturedProducts() {
   const {
@@ -17,6 +17,7 @@ export function FeaturedProducts() {
     featuredProducts,
     isLoading,
   } = useProductStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -32,8 +33,8 @@ export function FeaturedProducts() {
     <section className=" py-24 border-t border-border/50">
       <Container>
         <SectionTitle
-          title={en.home.featured.title}
-          subtitle={en.home.featured.subtitle}
+          title={t("home.featured.title")}
+          subtitle={t("home.featured.subtitle")}
         />
 
         {isLoading ? (

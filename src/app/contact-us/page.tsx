@@ -1,6 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/context/TranslationContext";
 
 import {
   Phone,
@@ -10,65 +13,61 @@ import {
 } from "lucide-react";
 
 import { HomePageContainer } from "@/components/common/HomePageContainer";
-
-const contactInfo = [
-  {
-    icon: Phone,
-    title: "Call Us",
-    content: (
-      <p className="text-sm text-muted-foreground">
-        +91 78789 04555
-      </p>
-    ),
-  },
-  {
-    icon: Mail,
-    title: "Email Us",
-    content: (
-      <p className="text-sm text-muted-foreground break-all">
-        jalpathakker@culturesignature.com
-      </p>
-    ),
-  },
-  {
-    icon: MapPin,
-    title: "Visit Boutique",
-    content: (
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        Ground floor Sanskruti app,
-        <br />
-        Ram Chowk, Ghod Dod Road,
-        <br />
-        Surat, Gujarat.
-      </p>
-    ),
-  },
-  {
-    icon: Clock,
-    title: "Boutique Hours",
-    content: (
-      <>
-        <p className="text-sm text-muted-foreground">
-          Mon - Sat: 11:00 AM - 8:00 PM
-        </p>
-        <p className="text-xs text-primary/60 italic mt-1">
-          Sundays by appointment only
-        </p>
-      </>
-    ),
-  },
-];
-
-
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { socialLinks } from "@/constants/constants";
 
 export default function ContactPage() {
+  const { t } = useTranslation();
+
+  const contactInfo = [
+    {
+      icon: Phone,
+      title: t("contact.channels.call"),
+      content: (
+        <p className="text-sm text-muted-foreground">
+          +91 78789 04555
+        </p>
+      ),
+    },
+    {
+      icon: Mail,
+      title: t("contact.channels.email"),
+      content: (
+        <p className="text-sm text-muted-foreground break-all">
+          jalpathakker@culturesignature.com
+        </p>
+      ),
+    },
+    {
+      icon: MapPin,
+      title: t("contact.channels.visit"),
+      content: (
+        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+          {t("contact.channels.address")}
+        </p>
+      ),
+    },
+    {
+      icon: Clock,
+      title: t("contact.channels.hours"),
+      content: (
+        <>
+          <p className="text-sm text-muted-foreground">
+            {t("contact.channels.boutiqueHours")}
+          </p>
+          <p className="text-xs text-primary/60 italic mt-1">
+            {t("contact.channels.sundayNote")}
+          </p>
+        </>
+      ),
+    },
+  ];
+
   return (
     <HomePageContainer
-      label={[{ label: "Contact Us" }]}
-      heading="Get in Touch"
-      description="Our concierge team is at your service for inquiries, bespoke orders, and artisanal consultations."
+      label={[{ label: t("contact.breadcrumb") }]}
+      heading={t("contact.heading")}
+      description={t("contact.description")}
     >
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-14 xl:gap-24">
@@ -77,7 +76,7 @@ export default function ContactPage() {
         <div className="space-y-14">
 
           <div>
-            <SectionHeader>Inquiry Channels</SectionHeader>
+            <SectionHeader>{t("contact.channels.header")}</SectionHeader>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {contactInfo.map((item, index) => {
@@ -107,7 +106,7 @@ export default function ContactPage() {
 
           {/* Social Links */}
           <div>
-            <SectionHeader>Social Presence</SectionHeader>
+            <SectionHeader>{t("contact.social.header")}</SectionHeader>
 
             <div className="flex flex-wrap items-center gap-4">
               {socialLinks.map((social, index) => {
@@ -135,11 +134,11 @@ export default function ContactPage() {
 
           <div className="mb-8">
             <h2 className="text-3xl md:text-4xl font-heading">
-              Send a Message
+              {t("contact.form.title")}
             </h2>
 
             <p className="mt-3 text-sm italic text-muted-foreground">
-              We typically respond within 24 business hours.
+              {t("contact.form.subtitle")}
             </p>
           </div>
 
@@ -149,23 +148,23 @@ export default function ContactPage() {
 
               <div className="space-y-2">
                 <label className="text-[11px] uppercase tracking-[0.2em] font-semibold">
-                  Full Name
+                  {t("contact.form.fullName")}
                 </label>
 
                 <Input
-                  placeholder="John Doe"
+                  placeholder={t("contact.form.placeholders.fullName")}
                   className="h-12 bg-background border-primary/10 focus-visible:ring-primary/20"
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[11px] uppercase tracking-[0.2em] font-semibold">
-                  Email Address
+                  {t("contact.form.email")}
                 </label>
 
                 <Input
                   type="email"
-                  placeholder="john@example.com"
+                  placeholder={t("contact.form.placeholders.email")}
                   className="h-12 bg-background border-primary/10 focus-visible:ring-primary/20"
                 />
               </div>
@@ -173,28 +172,28 @@ export default function ContactPage() {
 
             <div className="space-y-2">
               <label className="text-[11px] uppercase tracking-[0.2em] font-semibold">
-                Subject
+                {t("contact.form.subject")}
               </label>
 
               <Input
-                placeholder="Inquiry about artisanal jewelry"
+                placeholder={t("contact.form.placeholders.subject")}
                 className="h-12 bg-background border-primary/10 focus-visible:ring-primary/20"
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-[11px] uppercase tracking-[0.2em] font-semibold">
-                Message
+                {t("contact.form.message")}
               </label>
 
               <Textarea
-                placeholder="How can we assist you today?"
+                placeholder={t("contact.form.placeholders.message")}
                 className="min-h-[160px] resize-none bg-background border-primary/10 focus-visible:ring-primary/20"
               />
             </div>
 
             <Button className="w-full h-14 uppercase tracking-[0.2em] text-xs font-medium">
-              Send Inquiry
+              {t("contact.form.submit")}
             </Button>
           </form>
         </div>
