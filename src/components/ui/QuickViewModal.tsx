@@ -25,7 +25,7 @@ interface QuickViewModalProps {
 
 export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalProps) {
     const { t } = useTranslation();
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [selectedImage, setSelectedImage] = useState(0);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";

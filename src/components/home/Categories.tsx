@@ -10,9 +10,6 @@ import { useTranslation } from "@/context/TranslationContext";
 function CategoryCards() {
   const { categories, isLoading, fetchCategories } = useCategoryStore();
   const { t } = useTranslation();
-  useEffect(() => {
-    fetchCategories();
-  }, []);
 
   if (isLoading) return (
     <CommonLoader />
@@ -47,11 +44,14 @@ function CategoryCards() {
 
 export function Categories() {
   const { t } = useTranslation();
-  const { categories, isLoading } = useCategoryStore();
-
+  const { categories, isLoading, fetchCategories } = useCategoryStore();
   if (!isLoading && (!categories || categories.length === 0)) {
     return null;
   }
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <div className="py-24">

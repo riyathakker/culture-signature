@@ -13,10 +13,10 @@ interface Props {
 export function HomePageContainer({ label, heading, description, children }: Props) {
     return (
         <div className="bg-background min-h-screen pb-20">
-            <div className={cn("bg-secondary/20 py-16", heading && description && "mb-10")}>
+            <div className={cn("bg-secondary/20 py-8 md:py-16", heading && description && "mb-6 md:mb-10")}>
                 <Container>
                     <Breadcrumbs items={label} />
-                    {heading && <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2"> {heading}</h1>}
+                    {heading && <h1 className="text-4xl md:text-6xl font-heading mt-3 md:mt-6 mb-2"> {heading}</h1>}
                     {description && <p className="text-muted-foreground font-serif italic text-lg max-w-2xl">
                         {description}
                     </p>}
