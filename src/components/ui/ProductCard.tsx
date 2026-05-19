@@ -18,7 +18,12 @@ import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
 
 
-export function ProductCard({ product, variant = "default" }: { product: any, variant?: "default" | "wishlist" }) {
+interface ProductCardProps {
+  product: any,
+  variant?: "default" | "wishlist"
+}
+
+export function ProductCard({ product, variant = "default" }: ProductCardProps) {
   const pathname = usePathname();
   const from = pathname.startsWith("/collections") ? "collections" : pathname.startsWith("/categories") ? "categories" : null;
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
