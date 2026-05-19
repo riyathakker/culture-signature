@@ -1,15 +1,16 @@
 import { create } from "zustand";
+import { Category } from "@/types";
 
 interface CategoryState {
-  categories: any[];
+  categories: Category[];
   isLoading: boolean;
   showingArchived: boolean;
   lastFetched: number | null;
-  setCategories: (categories: any[]) => void;
+  setCategories: (categories: Category[]) => void;
   setLoading: (isLoading: boolean) => void;
   fetchCategories: (includeArchived?: boolean) => Promise<void>;
-  addCategory: (category: any) => void;
-  updateCategory: (category: any) => void;
+  addCategory: (category: Category) => void;
+  updateCategory: (category: Category) => void;
   deleteCategory: (id: string) => void;
 }
 

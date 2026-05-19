@@ -152,7 +152,7 @@ export default function AdminProducts() {
     return products.filter((product) => {
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase());
+        (product.description ?? "").toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesCategory = !selectedCategoryId || product.categoryId === selectedCategoryId;
 

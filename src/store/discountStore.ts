@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import { toast } from 'sonner';
+import { Discount } from '@/types';
 
 interface DiscountState {
-  discounts: any[];
+  discounts: Discount[];
   isLoading: boolean;
   lastFetched: number | null;
-  setDiscounts: (discounts: any[]) => void;
+  setDiscounts: (discounts: Discount[]) => void;
   setLoading: (isLoading: boolean) => void;
   fetchDiscounts: (force?: boolean) => Promise<void>;
   deleteDiscount: (id: string) => Promise<void>;

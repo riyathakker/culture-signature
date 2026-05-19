@@ -31,7 +31,7 @@ export default function CollectionsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
-          {categories.filter((cat) => cat?._count?.products > 0).map((category) => (
+          {categories.filter((cat) => (cat?._count?.products ?? 0) > 0).map((category) => (
             <Link
               key={category.id}
               href={`/categories/${category.id}`}

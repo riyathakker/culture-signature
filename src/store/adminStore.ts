@@ -1,7 +1,8 @@
 import { create } from 'zustand';
+import { AdminOverview } from '@/types';
 
 interface AdminState {
-  overview: any | null;
+  overview: AdminOverview | null;
   isLoading: boolean;
   lastFetched: number | null;
   fetchOverview: () => Promise<void>;

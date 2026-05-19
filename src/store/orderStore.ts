@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { toast } from 'sonner';
+import { Order } from '@/types';
 
 interface OrderState {
-  orders: any[];
+  orders: Order[];
   isLoading: boolean;
   lastFetched: number | null;
-  setOrders: (orders: any[]) => void;
+  setOrders: (orders: Order[]) => void;
   setLoading: (isLoading: boolean) => void;
-  updateOrder: (order: any) => void;
+  updateOrder: (order: Order) => void;
   fetchOrders: (force?: boolean) => Promise<void>;
   updateOrderStatus: (orderId: string, status: string) => Promise<void>;
 }

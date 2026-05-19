@@ -1,22 +1,23 @@
 import { create } from "zustand";
+import { Product } from "@/types";
 
 interface ProductState {
-  products: any[];
-  newArrivals: any[];
-  featuredProducts: any[];
+  products: Product[];
+  newArrivals: Product[];
+  featuredProducts: Product[];
   isLoading: boolean;
   lastFetched: number | null;
   lastFetchedNewArrivals: number | null;
   lastFetchedFeatured: number | null;
 
-  setProducts: (products: any[]) => void;
-  setNewArrivals: (newArrivals: any[]) => void;
-  setFeaturedProducts: (featuredProducts: any[]) => void;
+  setProducts: (products: Product[]) => void;
+  setNewArrivals: (newArrivals: Product[]) => void;
+  setFeaturedProducts: (featuredProducts: Product[]) => void;
   setLoading: (isLoading: boolean) => void;
 
-  updateProduct: (product: any) => void;
+  updateProduct: (product: Product) => void;
   deleteProduct: (id: string) => void;
-  addProduct: (product: any) => void;
+  addProduct: (product: Product) => void;
 
   fetchProducts: (force?: boolean) => Promise<void>;
   fetchNewArrivals: (force?: boolean) => Promise<void>;

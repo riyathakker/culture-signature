@@ -1,14 +1,7 @@
 import { create } from "zustand";
+import { Product } from "@/types";
 
-export type WishlistItem = {
-  id: string;
-  name: string;
-  price: number;
-  images: string[];
-  category: string;
-  rating: number;
-  description: string;
-};
+export type WishlistItem = Product;
 
 type WishlistStore = {
   items: WishlistItem[];

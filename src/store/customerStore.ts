@@ -1,10 +1,11 @@
 import { create } from 'zustand';
+import { User } from '@/types';
 
 interface CustomerState {
-  customers: any[];
+  customers: User[];
   isLoading: boolean;
   lastFetched: number | null;
-  setCustomers: (customers: any[]) => void;
+  setCustomers: (customers: User[]) => void;
   setLoading: (isLoading: boolean) => void;
   fetchCustomers: (query?: string) => Promise<void>;
 }

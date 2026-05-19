@@ -54,8 +54,8 @@ export default function AdminOrders() {
     return orders.filter((order) => {
       const matchesSearch =
         order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.user.email.toLowerCase().includes(searchQuery.toLowerCase());
+        (order.user?.name ?? order.customerName ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (order.user?.email ?? "").toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesStatus = !activeStatus || order.status === activeStatus;
 
@@ -240,7 +240,7 @@ export default function AdminOrders() {
                 <div className="md:col-span-2 space-y-4">
                   <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground">Order Composition</h4>
                   <div className="space-y-3">
-                    {order.items.map((item: any) => (
+                    {(order.items ?? []).map((item: any) => (
                       <div key={item.id} className="flex items-center justify-between bg-background p-4 border border-border/40 shadow-sm">
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-20 bg-muted relative overflow-hidden group">

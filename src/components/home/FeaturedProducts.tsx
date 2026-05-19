@@ -10,6 +10,7 @@ import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useProductStore } from "@/store/productStore";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { Product } from "@/types";
 
 export function FeaturedProducts() {
   const {
@@ -45,7 +46,7 @@ export function FeaturedProducts() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product: any) => (
+            {featuredProducts.map((product: Product) => (
               <ProductCard
                 key={product.id}
                 product={product}

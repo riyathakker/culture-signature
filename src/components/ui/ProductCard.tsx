@@ -16,11 +16,11 @@ import { convertINRToDiscountPercentage } from "@/utils/helper";
 import { useSession } from "next-auth/react";
 
 import { useTranslation } from "@/context/TranslationContext";
-
+import { Product } from "@/types";
 
 interface ProductCardProps {
-  product: any,
-  variant?: "default" | "wishlist"
+  product: Product;
+  variant?: "default" | "wishlist";
 }
 
 export function ProductCard({ product, variant = "default" }: ProductCardProps) {
