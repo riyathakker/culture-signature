@@ -31,12 +31,15 @@ interface SessionUser {
   role?: string;
 }
 
+import { useTranslation } from "@/context/TranslationContext";
+
 export function UserMenu({
   isLoggedIn,
   session,
   onAuthModalOpen,
 }: UserMenuProps) {
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+  const { t } = useTranslation();
 
   const user = session?.user as SessionUser | undefined;
 
@@ -48,7 +51,7 @@ export function UserMenu({
         ? [
             {
               href: "/admin",
-              label: "Admin Panel",
+              label: t("nav.account.adminPanel"),
               icon: LayoutDashboard,
             },
           ]
@@ -56,17 +59,17 @@ export function UserMenu({
 
       {
         href: "/account",
-        label: "My Account",
+        label: t("nav.account.myAccount"),
         icon: User,
       },
     ],
-    [isAdmin]
+    [isAdmin, t]
   );
 
   const handleSignOut = async () => {
     await signOut();
 
-    toast.success("Successfully signed out");
+    toast.success(t("nav.account.signOutSuccess"));
   };
 
   if (!isLoggedIn) {
@@ -74,7 +77,7 @@ export function UserMenu({
       <IconButton 
         icon={User} 
         onClick={onAuthModalOpen} 
-        aria-label="Account"
+        aria-label={t("nav.account.label")}
       />
     );
   }
@@ -83,7 +86,7 @@ export function UserMenu({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <IconButton icon={User} aria-label="Account menu" />
+          <IconButton icon={User} aria-label={t("nav.account.menuLabel")} />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
@@ -113,7 +116,7 @@ export function UserMenu({
           >
             <LogOut className="mr-2 h-4 w-4" />
 
-            <span>Sign out</span>
+            <span>{t("nav.account.signOut")}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -122,9 +125,9 @@ export function UserMenu({
         open={isSignOutDialogOpen}
         onOpenChange={setIsSignOutDialogOpen}
         onConfirm={handleSignOut}
-        title="Sign Out"
-        description="Are you sure you want to end your current session?"
-        confirmText="Sign Out"
+        title={t("nav.account.signOut")}
+        description={t("nav.account.signOutConfirm")}
+        confirmText={t("nav.account.signOut")}
         variant="destructive"
       />
     </>

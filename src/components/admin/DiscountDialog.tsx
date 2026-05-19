@@ -23,9 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Tag, Loader2, Save } from "lucide-react";
 import { useDiscountStore } from "@/store/discountStore";
-import { en } from "@/locales/en";
-
-const t = en.admin.discounts.dialog;
+import { useTranslation } from "@/context/TranslationContext";
 
 interface DiscountFormValues {
   code: string;
@@ -44,6 +42,7 @@ interface DiscountDialogProps {
 }
 
 export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenChange: setExternalOpen }: DiscountDialogProps) {
+  const { t } = useTranslation();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { fetchDiscounts } = useDiscountStore();
@@ -114,16 +113,16 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
 
       if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.error || "Failed to save discount");
+        throw new Error(err.error || t("admin.discounts.dialog.saveError"));
       }
 
-      toast.success(discount ? "Privilege updated" : "Privilege created");
+      toast.success(discount ? t("admin.discounts.dialog.messages.updateSuccess") : t("admin.discounts.dialog.messages.createSuccess"));
       setOpen?.(false);
       if (!discount) reset();
       await fetchDiscounts(true);
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+      toast.error(error.message || t("admin.common.error"));
     } finally {
       setIsLoading(false);
     }
@@ -135,24 +134,24 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
       {!trigger && !isControlled && (
         <DialogTrigger>
           <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
-            <Plus className="w-4 h-4 mr-2" /> {en.admin.discounts.newOffer}
+            <Plus className="w-4 h-4 mr-2" /> {t("admin.discounts.newOffer")}
           </Button>
         </DialogTrigger>
       )}
       <DialogContent className="sm:max-w-[550px] bg-background border-none">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl tracking-tight">
-            {discount ? t.titleEdit : t.titleCreate}
+            {discount ? t("admin.discounts.dialog.titleEdit") : t("admin.discounts.dialog.titleCreate")}
           </DialogTitle>
           <p className="text-muted-foreground font-serif italic text-sm">
-            {discount ? t.descEdit : t.descCreate}
+            {discount ? t("admin.discounts.dialog.descEdit") : t("admin.discounts.dialog.descCreate")}
           </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto px-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2 md:col-span-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t.labels.code}</Label>
+              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.code")}</Label>
               <Input
                 placeholder="e.g., ROYAL20"
                 {...register("code", { required: "Code is required" })}
@@ -162,7 +161,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t.labels.type}</Label>
+              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.type")}</Label>
               <Select
                 value={discountType}
                 onValueChange={(val: any) => setValue("type", val)}
@@ -178,7 +177,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t.labels.value}</Label>
+              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.value")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -188,7 +187,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t.labels.usageLimit}</Label>
+              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.usageLimit")}</Label>
               <Input
                 type="number"
                 placeholder="Unlimited"
@@ -198,7 +197,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t.labels.expiryDate}</Label>
+              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.expiryDate")}</Label>
               <Input
                 type="date"
                 {...register("expiryDate")}
@@ -207,7 +206,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t.labels.status}</Label>
+              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.status")}</Label>
               <Select
                 value={discountStatus}
                 onValueChange={(val: any) => setValue("status", val)}
@@ -230,7 +229,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             className="w-full h-14 uppercase tracking-[0.2em] text-[10px] font-bold mt-4"
           >
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-            {discount ? t.buttons.edit : t.buttons.create}
+            {discount ? t("admin.discounts.dialog.buttons.edit") : t("admin.discounts.dialog.buttons.create")}
           </Button>
         </form>
       </DialogContent>

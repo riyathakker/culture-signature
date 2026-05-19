@@ -98,18 +98,18 @@ export default function SettingsPage() {
       <section className="space-y-6">
         <SectionHeader>Personal Information</SectionHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid-split">
             <div className="space-y-2">
               <Label className="text-[10px] uppercase tracking-widest font-bold">Full Name</Label>
               <Input 
                 value={formData.name} 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="rounded-none border-border/50 h-10" 
+                className="border-border/50 h-10" 
               />
             </div>
             <div className="space-y-2">
               <Label className="text-[10px] uppercase tracking-widest font-bold">Email Address</Label>
-              <Input value={formData.email} disabled className="rounded-none bg-secondary/20 h-10" />
+              <Input value={formData.email} disabled className=" bg-secondary/20 h-10" />
             </div>
              <div className="space-y-2">
               <Label className="text-[10px] uppercase tracking-widest font-bold">Mobile Number</Label>
@@ -117,7 +117,7 @@ export default function SettingsPage() {
                 value={formData.mobileNo} 
                 onChange={(e) => setFormData({ ...formData, mobileNo: e.target.value })}
                 placeholder="+91 99999 99999"
-                className="rounded-none border-border/50 h-10" 
+                className="border-border/50 h-10" 
               />
             </div>
           </div>

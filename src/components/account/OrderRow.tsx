@@ -62,7 +62,7 @@ export function OrderRow({ order }: { order: any }) {
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-secondary/30 rounded-sm overflow-hidden relative">
                         <img 
-                          src={item.product.images?.[0] || "/Logo.png"} 
+                          src={item.product.images?.[0]} 
                           alt={item.product.name}
                           className="w-full h-full object-cover"
                         />

@@ -16,7 +16,7 @@ interface BreadcrumbsProps {
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   return (
     <nav className={cn("py-4", className)} aria-label="Breadcrumb">
-      <Container className="pl-0 flex items-center space-x-2 text-xs uppercase tracking-widest text-muted-foreground">
+      <Container className="pl-0! flex items-center space-x-2 text-xs uppercase tracking-widest text-muted-foreground">
         <Link
           href="/"
           className="flex items-center hover:text-primary transition-colors"

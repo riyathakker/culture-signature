@@ -1,59 +1,117 @@
 "use client";
+import { ProductCard } from "@/components/ui/ProductCard";
+import { FilterSidebar } from "@/components/shop/FilterSidebar";
+import { FilterDrawer } from "@/components/shop/FilterDrawer";
+import { ShopControls } from "@/components/shop/ShopControls";
+import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
+import { useTranslation } from "@/context/TranslationContext";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
-import { CommonLoader } from "@/components/common/Loader";
-import { useCategoryStore } from "@/store/categoryStore";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { useEffect } from "react";
 
-export default function CollectionsPage() {
-  const { categories, isLoading, fetchCategories } = useCategoryStore();
+export default function ShopPage() {
+  const { t } = useTranslation();
+  const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const url = activeCategoryIds.length > 0
+          ? `/api/products?categoryId=${activeCategoryIds.join(",")}`
+          : "/api/products";
+        const res = await fetch(url);
+        const data = await res.json();
+        setProducts(data);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [activeCategoryIds]);
+
+  const searchParams = useSearchParams();
+  const minPrice = Number(searchParams.get("minPrice")) || 0;
+  const maxPrice = Number(searchParams.get("maxPrice")) || 10000;
+
+  const filteredProducts = products.filter((p) => Number(p.price) >= minPrice && Number(p.price) <= maxPrice);
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy === "price-low") return a.price - b.price;
+    if (sortBy === "price-high") return b.price - a.price;
+    if (sortBy === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (sortBy === "popularity") return (b.reviews?.length || 0) - (a.reviews?.length || 0);
+    return 0;
+  });
 
   return (
-    <HomePageContainer label={[{ label: "Collections" }]} heading="Our Collections" description="Curated anthologies of heritage and style.">
-      {isLoading ? (
-        <CommonLoader />
-      ) : categories.length === 0 ? (
-        <div className="py-20 text-center">
-          <p className="text-muted-foreground font-serif italic text-lg">Our curations are being prepared for your view.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/shop?categoryId=${category.id}`}
-              className="group block"
-            >
-              <div className="aspect-[4/5] bg-secondary/30 relative overflow-hidden mb-6">
-                <div className="absolute inset-0 bg-luxury-gradient opacity-10 group-hover:opacity-20 transition-opacity" />
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 scale-95 group-hover:scale-100">
-                  <div className="bg-background/90 backdrop-blur-md px-8 py-4 uppercase tracking-[0.2em] text-[10px] font-bold">
-                    View Collection
-                  </div>
-                </div>
+    <HomePageContainer
+      label={[{ label: t("shop.subtitle") }]}
+      heading={t("shop.title")}
+      description={t("shop.description")}
+    >
+
+      <div className="flex flex-col lg:flex-row gap-12">
+        {/* Desktop Sidebar */}
+        <aside className="hidden lg:block w-64 flex-shrink-0">
+          <FilterSidebar showCategories
+            activeCategoryIds={activeCategoryIds}
+            onCategoryChange={setActiveCategoryIds}
+          />
+        </aside>
+
+        {/* Main Content */}
+        <div className="flex-1 space-y-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
+            <div className="flex items-center gap-4">
+              <FilterDrawer showCategories
+            activeCategoryIds={activeCategoryIds}
+            onCategoryChange={setActiveCategoryIds}/>
+              <p className="text-spaced-bold text-muted-foreground">
+                {t("shop.showing").replace("{count}", products.length.toString())}
+              </p>
+            </div>
+            <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="py-32 text-center space-y-4">
+              <p className="text-muted-foreground font-serif italic text-lg">{t("shop.noMatches")}</p>
+              <button
+                onClick={() => window.location.href = "/shop"}
+                className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"
+              >
+                {t("shop.clearFilters")}
+              </button>
+            </div>
+          ) : (
+            <div className="grid-gallery  animate-in fade-in duration-700">
+              {sortedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+
+          {!loading && products.length > 0 && (
+            <div className="pt-20 flex justify-center">
+              <div className="flex gap-2">
+                <button className="w-10 h-10 flex items-center justify-center border border-primary bg-primary text-primary-foreground font-bold text-xs">1</button>
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between items-end">
-                  <h3 className="text-3xl font-heading group-hover:text-primary transition-colors">{category.name}</h3>
-                  <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mb-1">{category._count?.products || 0} Pieces</span>
-                </div>
-                <p className="text-muted-foreground font-serif italic text-sm leading-relaxed max-w-xs">
-                  Curated selection of artisanal {category.name.toLowerCase()} masterpieces.
-                </p>
-                <div className="pt-2 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-primary group-hover:gap-4 transition-all">
-                  Explore Now <ArrowRight className="w-3 h-3" />
-                </div>
-              </div>
-            </Link>
-          ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </HomePageContainer>
   );
 }

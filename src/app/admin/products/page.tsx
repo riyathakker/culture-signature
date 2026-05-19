@@ -23,6 +23,8 @@ import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { Input } from "@/components/ui/input";
+
 import { Switch } from "@/components/ui/switch";
 
 import { useCategoryStore } from "@/store/categoryStore";
@@ -33,7 +35,90 @@ import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
 
+import { useTranslation } from "@/context/TranslationContext";
+
+const EditableCell = ({
+  productId,
+  field,
+  initialValue,
+  onSave,
+  className,
+  renderValue
+}: {
+  productId: string;
+  field: string;
+  initialValue: any;
+  onSave: (id: string, field: string, value: any) => Promise<void>;
+  className?: string;
+  renderValue?: (value: any) => React.ReactNode;
+}) => {
+  const { t } = useTranslation();
+  const [isEditing, setIsEditing] = useState(false);
+  const [value, setValue] = useState(initialValue);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Sync value with initialValue if it changes externally
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  const handleSave = async () => {
+    if (parseFloat(value) === parseFloat(initialValue)) {
+      setIsEditing(false);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await onSave(productId, field, value);
+      setIsEditing(false);
+    } catch (error) {
+      setValue(initialValue);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <div className={cn("flex justify-end w-full", className)}>
+        <Input
+          type="number"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onBlur={handleSave}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSave();
+            if (e.key === "Escape") {
+              setValue(initialValue);
+              setIsEditing(false);
+            }
+          }}
+          autoFocus
+          className="w-24 h-8 text-right bg-background border-primary/50"
+          disabled={isLoading}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onDoubleClick={() => setIsEditing(true)}
+      className={cn(
+        "cursor-pointer relative",
+        className
+      )}
+      title={t("admin.products.doubleClick")}
+    >
+      <div className="group-hover:text-primary transition-colors">
+        {renderValue ? renderValue(initialValue) : (field === 'price' ? `₹${initialValue.toLocaleString()}` : initialValue)}
+      </div>
+    </div>
+  );
+};
+
 export default function AdminProducts() {
+  const { t } = useTranslation();
   const { products, isLoading, fetchProducts, deleteProduct: storeDeleteProduct } = useProductStore();
   const { categories, fetchCategories } = useCategoryStore();
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,6 +128,25 @@ export default function AdminProducts() {
     fetchProducts();
     fetchCategories();
   }, []);
+
+  const handleInlineUpdate = async (id: string, field: string, value: any) => {
+    try {
+      const response = await fetch(`/api/admin/products/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: value }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update");
+
+      const updatedProduct = await response.json();
+      useProductStore.getState().updateProduct(updatedProduct);
+      toast.success(t("admin.products.messages.updateSuccess", { field: field.charAt(0).toUpperCase() + field.slice(1) }));
+    } catch (error) {
+      toast.error(t("admin.products.messages.updateError"));
+      throw error;
+    }
+  };
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -79,11 +183,11 @@ export default function AdminProducts() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Failed to delete product");
+        throw new Error(error.error || t("admin.products.delete.error"));
       }
 
       storeDeleteProduct(productToDelete);
-      toast.success("Masterpiece removed from the catalog.");
+      toast.success(t("admin.products.delete.success"));
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -104,15 +208,15 @@ export default function AdminProducts() {
 
       const updatedProduct = await response.json();
       useProductStore.getState().updateProduct(updatedProduct);
-      toast.success(updatedProduct.isFeatured ? "Marked as Featured" : "Removed from Featured");
+      toast.success(updatedProduct.isFeatured ? t("admin.products.messages.featuredSuccess") : t("admin.products.messages.unfeaturedSuccess"));
     } catch (error) {
-      toast.error("Failed to update status");
+      toast.error(t("admin.products.messages.updateError"));
     }
   };
 
   const columns: Column<any>[] = [
     {
-      header: "Product",
+      header: t("admin.products.columns.product"),
       render: (product) => (
         <div className="flex items-center gap-4 py-2">
           <div className="w-12 h-16 bg-secondary/20 rounded-sm overflow-hidden flex-shrink-0">
@@ -132,35 +236,62 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: "Price",
+      header: `${t("admin.products.columns.price")} (₹)`,
       headerClassName: "text-right",
-      className: "text-right font-medium",
-      render: (product) => `₹${product.price.toLocaleString()}`,
+      className: "text-right",
+      render: (product) => (
+        <EditableCell
+          productId={product.id}
+          field="price"
+          initialValue={product.price}
+          onSave={handleInlineUpdate}
+          className="text-right font-medium"
+        />
+      ),
     },
     {
-      header: "Discount",
+      header: `${t("admin.products.columns.discount")} (₹)`,
       headerClassName: "text-right",
-      className: "text-right font-medium",
-      render: (product) => `${product.discount.toLocaleString()}`,
+      className: "text-right",
+      render: (product) => (
+        <EditableCell
+          productId={product.id}
+          field="discount"
+          initialValue={product.discount}
+          onSave={handleInlineUpdate}
+          className="text-right font-medium"
+        />
+      ),
     },
     {
-      header: "Stock",
+      header: t("admin.products.columns.stock"),
       headerClassName: "text-center",
       className: "text-center",
-      render: (product) => {
-        const isOutOfStock = product.stock === 0;
-        const isLowStock = product.stock > 0 && product.stock <= 5;
-        return (
-          <div className="flex flex-col items-center gap-1">
-            <span className={cn("text-xs font-bold", isOutOfStock ? "text-destructive" : isLowStock ? "text-amber-500" : "text-foreground")}>
-              {product.stock}
-            </span>
-          </div>
-        );
-      },
+      render: (product) => (
+        <EditableCell
+          productId={product.id}
+          field="stock"
+          initialValue={product.stock}
+          onSave={handleInlineUpdate}
+          className="text-center font-bold"
+          renderValue={(val) => {
+            const isOutOfStock = val === 0;
+            const isLowStock = val > 0 && val <= 5;
+            return (
+              <span className={cn(
+                isOutOfStock ? "text-destructive" :
+                  isLowStock ? "text-amber-500" :
+                    "text-foreground"
+              )}>
+                {val}
+              </span>
+            );
+          }}
+        />
+      ),
     },
     {
-      header: "Featured",
+      header: t("admin.products.columns.featured"),
       headerClassName: "text-center",
       className: "text-center",
       render: (product) => (
@@ -173,24 +304,26 @@ export default function AdminProducts() {
       ),
     },
     {
-      header: "Status",
+      header: t("admin.products.columns.status"),
       render: (product) => {
         const isOutOfStock = product.stock === 0;
+        const isLowStock = product.stock > 0 && product.stock <= 5;
         return (
           <Badge
             variant="outline"
             className={cn(
               "text-[9px] tracking-[0.15em] font-bold h-5 uppercase rounded-none px-2",
-              isOutOfStock ? "border-destructive text-destructive bg-destructive/5" : "border-primary/30 text-primary bg-primary/5"
+              isOutOfStock ? "border-destructive text-destructive bg-destructive/5" : "border-success text-success bg-success/5",
+              isLowStock ? "border-amber-500 text-amber-500 bg-amber-500/5" : "border-success text-success bg-success/5"
             )}
           >
-            {isOutOfStock ? "Out of Stock" : "In Stock"}
+            {isOutOfStock ? t("admin.products.status.outOfStock") : isLowStock ? t("admin.products.status.lowStock") : t("admin.products.status.inStock")}
           </Badge>
         );
       },
     },
     {
-      header: "Created",
+      header: t("admin.products.columns.created"),
       className: "text-muted-foreground text-xs",
       render: (product) => format(new Date(product.createdAt), "MMM dd, yyyy"),
     },
@@ -207,14 +340,14 @@ export default function AdminProducts() {
           <DropdownMenuContent align="end" className="w-40">
             <Link href={ROUTES.ADMIN.PRODUCTS_EDIT(product.id)}>
               <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Edit2 className="w-4 h-4" /> Edit
+                <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
               </DropdownMenuItem>
             </Link>
             <DropdownMenuItem
               className="gap-2 text-destructive focus:text-destructive cursor-pointer"
               onClick={() => handleDeleteClick(product.id)}
             >
-              <Trash2 className="w-4 h-4" /> Remove
+              <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -225,40 +358,40 @@ export default function AdminProducts() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <AdminPageHeader
-        title="Artisanal Catalog"
-        description="Curate and manage your collection of timeless masterpieces."
+        title={t("admin.products.title")}
+        description={t("admin.products.description")}
         action={
           <Link href={ROUTES.ADMIN.PRODUCTS_NEW}>
             <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
-              <Plus className="w-4 h-4 mr-2" /> New Product
+              <Plus className="w-4 h-4 mr-2" /> {t("admin.products.newProduct")}
             </Button>
           </Link>
         }
       />
 
       <AdminFilterBar
-        searchPlaceholder="Search masterpieces..."
+        searchPlaceholder={t("admin.products.searchPlaceholder")}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       >
         <AdminFilterDropdown
-          label="Categories"
+          label={t("admin.products.categories.label")}
           icon={Filter}
           options={categories.map(c => ({ label: c.name, value: c.id }))}
           selectedValue={selectedCategoryId}
           onSelect={setSelectedCategoryId}
-          allLabel="All Categories"
+          allLabel={t("admin.products.categories.all")}
         />
         <AdminFilterDropdown
-          label="Stock Status"
+          label={t("admin.products.columns.status")}
           icon={Activity}
           options={[
-            { label: "Low Stock", value: "LOW_STOCK" },
-            { label: "Out of Stock", value: "OUT_OF_STOCK" }
+            { label: t("admin.products.status.lowStock"), value: "LOW_STOCK" },
+            { label: t("admin.products.status.outOfStock"), value: "OUT_OF_STOCK" }
           ]}
           selectedValue={activeStatus}
           onSelect={setActiveStatus}
-          allLabel="All Stock"
+          allLabel={t("admin.products.status.allStock")}
         />
       </AdminFilterBar>
 
@@ -266,7 +399,7 @@ export default function AdminProducts() {
         columns={columns}
         data={filteredProducts}
         isLoading={isLoading}
-        emptyMessage="No masterpieces match your current search criteria."
+        emptyMessage={t("admin.products.noResults")}
         rowKey={(p) => p.id}
       />
 
@@ -274,9 +407,9 @@ export default function AdminProducts() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={deleteProduct}
-        title="Remove Masterpiece"
-        description="Are you sure you want to remove this product from the catalog? This action cannot be undone."
-        confirmText="Remove"
+        title={t("admin.products.delete.title")}
+        description={t("admin.products.delete.description")}
+        confirmText={t("admin.products.delete.confirm")}
         variant="destructive"
       />
     </div>

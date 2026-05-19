@@ -22,13 +22,12 @@ import { AdminTable, Column } from "@/components/admin/AdminTable";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { CategoryDialog } from "@/components/admin/CategoryDialog";
-import { en } from "@/locales/en";
-
-const t = en.admin.categories;
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function CategoriesPage() {
   const { categories, isLoading, updateCategory, addCategory } = useCategoryStore();
   const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useTranslation();
 
   const filteredCategories = useMemo(() => {
     return categories.filter((cat) =>
@@ -39,7 +38,7 @@ export default function CategoriesPage() {
 
   const columns: Column<any>[] = [
     {
-      header: t.table.collection,
+      header: t("admin.categories.table.collection"),
       render: (cat) => (
         <div className="flex items-center gap-3 py-2">
           <div className="w-10 h-10 rounded bg-secondary/50 flex items-center justify-center font-bold text-primary">
@@ -50,23 +49,23 @@ export default function CategoriesPage() {
       ),
     },
     {
-      header: t.table.slug,
+      header: t("admin.categories.table.slug"),
       className: "font-mono text-[10px] text-muted-foreground",
       accessor: "slug",
     },
     {
-      header: t.table.description,
+      header: t("admin.categories.table.description"),
       className: "max-w-[300px] truncate text-xs italic font-serif opacity-60",
       accessor: "description",
     },
     {
-      header: t.table.products,
+      header: t("admin.categories.table.products"),
       headerClassName: "text-center",
       className: "text-center font-bold text-xs",
       render: (cat) => cat._count?.products || 0,
     },
     {
-      header: t.table.status,
+      header: t("admin.categories.table.status"),
       render: (cat) => (
         <Badge
           variant="outline"
@@ -81,7 +80,7 @@ export default function CategoriesPage() {
       ),
     },
     {
-      header: en.admin.common.actions,
+      header: t("admin.common.actions"),
       render: (cat) => (
         <div className="flex justify-center gap-2">
           <CategoryDialog
@@ -101,14 +100,14 @@ export default function CategoriesPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
-        title={t.title}
-        description={t.description}
+        title={t("admin.categories.title")}
+        description={t("admin.categories.description")}
         action={
           <CategoryDialog
             onSuccess={(newCat) => addCategory(newCat)}
             trigger={
               <Button className="btn-luxury px-6 gap-2">
-                <Plus className="w-4 h-4" /> {t.newCategory}
+                <Plus className="w-4 h-4" /> {t("admin.categories.newCategory")}
               </Button>
             }
           />
@@ -116,7 +115,7 @@ export default function CategoriesPage() {
       />
 
       <AdminFilterBar
-        searchPlaceholder={t.searchPlaceholder}
+        searchPlaceholder={t("admin.categories.searchPlaceholder")}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       />
@@ -125,7 +124,7 @@ export default function CategoriesPage() {
         columns={columns}
         data={filteredCategories}
         isLoading={isLoading}
-        emptyMessage={t.empty}
+        emptyMessage={t("admin.categories.empty")}
         rowKey={(cat) => cat.id}
       />
     </div>

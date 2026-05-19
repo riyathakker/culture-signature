@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useCartStore, CartItem } from "@/store/cartStore";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface ProductInfoProps {
   product: {
@@ -24,6 +25,7 @@ interface ProductInfoProps {
 
 export function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1);
+  const { t } = useTranslation();
 
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
@@ -46,7 +48,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       {/* Header */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-luxury italic opacity-60 uppercase">{product.category}</p>
+          <p className="text-luxury italic opacity-60 uppercase">{product.category || t("shop.product.defaultCollection")}</p>
           <div className="flex items-center gap-2">
             {!isAdmin && (
               <Button variant="ghost" size="icon" className="rounded-full">
@@ -59,17 +61,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
           </div>
         </div>
         <h1 className="text-4xl lg:text-5xl font-heading tracking-tight">{product.name}</h1>
-        <div className="flex items-center gap-4">
-          {/* <div className="flex items-center text-primary">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={cn("w-4 h-4", i < Math.floor(product.rating || 5) ? "fill-current" : "opacity-30")} />
-            ))}
-            <span className="ml-2 text-sm font-sans text-muted-foreground">({product.reviewCount || 0} Reviews)</span>
-          </div> */}
-        </div>
       </div>
 
-      {/* Price */}
       <div className="flex items-center gap-4">
         <span className="text-3xl font-medium">₹{(product.price - (product.discount || 0)).toLocaleString()}</span>
         {product.discount > 0 && (
@@ -81,7 +74,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
         {product.description}
       </p>
 
-      {/* Quantity & Actions */}
       {!isAdmin && (
         <div className="space-y-4 pt-6">
           <div className="flex items-center gap-4">
@@ -91,11 +83,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
               <button onClick={() => setQuantity(quantity + 1)} className="px-4 h-full hover:bg-secondary transition-colors"><Plus className="w-4 h-4" /></button>
             </div>
             <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
-              Add to Collection
+              {t("shop.product.details.addToCollection")}
             </Button>
           </div>
           <Button variant="outline" className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            Buy Now
+            {t("shop.product.details.buyNow")}
           </Button>
         </div>
       )}
@@ -104,11 +96,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
       <div className="grid grid-cols-2 gap-4 pt-8 border-t">
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
           <Truck className="w-5 h-5 text-primary opacity-60" />
-          <span>Premium <br /> Shipping</span>
+          <span>{t("shop.product.details.premiumShipping")}</span>
         </div>
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
           <ShieldCheck className="w-5 h-5 text-primary opacity-60" />
-          <span>Lifetime <br /> Warranty</span>
+          <span>{t("shop.product.details.lifetimeWarranty")}</span>
         </div>
       </div>
     </div>

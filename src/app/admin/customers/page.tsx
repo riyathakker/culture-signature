@@ -2,20 +2,8 @@
 
 import {
   Filter,
-  MoreVertical,
-  Mail,
-  UserCheck,
-  ShieldAlert,
-  Trash2
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -86,31 +74,7 @@ export default function AdminCustomers() {
       headerClassName: "text-center",
       className: "text-center font-medium",
       render: (customer) => customer.orders?.length || 0,
-    },
-    {
-      header: "",
-      className: "text-right",
-      render: (customer) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem className="gap-2 cursor-pointer">
-              <Mail className="w-4 h-4" /> Send Invitation
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 cursor-pointer">
-              <UserCheck className="w-4 h-4" /> View Purchase History
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer">
-              <Trash2 className="w-4 h-4" /> Deactivate Account
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-    },
+    }
   ];
 
   return (

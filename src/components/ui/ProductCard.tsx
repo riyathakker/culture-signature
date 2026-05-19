@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Heart, Eye, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, CartItem } from "@/store/cartStore";
@@ -14,18 +15,23 @@ import { QuantitySelector } from "./QuantitySelector";
 import { convertINRToDiscountPercentage } from "@/utils/helper";
 import { useSession } from "next-auth/react";
 
+import { useTranslation } from "@/context/TranslationContext";
+
 
 export function ProductCard({ product, variant = "default" }: { product: any, variant?: "default" | "wishlist" }) {
+  const pathname = usePathname();
+  const from = pathname.startsWith("/collections") ? "collections" : pathname.startsWith("/categories") ? "categories" : null;
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
-  const { items, addItem, updateQuantity } = useCartStore();
+  const { items, addItem, updateQuantity, removeItem } = useCartStore();
+  const { t } = useTranslation();
 
   const cartItem = items.find((item) => item.id === product.id);
   const isOutOfStock = product.stock == 0;
   const handleAddToCart = () => {
     if (isOutOfStock) {
-      toast.error("This product is currently unavailable.");
+      toast.error(t("shop.product.unavailable"));
       return;
     }
     const item: CartItem = {
@@ -46,7 +52,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
     e.preventDefault();
     if (isWishlisted) {
       removeFromWishlist(product.id);
-      toast.info(`${product.name} removed from wishlist`);
+      toast.info(`${product.name} ${t("shop.product.removedFromWishlist")}`);
     } else {
       addToWishlist(product);
     }
@@ -56,6 +62,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
 
   return (
     <>
+    <Link href={`/product/${product.id}${from ? `?from=${from}` : ""}`}>
       <div className={cn(
         "group relative bg-background rounded-lg overflow-hidden transition-all duration-500",
         isOutOfStock && "grayscale-[0.5]"
@@ -65,7 +72,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           {isOutOfStock && (
             <div className="absolute inset-0 bg-background/20 backdrop-blur-[2px] z-20 flex items-center justify-center">
               <div className="bg-background/90 text-foreground px-6 py-3 text-[10px] uppercase tracking-[0.4em] font-bold border border-border shadow-2xl animate-in fade-in zoom-in duration-700">
-                Out of Stock
+                {t("shop.product.outOfStock")}
               </div>
             </div>
           )}
@@ -73,13 +80,13 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           {/* Badges */}
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
             {discountPercentage && !isOutOfStock && (
-              <span className="text-[10px] uppercase tracking-widest bg-destructive text-destructive-foreground px-2 py-1 font-bold">
-                -{discountPercentage}% OFF
+              <span className="text-[10px] uppercase tracking-widest bg-destructive/60 text-white px-2 py-1 font-bold">
+                -{discountPercentage}% {t("shop.product.off")}
               </span>
             )}
             {product.isNew && !isOutOfStock && (
               <span className="text-[10px] uppercase tracking-widest bg-primary text-primary-foreground px-2 py-1 font-bold">
-                New
+                {t("shop.product.new")}
               </span>
             )}
           </div>
@@ -91,19 +98,31 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           )}>
             {!isAdmin ? (
               cartItem ? (
-                <QuantitySelector
-                  quantity={cartItem.quantity}
-                  onUpdate={(newQty) => updateQuantity(product.id, newQty)}
-                  className="flex-1 bg-background/90 backdrop-blur-sm border-none h-10"
-                  size="sm"
-                />
+                <div className="flex-1" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
+                  <QuantitySelector
+                    quantity={cartItem.quantity}
+                    onUpdate={(newQty) => {
+                      if (newQty === 0) {
+                        removeItem(product.id);
+                      } else {
+                        updateQuantity(product.id, newQty);
+                      }
+                    }}
+                    className="w-full bg-background/90 backdrop-blur-sm border-none h-10"
+                    size="sm"
+                  />
+                </div>
               ) : (
                 <Button
-                  onClick={handleAddToCart}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleAddToCart();
+                  }}
                   disabled={isOutOfStock}
                   className="flex-1 bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground border-none backdrop-blur-sm uppercase text-[10px] tracking-widest h-10"
                 >
-                  {isOutOfStock ? "Unavailable" : "Add to Cart"}
+                  {isOutOfStock ? t("shop.product.unavailable") : t("shop.product.addToCart")}
                 </Button>
               )
             ) : null}
@@ -112,20 +131,20 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => setIsQuickViewOpen(true)}
+                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); setIsQuickViewOpen(true); }}
                   className={cn(
                     "bg-background/90 border-none backdrop-blur-sm hover:text-primary h-10 w-10 rounded-full",
                     isAdmin && "flex-1 w-auto px-4 gap-2 text-[10px] uppercase tracking-widest font-bold"
                   )}
                 >
                   <Eye className="w-4 h-4" />
-                  {isAdmin && "Quick View"}
+                  {isAdmin && t("shop.product.quickView")}
                 </Button>
                 {!isAdmin && (
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={toggleWishlist}
+                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); toggleWishlist(e); }}
                     className={cn(
                       "bg-background/90 border-none backdrop-blur-sm h-10 w-10 rounded-full transition-colors",
                       isWishlisted ? "text-primary fill-primary" : "hover:text-primary"
@@ -144,7 +163,6 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           )}>
             <div className={cn(
               "absolute inset-0 transition-all duration-700 ease-in-out group-hover:scale-110",
-              product.images?.[1] ? "group-hover:opacity-0" : ""
             )}>
               {product.images?.[0] ? (
                 <Image
@@ -166,7 +184,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
         )}>
           <div className="flex justify-between items-center">
             <p className="text-luxury italic opacity-60 text-[10px]">
-              {typeof product.category === 'string' ? product.category : product.category?.name || "Collection"}
+              {typeof product.category === 'string' ? product.category : product.category?.name || t("shop.product.defaultCollection")}
             </p>
             <div className="flex items-center text-primary/80">
               <Star className="w-3 h-3 fill-current" />
@@ -175,9 +193,7 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
           </div>
 
           <h3 className="font-heading text-lg group-hover:text-primary transition-colors">
-            <Link href={`/product/${product.id}`}>
               {product.name}
-            </Link>
           </h3>
 
           <div className="flex items-center justify-between">
@@ -192,12 +208,13 @@ export function ProductCard({ product, variant = "default" }: { product: any, va
 
             {isOutOfStock && (
               <span className="text-[8px] uppercase tracking-widest font-bold text-destructive bg-destructive/5 px-2 py-1 border border-destructive/20">
-                Sold Out
+                {t("shop.product.soldOut")}
               </span>
             )}
           </div>
         </div>
       </div>
+      </Link>
 
       <QuickViewModal
         product={product}

@@ -1,15 +1,22 @@
+"use client";
+
 import { Container } from "@/components/layout/Container";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function PrivacyPage() {
+  const { t } = useTranslation();
+  const collectItems = t("legal.privacy.sections.collect.items") as unknown as string[];
+  const useItems = t("legal.privacy.sections.use.items") as unknown as string[];
+
   return (
     <div className="bg-background min-h-screen pb-20">
       <div className="bg-secondary/20 py-16 mb-10">
         <Container>
-          <Breadcrumbs items={[{ label: "Legal" }, { label: "Privacy Policy" }]} />
-          <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2 text-primary">Privacy Policy</h1>
+          <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.privacy.breadcrumb") }]} />
+          <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2 text-primary">{t("legal.privacy.title")}</h1>
           <p className="text-muted-foreground font-serif italic text-lg max-w-2xl">
-            Your trust is our most precious masterpiece. Learn how we protect your information.
+            {t("legal.privacy.subtitle")}
           </p>
         </Container>
       </div>
@@ -17,41 +24,40 @@ export default function PrivacyPage() {
       <Container>
         <div className="max-w-4xl mx-auto prose prose-luxury">
           <section className="mb-12">
-            <h2 className="text-2xl font-heading mb-4 text-primary">1. Information We Collect</h2>
+            <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.privacy.sections.collect.title")}</h2>
             <p className="text-muted-foreground leading-relaxed font-serif italic mb-4">
-              At Culture Signature, we collect information that helps us provide a personalized and seamless luxury experience.
+              {t("legal.privacy.sections.collect.content")}
             </p>
             <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-              <p>• Personal Identification: Name, email address, phone number, and shipping/billing address.</p>
-              <p>• Transaction Details: Purchase history and payment preferences (though we never store full credit card numbers).</p>
-              <p>• Digital Footprint: IP address, browser type, and interaction data to improve our boutique experience online.</p>
+              {Array.isArray(collectItems) && collectItems.map((item, idx) => (
+                <p key={idx}>• {item}</p>
+              ))}
             </div>
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-heading mb-4 text-primary">2. How We Use Your Data</h2>
+            <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.privacy.sections.use.title")}</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
-              Your data is utilized solely to enhance your journey with us. This includes:
+              {t("legal.privacy.sections.use.intro")}
             </p>
             <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Processing and fulfilling your artisanal orders.</li>
-              <li>Providing exclusive "Inner Circle" updates and invitations.</li>
-              <li>Customizing product recommendations based on your unique style.</li>
-              <li>Ensuring the security and integrity of our platform.</li>
+              {Array.isArray(useItems) && useItems.map((item, idx) => (
+                <li key={idx}>{item}</li>
+              ))}
             </ul>
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-heading mb-4 text-primary">3. Data Protection</h2>
+            <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.privacy.sections.protection.title")}</h2>
             <p className="text-muted-foreground leading-relaxed font-serif italic">
-              We employ state-of-the-art encryption and security protocols to ensure your data remains as secure as the gems in our vault. We never sell your personal information to third parties.
+              {t("legal.privacy.sections.protection.content")}
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-heading mb-4 text-primary">4. Contact Our Privacy Officer</h2>
+            <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.privacy.sections.contact.title")}</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              If you have any questions regarding your privacy or wish to exercise your data rights, please reach out to us at <span className="text-primary font-bold">privacy@culturesignature.com</span>.
+              {t("legal.privacy.sections.contact.content")} <span className="text-primary font-bold">{t("legal.privacy.sections.contact.email")}</span>.
             </p>
           </section>
         </div>

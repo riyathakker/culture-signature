@@ -5,12 +5,12 @@ import { Container } from "@/components/layout/Container";
 import { Quote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 import { SectionTitle } from "../ui/SectionTitle";
 
-const testimonials = en.home.testimonials.reviews;
-
 export function Testimonials() {
+  const { t } = useTranslation();
+  const testimonials = t("home.testimonials.reviews") as unknown as any[];
   const [activeIndex, setActiveIndex] = useState(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -41,7 +41,7 @@ export function Testimonials() {
   return (
     <section className="py-24 border-t border-border/50">
       <Container>
-        <SectionTitle title={en.home.testimonials.title} subtitle={en.home.testimonials.subtitle} align="center" className="mb-16" />
+        <SectionTitle title={t("home.testimonials.title")} subtitle={t("home.testimonials.subtitle")} align="center" className="mb-16" />
           <div className="max-w-4xl mx-auto text-center space-y-12">
             <Quote className="w-12 h-12 text-primary mx-auto opacity-30" />
 
@@ -56,12 +56,12 @@ export function Testimonials() {
                   className="absolute w-full"
                 >
                   <p className="text-2xl md:text-3xl font-serif italic leading-relaxed mb-8">
-                    "{testimonials[activeIndex].quote}"
+                    "{testimonials && testimonials[activeIndex] ? testimonials[activeIndex].quote : ""}"
                   </p>
 
                   <div className="space-y-1">
                     <h4 className="text-luxury font-bold tracking-[0.3em]">
-                      {testimonials[activeIndex].author}
+                      {testimonials && testimonials[activeIndex] ? testimonials[activeIndex].author : ""}
                     </h4>
                   </div>
                 </motion.div>
@@ -69,7 +69,7 @@ export function Testimonials() {
             </div>
 
             <div className="flex justify-center gap-4">
-              {testimonials.map((_, idx) => (
+              {Array.isArray(testimonials) && testimonials.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleManualChange(idx)}

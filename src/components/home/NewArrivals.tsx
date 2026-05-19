@@ -6,10 +6,11 @@ import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useProductStore } from "@/store/productStore";
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function NewArrivals() {
   const { fetchNewArrivals, newArrivals, isLoading } = useProductStore()
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchNewArrivals();
@@ -22,7 +23,7 @@ export function NewArrivals() {
   return (
     <section className="py-24 border-t border-border/50">
       <Container>
-        <SectionTitle title={en.home.newArrivals.title} subtitle={en.home.newArrivals.subtitle} align="center" />
+        <SectionTitle title={t("home.newArrivals.title")} subtitle={t("home.newArrivals.subtitle")} align="center" />
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {[...Array(4)].map((_, i) => (

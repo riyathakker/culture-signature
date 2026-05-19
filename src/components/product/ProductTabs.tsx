@@ -4,7 +4,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface ProductTabsProps {
   details: {
@@ -15,6 +15,9 @@ interface ProductTabsProps {
 }
 
 export function ProductTabs({ details }: ProductTabsProps) {
+  const { t } = useTranslation();
+  const shippingList = t("shop.product.details.tabs.shippingList") as unknown as string[];
+
   return (
     <div className="py-20 border-t">
       <Tabs defaultValue="description" className="w-full">
@@ -23,19 +26,19 @@ export function ProductTabs({ details }: ProductTabsProps) {
             value="description" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-4 text-[10px] uppercase tracking-[0.3em] font-bold"
           >
-            The Story
+            {t("shop.product.details.tabs.story")}
           </TabsTrigger>
           <TabsTrigger 
             value="specifications" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-4 text-[10px] uppercase tracking-[0.3em] font-bold"
           >
-            Specifications
+            {t("shop.product.details.tabs.specs")}
           </TabsTrigger>
           <TabsTrigger 
             value="shipping" 
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-4 text-[10px] uppercase tracking-[0.3em] font-bold"
           >
-            Shipping & Returns
+            {t("shop.product.details.tabs.shipping")}
           </TabsTrigger>
         </TabsList>
         
@@ -60,14 +63,14 @@ export function ProductTabs({ details }: ProductTabsProps) {
 
         <TabsContent value="shipping" className="max-w-3xl animate-in fade-in duration-500">
           <div className="space-y-6 text-muted-foreground leading-relaxed">
-            <h4 className="font-heading text-xl text-foreground">Premium Shipping</h4>
+            <h4 className="font-heading text-xl text-foreground">{t("shop.product.details.tabs.shippingTitle")}</h4>
             <p className="font-serif italic text-lg">
-              Every Culture Signature piece is delivered in our signature lacquered box, wrapped in silk ribbon, and accompanied by a certificate of authenticity.
+              {t("shop.product.details.tabs.shippingDesc")}
             </p>
             <ul className="space-y-4 list-disc pl-5 font-sans text-sm tracking-wide">
-              <li>Insured worldwide express delivery (3-5 business days).</li>
-              <li>Complimentary boutique collection available in selected cities.</li>
-              <li>30-day extended returns for all standard collection items.</li>
+              {Array.isArray(shippingList) && shippingList.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
             </ul>
           </div>
         </TabsContent>

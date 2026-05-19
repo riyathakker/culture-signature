@@ -6,27 +6,28 @@ import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
+import { ROUTES } from "@/constants/routes";
+import { useCategoryStore } from "@/store/categoryStore";
 
 export default function CategoryPage() {
   const { id } = useParams();
+  const { categories, fetchCategories } = useCategoryStore();
   const [products, setProducts] = useState<any[]>([]);
   const [category, setCategory] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
+    fetchCategories();
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch Category Details
-        const catRes = await fetch("/api/categories");
-        const categories = await catRes.json();
         const currentCat = categories.find((c: any) => c.id === id);
         setCategory(currentCat);
 
-        // Fetch Products
         const prodRes = await fetch(`/api/products?categoryId=${id}`);
         if (!prodRes.ok) throw new Error("Failed to fetch products");
         const data = await prodRes.json();
@@ -41,11 +42,23 @@ export default function CategoryPage() {
     if (id) fetchData();
   }, [id]);
 
+  const searchParams = useSearchParams();
+  const minPrice = Number(searchParams.get("minPrice")) || 0;
+  const maxPrice = Number(searchParams.get("maxPrice")) || 10000;
+
+  const filteredProducts = products.filter((p) => Number(p.price) >= minPrice && Number(p.price) <= maxPrice);
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy === "price-low") return a.price - b.price;
+    if (sortBy === "price-high") return b.price - a.price;
+    if (sortBy === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    if (sortBy === "popularity") return (b.reviews?.length || 0) - (a.reviews?.length || 0);
+    return 0;
+  });
+
   return (
     <HomePageContainer 
-      label={[{ label: "Collections", href: "/collections" }]}
-      heading={category?.name || "The Collection"} 
-      description={category?.description || `Explore our curated selection of handcrafted ${category?.name?.toLowerCase() || 'pieces'} that celebrate heritage and style.`}
+      label={[{ label: "Categories", href: ROUTES.CATEGORIES }, {label: category?.name}]}
     >
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Desktop Sidebar */}
@@ -55,18 +68,18 @@ export default function CategoryPage() {
 
           {/* Main Content */}
           <div className="flex-1 space-y-8">
-            <div className="flex justify-between items-center border-b border-muted-foreground/10 pb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-muted-foreground/10 pb-6">
               <div className="flex items-center gap-4">
                 <FilterDrawer />
                 <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">
                   Showing {products.length} {products.length === 1 ? 'piece' : 'pieces'}
                 </p>
               </div>
-              <ShopControls />
+              <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
             </div>
 
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid-gallery">
                 {[...Array(6)].map((_, i) => (
                   <ProductSkeleton key={i} />
                 ))}
@@ -79,14 +92,14 @@ export default function CategoryPage() {
                 <p className="text-muted-foreground font-serif italic text-xl">No masterpieces found in this curation yet.</p>
                 <button 
                   onClick={() => window.location.href = "/collections"}
-                  className="text-primary hover:text-primary/70 transition-colors text-sm uppercase tracking-[0.2em] font-bold border-b border-primary/30 pb-1"
+                  className="text-primary hover:text-primary/70 transition-colors text-sm uppercase tracking-[0.2em] font-bold border-b border-primary/30 pb-1 cursor-pointer"
                 >
                   Explore All Collections
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 animate-in fade-in duration-1000">
-                {products.map((product) => (
+              <div className="grid-gallery gap-x-8 gap-y-12 animate-in fade-in duration-1000">
+                {sortedProducts.map((product) => (
                   <ProductCard product={product} />
                 ))}
               </div>

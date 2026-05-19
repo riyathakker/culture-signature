@@ -1,7 +1,7 @@
 "use client";
 
 import { SectionTitle } from "@/components/ui/SectionTitle";
-import { en } from "@/locales/en";
+import { useTranslation } from "@/context/TranslationContext";
 
 const celebImages = [
   "https://picsum.photos/400/500?random=1",
@@ -14,9 +14,10 @@ const celebImages = [
 ];
 
 export function CelebSpotting() {
+  const { t } = useTranslation();
   return (
     <section className="py-24 bg-secondary/50 overflow-hidden border-t border-border/50">
-      <SectionTitle title={en.home.celebSpotting.title} subtitle={en.home.celebSpotting.subtitle} align="center" />
+      <SectionTitle title={t("home.celebSpotting.title")} subtitle={t("home.celebSpotting.subtitle")} align="center" />
 
       <div className="relative mt-10 w-full flex overflow-x-hidden">
         <div className="flex animate-marquee whitespace-nowrap gap-4 px-2 w-max">

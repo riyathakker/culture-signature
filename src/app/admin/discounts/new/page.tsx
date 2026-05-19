@@ -59,7 +59,7 @@ export default function NewDiscountPage() {
         throw new Error(errorData.error || "Failed to create discount");
       }
 
-      toast.success("Privilege created successfully.");
+      toast.success("Discount created successfully.");
       router.push("/admin/discounts");
       router.refresh();
     } catch (error) {
@@ -79,7 +79,7 @@ export default function NewDiscountPage() {
             </Button>
           </Link>
           <div className="space-y-1">
-            <h1 className="text-3xl font-heading tracking-tight">Create Privilege</h1>
+            <h1 className="text-3xl font-heading tracking-tight">Create Discount</h1>
             <p className="text-muted-foreground font-serif italic text-sm">Design an exclusive offer for your patrons.</p>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function NewDiscountPage() {
               <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold">Validity & Scope</h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid-split">
               <div className="space-y-2">
                 <Label className="text-[10px] uppercase tracking-widest font-bold">Usage Limit</Label>
                 <div className="relative">

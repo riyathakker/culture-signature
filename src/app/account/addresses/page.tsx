@@ -33,7 +33,6 @@ export default async function AddressesPage() {
         <div className="py-24 text-center border border-dashed rounded-sm bg-secondary/10">
           <div className="max-w-xs mx-auto space-y-6">
             <p className="text-muted-foreground font-serif italic">Your address book is empty. Curate your delivery locations for faster acquisition of masterpieces.</p>
-            <AddressDialog />
           </div>
         </div>
       ) : (

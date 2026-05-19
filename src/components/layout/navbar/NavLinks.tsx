@@ -1,18 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { navigationLinks } from "@/constants/constants";
 
+import { useTranslation } from "@/context/TranslationContext";
+
 export function NavLinks() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+  const { t } = useTranslation();
+
+  const getTranslatedName = (name: string) => {
+    switch (name) {
+      case "Home": return t("nav.links.home");
+      case "New Arrivals": return t("nav.links.newArrivals");
+      case "Collections": return t("nav.links.collections");
+      case "Categories": return t("nav.links.categories");
+      case "About Us": return t("nav.links.aboutUs");
+      case "Contact Us": return t("nav.links.contactUs");
+      default: return name;
+    }
+  };
 
   return (
     <nav className="hidden lg:block mt-4">
-      <ul className="flex items-center px-4 sm:px-6 lg:px-8 space-x-10">
+      <ul className="flex items-center justify-center px-4 sm:px-6 lg:px-8 space-x-10">
         {navigationLinks.map((item) => {
-          const isActive = pathname === item.href;
+          let isActive = pathname === item.href;
+          
+          if (pathname.startsWith("/product") && from) {
+            if (from === "collections" && item.href === "/collections") {
+              isActive = true;
+            } else if (from === "categories" && item.href === "/categories") {
+              isActive = true;
+            }
+          }
 
           return (
             <li key={item.href}>
@@ -26,7 +51,7 @@ export function NavLinks() {
                   }
                 `}
               >
-                {item.name}
+                {getTranslatedName(item.name)}
 
                 <span
                   className={`

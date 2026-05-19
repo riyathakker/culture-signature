@@ -15,9 +15,18 @@ import { QuantitySelector } from "@/components/ui/QuantitySelector";
 import { IconButton } from "@/components/ui/IconButton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSession } from "next-auth/react";
+import { useTranslation } from "@/context/TranslationContext";
 
-export function QuickViewModal({ product, open, onOpenChange }: any) {
+interface QuickViewModalProps {
+  product: any,
+  open: boolean,
+  onOpenChange: (open: boolean) => void
+}
+
+export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalProps) {
+    const { t } = useTranslation();
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem } = useCartStore();
@@ -41,13 +50,37 @@ export function QuickViewModal({ product, open, onOpenChange }: any) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[92vw] md:max-w-4xl p-0 overflow-hidden border-none bg-background max-h-[85vh] flex flex-col md:flex-row">
         {/* Product Image */}
-        <div className="relative w-full md:w-1/2 bg-secondary/30 h-[220px] md:h-auto shrink-0">
+        <div className="relative w-full md:w-1/2 bg-secondary/30 h-[320px] md:h-[420px] shrink-0">
           <div className="absolute inset-0 bg-luxury-gradient opacity-10" />
+
+          {/* Main Image */}
           <img
-            src={product.images?.[0] || "/Logo.png"}
+            src={product.images?.[selectedImage || 0]}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-all duration-300"
           />
+
+          {/* Horizontal Image Slider */}
+          {product.images.length > 1 && (
+            <div className="absolute bottom-3 left-0 right-0 flex gap-2 px-3 overflow-x-auto scrollbar-hide">
+              {product.images.map((img: string, index: number) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`min-w-[60px] h-[60px] rounded-lg overflow-hidden border-2 transition-all ${selectedImage === index
+                    ? "border-white scale-105"
+                    : "border-white/30"
+                    }`}
+                >
+                  <img
+                    src={img}
+                    alt={`preview-${index}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Product Details */}
@@ -55,9 +88,6 @@ export function QuickViewModal({ product, open, onOpenChange }: any) {
           <ScrollArea className="flex-1">
             <div className="p-5 md:p-8 space-y-4 md:space-y-6">
               <div>
-                <p className="text-luxury italic opacity-60 mb-1 text-[10px] uppercase tracking-widest">
-                  {typeof product.category === 'string' ? product.category : product.category?.name || "Collection"}
-                </p>
                 <DialogTitle className="text-xl md:text-2xl font-heading mb-1 md:mb-2 leading-tight">
                   {product.name}
                 </DialogTitle>
@@ -107,7 +137,7 @@ export function QuickViewModal({ product, open, onOpenChange }: any) {
                         className="flex-1 py-3 md:py-4 uppercase tracking-[0.2em] text-[9px] md:text-[10px] h-10 md:h-12"
                       >
                         <ShoppingBag className="w-4 h-4 mr-2" />
-                        Add to Collection
+                        {t("shop.product.addToCart")}
                       </Button>
                       <IconButton
                         icon={Heart}

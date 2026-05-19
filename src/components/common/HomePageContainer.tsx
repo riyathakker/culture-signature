@@ -1,24 +1,25 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { Container } from "../layout/Container";
 import { BreadcrumbItem, Breadcrumbs } from "../ui/Breadcrumbs";
 
 interface Props {
     label: BreadcrumbItem[];
-    heading: string;
-    description: string;
+    heading?: string;
+    description?: string;
     children: React.ReactNode;
 }
 export function HomePageContainer({ label, heading, description, children }: Props) {
     return (
         <div className="bg-background min-h-screen pb-20">
-            <div className="bg-secondary/20 py-16 mb-10">
+            <div className={cn("bg-secondary/20 py-16", heading && description && "mb-10")}>
                 <Container>
                     <Breadcrumbs items={label} />
-                    <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2"> {heading}</h1>
-                    <p className="text-muted-foreground font-serif italic text-lg max-w-2xl">
+                    {heading && <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2"> {heading}</h1>}
+                    {description && <p className="text-muted-foreground font-serif italic text-lg max-w-2xl">
                         {description}
-                    </p>
+                    </p>}
                 </Container>
             </div>
             <Container>

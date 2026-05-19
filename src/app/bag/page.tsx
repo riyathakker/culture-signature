@@ -8,12 +8,20 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 
+import { useTranslation } from "@/context/TranslationContext";
+import { ROUTES } from "@/constants/routes";
+
 export default function BagPage() {
   const { items } = useCartStore();
+  const { t } = useTranslation();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <HomePageContainer label={[{ label: "Shopping Bag" }]} heading="Shopping Bag" description="Review your selection of artisanal masterpieces.">
+    <HomePageContainer 
+      label={[{ label: t("cart.page.title") }]} 
+      heading={t("cart.page.title")} 
+      description={t("cart.page.description")}
+    >
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center space-y-8">
             <div className="w-24 h-24 rounded-full bg-secondary/50 flex items-center justify-center relative">
@@ -21,14 +29,14 @@ export default function BagPage() {
               <div className="absolute inset-0 border border-primary/20 rounded-full animate-ping" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-3xl font-heading">Your bag is empty</h3>
+              <h3 className="text-3xl font-heading">{t("cart.page.emptyTitle")}</h3>
               <p className="text-muted-foreground font-serif italic max-w-sm mx-auto">
-                Discover our latest collections and find the piece that speaks to your legacy.
+                {t("cart.page.emptyDescription")}
               </p>
             </div>
-            <Link href="/shop">
+            <Link href={ROUTES.COLLECTIONS}>
               <Button className="px-10 py-7 h-auto uppercase tracking-[0.3em] text-xs">
-                Browse Collection
+                {t("cart.page.browseCollection")}
               </Button>
             </Link>
           </div>
@@ -37,7 +45,9 @@ export default function BagPage() {
             {/* Cart Items List */}
             <div className="lg:col-span-2 space-y-8">
               <div className="flex  border-b pb-4">
-                <span className="text-[10px] uppercase tracking-[0.3em] font-bold">Product Selection ({itemCount})</span>
+                <span className="text-[10px] uppercase tracking-[0.3em] font-bold">
+                  {t("cart.page.selection").replace("{count}", itemCount.toString())}
+                </span>
               </div>
               <div className="flex flex-col">
                 {items.map((item) => (
@@ -46,13 +56,13 @@ export default function BagPage() {
               </div>
               
               <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <Link href="/shop" className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors">
-                  <ArrowLeft className="w-4 h-4" /> Continue Shopping
+                <Link href={ROUTES.COLLECTIONS} className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors">
+                  <ArrowLeft className="w-4 h-4" /> {t("cart.page.continueShopping")}
                 </Link>
                 <div className="flex items-center gap-4">
-                  <Link href="/wishlist">
+                  <Link href={ROUTES.WISHLIST}>
                     <Button variant="ghost" className="gap-2 text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
-                      <Heart className="w-4 h-4" /> Move all to Wishlist
+                      <Heart className="w-4 h-4" /> {t("cart.page.moveToWishlist")}
                     </Button>
                   </Link>
                 </div>

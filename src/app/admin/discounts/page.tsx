@@ -25,14 +25,13 @@ import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
 import { DiscountDialog } from "@/components/admin/DiscountDialog";
 import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
-import { en } from "@/locales/en";
-
-const t = en.admin.discounts;
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function DiscountsPage() {
   const { discounts, isLoading, fetchDiscounts, deleteDiscount } = useDiscountStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeStatus, setActiveStatus] = useState("");
+  const { t } = useTranslation();
   
   // State for Edit/Delete modals
   const [selectedDiscount, setSelectedDiscount] = useState<any>(null);
@@ -72,7 +71,7 @@ export default function DiscountsPage() {
 
   const columns: Column<any>[] = useMemo(() => [
     {
-      header: t.table.code,
+      header: t("admin.discounts.table.code"),
       render: (discount) => (
         <div className="flex items-center gap-2 py-2">
           <div className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -81,18 +80,18 @@ export default function DiscountsPage() {
       ),
     },
     {
-      header: t.table.type,
+      header: t("admin.discounts.table.type"),
       className: "text-xs uppercase tracking-widest font-bold text-muted-foreground",
       accessor: "type",
     },
     {
-      header: t.table.value,
+      header: t("admin.discounts.table.value"),
       headerClassName: "text-right",
       className: "text-right font-bold text-sm",
       render: (discount) => discount.type === "PERCENTAGE" ? `${discount.value}%` : `₹${discount.value.toLocaleString()}`,
     },
     {
-      header: t.table.usage,
+      header: t("admin.discounts.table.usage"),
       headerClassName: "text-center",
       className: "text-center",
       render: (discount) => (
@@ -112,12 +111,12 @@ export default function DiscountsPage() {
       ),
     },
     {
-      header: t.table.expires,
+      header: t("admin.discounts.table.expires"),
       className: "text-xs font-medium text-muted-foreground",
       render: (discount) => discount.expiryDate ? format(new Date(discount.expiryDate), "MMM dd, yyyy") : "Never",
     },
     {
-      header: t.table.status,
+      header: t("admin.discounts.table.status"),
       render: (discount) => (
         <Badge
           variant="outline"
@@ -151,7 +150,7 @@ export default function DiscountsPage() {
                 }} 
                 className="gap-2 cursor-pointer focus:bg-primary focus:text-primary-foreground"
               >
-                <Edit2 className="w-4 h-4" /> {en.admin.products.actions.edit}
+                <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={(e) => {
@@ -160,38 +159,38 @@ export default function DiscountsPage() {
                 }} 
                 className="gap-2 text-destructive cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
               >
-                <Trash2 className="w-4 h-4" /> {en.admin.products.actions.remove}
+                <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       ),
     },
-  ], [handleEdit, handleDeleteClick]);
+  ], [handleEdit, handleDeleteClick, t]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
       <AdminPageHeader
-        title={t.title}
-        description={t.description}
+        title={t("admin.discounts.title")}
+        description={t("admin.discounts.description")}
         action={<DiscountDialog />}
       />
 
       <AdminFilterBar
-        searchPlaceholder={t.searchPlaceholder}
+        searchPlaceholder={t("admin.discounts.searchPlaceholder")}
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
       >
         <AdminFilterDropdown
-          label={t.filters.status}
+          label={t("admin.discounts.filters.status")}
           icon={Filter}
           options={[
-            { label: t.filters.active, value: "ACTIVE" },
-            { label: t.filters.expired, value: "EXPIRED" }
+            { label: t("admin.discounts.filters.active"), value: "ACTIVE" },
+            { label: t("admin.discounts.filters.expired"), value: "EXPIRED" }
           ]}
           selectedValue={activeStatus}
           onSelect={setActiveStatus}
-          allLabel={t.filters.all}
+          allLabel={t("admin.discounts.filters.all")}
         />
       </AdminFilterBar>
 
@@ -199,7 +198,7 @@ export default function DiscountsPage() {
         columns={columns}
         data={filteredDiscounts}
         isLoading={isLoading}
-        emptyMessage={t.empty}
+        emptyMessage={t("admin.discounts.empty")}
         rowKey={(d) => d.id}
       />
 
@@ -220,11 +219,11 @@ export default function DiscountsPage() {
           setIsDeleteDialogOpen(val);
           if (!val) setTimeout(() => setSelectedDiscount(null), 300);
         }}
-        title={t.delete.title}
-        description={selectedDiscount ? t.delete.description.replace("{code}", selectedDiscount.code) : ""}
+        title={t("admin.discounts.delete.title")}
+        description={selectedDiscount ? t("admin.discounts.delete.description").replace("{code}", selectedDiscount.code) : ""}
         onConfirm={confirmDelete}
-        cancelText={en.admin.common.cancel}
-        confirmText={en.admin.common.delete}
+        cancelText={t("admin.common.cancel")}
+        confirmText={t("admin.common.delete")}
       />
     </div>
   );

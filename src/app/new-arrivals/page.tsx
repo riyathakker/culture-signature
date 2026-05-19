@@ -6,15 +6,22 @@ import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useProductStore } from "@/store/productStore";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 
+import { useTranslation } from "@/context/TranslationContext";
+
 export default function NewArrivalsPage() {
   const { newArrivals, isLoading, fetchNewArrivals } = useProductStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchNewArrivals();
   }, []);
 
   return (
-    <HomePageContainer label={[{ label: "New Arrivals" }]} heading="New Arrivals" description="The latest masterpieces to join the Culture Signature house.">
+    <HomePageContainer 
+      label={[{ label: t("home.newArrivals.title") }]} 
+      heading={t("home.newArrivals.title")} 
+      description={t("home.newArrivals.description")}
+    >
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -24,7 +31,7 @@ export default function NewArrivalsPage() {
         </div>
       ) : newArrivals.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-muted-foreground font-serif italic text-lg">New masterpieces are being curated as we speak.</p>
+          <p className="text-muted-foreground font-serif italic text-lg">{t("home.newArrivals.empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 animate-in fade-in duration-700">

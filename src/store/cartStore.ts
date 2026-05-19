@@ -16,7 +16,7 @@ type CartStore = {
   appliedPromo: any | null;
   isAuthenticated: boolean;
   setIsAuthenticated: (status: boolean) => void;
-  fetchCart: () => Promise<void>;
+  fetchCart: (force?: boolean) => Promise<void>;
   addItem: (item: CartItem) => Promise<void>;
   removeItem: (id: string) => Promise<void>;
   updateQuantity: (id: string, quantity: number) => Promise<void>;
@@ -34,7 +34,8 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
   setIsAuthenticated: (status: boolean) => set({ isAuthenticated: status }),
 
-  fetchCart: async () => {
+  fetchCart: async (force = false) => {
+    if (!get().isAuthenticated && !force) return;
     set({ isLoading: true });
     try {
       const response = await fetch("/api/cart");

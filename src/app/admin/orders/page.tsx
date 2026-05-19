@@ -101,7 +101,7 @@ export default function AdminOrders() {
               title={item.product.name}
             >
               <img
-                src={item.product.images?.[0] || "/Logo.png"}
+                src={item.product.images?.[0]}
                 alt={item.product.name}
                 className="h-full w-full object-cover"
               />
@@ -205,11 +205,6 @@ export default function AdminOrders() {
       <AdminPageHeader
         title="Orders"
         description="Track and fulfill artisanal orders."
-        action={
-          <Button variant="outline" className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 border-border/50">
-            <Download className="w-4 h-4 mr-2" /> Export Orders
-          </Button>
-        }
       />
 
       <AdminFilterBar
@@ -250,7 +245,7 @@ export default function AdminOrders() {
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-20 bg-muted relative overflow-hidden group">
                             <img
-                              src={item.product.images?.[0] || "/Logo.png"}
+                              src={item.product.images?.[0]}
                               alt={item.product.name}
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
@@ -310,7 +305,7 @@ export default function AdminOrders() {
                       </div>
                       {order.discountAmount > 0 && (
                         <div className="flex justify-between text-xs uppercase tracking-widest text-primary">
-                          <span>Privilege ({order.promoCode})</span>
+                          <span>{order.promoCode}</span>
                           <span>-₹{order.discountAmount.toLocaleString()}</span>
                         </div>
                       )}
