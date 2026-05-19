@@ -11,7 +11,7 @@ function CategoryCards() {
   const { categories, isLoading, fetchCategories } = useCategoryStore();
   const { t } = useTranslation();
   useEffect(() => {
-    fetchCategories(true);
+    fetchCategories();
   }, []);
 
   if (isLoading) return (
@@ -47,6 +47,12 @@ function CategoryCards() {
 
 export function Categories() {
   const { t } = useTranslation();
+  const { categories, isLoading } = useCategoryStore();
+
+  if (!isLoading && (!categories || categories.length === 0)) {
+    return null;
+  }
+
   return (
     <div className="py-24">
       <SectionTitle title={t("home.categories.title")} subtitle={t("home.categories.subtitle")} align="center" />
