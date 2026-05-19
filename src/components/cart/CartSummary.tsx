@@ -19,11 +19,11 @@ interface OrderSummaryProps {
 }
 
 export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
+  const { t } = useTranslation();
   const { items, appliedPromo, setAppliedPromo, getDiscountAmount, clearCart } = useCartStore();
   const { shippingAddress, resetCheckout } = useCheckoutStore();
   const { fetchFeaturedProducts, fetchNewArrivals } = useProductStore();
   const { fetchOrders } = useOrderStore();
-  const { t } = useTranslation();
   const [promoCode, setPromoCode] = useState("");
   const [isApplying, setIsApplying] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
@@ -87,7 +87,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       }
 
       const order = await response.json();
-      toast.success(en.cart.summary.messages.orderSuccess);
+      toast.success(t("cart.summary.messages.orderSuccess"));
       
       // Clear cart and reset checkout
       await clearCart();
@@ -103,7 +103,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       router.push(`/bag/checkout/success?id=${order.id}`);
     } catch (error) {
       console.error("Finalize error:", error);
-      toast.error(en.cart.summary.messages.orderError);
+      toast.error(t("cart.summary.messages.orderError"));
     } finally {
       setIsFinalizing(false);
     }
