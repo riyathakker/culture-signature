@@ -10,6 +10,7 @@ export const ROUTES = {
     DASHBOARD: "/admin",
     PRODUCTS: "/admin/products",
     PRODUCTS_NEW: "/admin/products/new",
+    PRODUCTS_BULK: "/admin/products/bulk",
     PRODUCTS_EDIT: (id: string) => `/admin/products/${id}`,
     ORDERS: "/admin/orders",
     CUSTOMERS: "/admin/customers",

@@ -105,6 +105,7 @@ export const en = {
       title: "Artisanal Catalog",
       description: "Curate and manage your collection of timeless masterpieces.",
       newProduct: "New Product",
+      bulkUpload: "Bulk Upload",
       searchPlaceholder: "Search masterpieces...",
       noResults: "No masterpieces match your current search criteria.",
       doubleClick: "Double click to edit",

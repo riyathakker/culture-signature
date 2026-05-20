@@ -52,4 +52,30 @@ export class ProductService {
       endpoint: `/admin/products/${id}`,
     });
   }
+
+  static async bulkCreate(
+    products: {
+      title: string;
+      description: string;
+      price: string;
+      discount: string;
+      stock: string;
+      categoryId: string;
+      images: string[];
+      isFeatured: boolean;
+    }[]
+  ): Promise<{ results: Product[]; errors: { index: number; message: string }[] }> {
+    const results: Product[] = [];
+    const errors: { index: number; message: string }[] = [];
+
+    await Promise.allSettled(
+      products.map((product, index) =>
+        ProductService.create(product)
+          .then((p) => results.push(p))
+          .catch((e: Error) => errors.push({ index, message: e.message }))
+      )
+    );
+
+    return { results, errors };
+  }
 }

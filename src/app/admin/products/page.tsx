@@ -335,11 +335,18 @@ export default function AdminProducts() {
         title={t("admin.products.title")}
         description={t("admin.products.description")}
         action={
-          <Link href={ROUTES.ADMIN.PRODUCTS_NEW}>
-            <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
-              <Plus className="w-4 h-4 mr-2" /> {t("admin.products.newProduct")}
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href={ROUTES.ADMIN.PRODUCTS_BULK}>
+              <Button variant="outline" className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-6 border-border/60">
+                <Plus className="w-4 h-4 mr-2" />  {t("admin.products.bulkUpload")}
+              </Button>
+            </Link>
+            <Link href={ROUTES.ADMIN.PRODUCTS_NEW}>
+              <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
+                <Plus className="w-4 h-4 mr-2" /> {t("admin.products.newProduct")}
+              </Button>
+            </Link>
+          </div>
         }
       />
 
