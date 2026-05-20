@@ -54,7 +54,7 @@ export default async function AccountPage() {
           <p className="text-muted-foreground font-serif italic">Member since {memberSince}</p>
           <div className="flex items-center justify-center md:justify-start gap-4 pt-2">
             <Link href={ROUTES.ACCOUNT.SETTINGS}>
-              <Button variant="outline" size="sm" className="h-8 text-[10px] uppercase tracking-widest font-bold">Edit Profile</Button>
+              <Button variant="outline" size="sm" className="text-spaced-bold">Edit Profile</Button>
             </Link>
           </div>
         </div>

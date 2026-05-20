@@ -52,12 +52,12 @@ export function AdminSidebar() {
                 "flex items-center justify-between px-4 py-3 rounded-sm transition-all group",
                 isActive 
                   ? "bg-primary-foreground text-primary shadow-sm" 
-                  : "hover:bg-primary-foreground/80 text-primary-foreground hover:text-foreground"
+                  : "hover:bg-primary-foreground/60 text-primary-foreground"
               )}
             >
               <div className="flex items-center gap-3">
                 <item.icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-primary-foreground")} />
-                <span className="text-[10px] uppercase tracking-widest font-bold">{item.label}</span>
+                <span className="text-spaced-bold">{item.label}</span>
               </div>
               {isActive && <ChevronRight className="w-3 h-3" />}
             </Link>

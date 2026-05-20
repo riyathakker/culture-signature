@@ -163,7 +163,11 @@
   }
 
   .text-spaced-bold {
-    @apply text-[10px] uppercase tracking-widest font-bold;
+    @apply !text-[10px] !uppercase !tracking-widest !font-bold;
+  }
+
+  .header-spaced-bold {
+    @apply !text-[14px] !uppercase !tracking-[0.3em] !font-bold !text-primary;
   }
 }
 

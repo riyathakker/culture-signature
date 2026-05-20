@@ -94,7 +94,7 @@ export default function AboutPage() {
 
         <div className="space-y-16">
           <div className="text-center space-y-4">
-            <h2 className="text-[10px] uppercase tracking-[0.3em] font-bold text-primary">{t("about.pillars.subtitle")}</h2>
+            <SectionHeader>{t("about.pillars.subtitle")}</SectionHeader>
             <h3 className="text-4xl font-heading">{t("about.pillars.title")}</h3>
           </div>
 
