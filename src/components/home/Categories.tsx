@@ -3,25 +3,20 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useCategoryStore } from "@/store/categoryStore";
-import { CommonLoader } from "../common/Loader";
 import { SectionTitle } from "../ui/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
 
 function CategoryCards() {
-  const { categories, isLoading, fetchCategories } = useCategoryStore();
+  const { categories } = useCategoryStore();
   const { t } = useTranslation();
 
-  if (isLoading) return (
-    <CommonLoader />
-  );
-
   return (
-    <div className="max-w-[100vw] overflow-hidden">
+    <div className="max-w-[100vw] overflow-hidden ml-4">
       <div className="flex overflow-x-auto gap-6 pb-4 no-scrollbar -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        {categories.map((cat) => (
+        {categories.filter((cat) => (cat?._count?.products || 0) > 0).map((cat) => (
           <Link
             key={cat.id}
-            href={`/collections/${cat.id}`}
+            href={`/categories/${cat.id}`}
             className="group flex flex-col items-center p-8 bg-secondary/60 hover:bg-primary transition-all duration-700 relative overflow-hidden flex-shrink-0 min-w-[160px] md:min-w-[200px]"
           >
             <div className="absolute inset-0 bg-luxury-gradient opacity-0 group-hover:opacity-20 transition-opacity" />
@@ -45,16 +40,17 @@ function CategoryCards() {
 export function Categories() {
   const { t } = useTranslation();
   const { categories, isLoading, fetchCategories } = useCategoryStore();
-  if (!isLoading && (!categories || categories.length === 0)) {
-    return null;
-  }
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
+  if (!isLoading && (!categories || categories.length === 0)) {
+    return null;
+  }
+
   return (
-    <div className="py-24">
+    <div className="py-20">
       <SectionTitle title={t("home.categories.title")} subtitle={t("home.categories.subtitle")} align="center" />
       <CategoryCards />
     </div>

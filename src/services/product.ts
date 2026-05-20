@@ -19,7 +19,7 @@ export class ProductService {
   static async getNewArrivals(): Promise<Product[]> {
     return api<Product[]>({
       method: "GET",
-      endpoint: "/products?isNew=true&limit=4",
+      endpoint: "/products?isNew=true",
     });
   }
 

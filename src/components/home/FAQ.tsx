@@ -13,7 +13,7 @@ export function FAQ() {
   const faqs = t("home.faq.questions") as unknown as any[];
 
   return (
-    <section className="py-24 bg-secondary/50 border-t border-border/50">
+    <section className="py-20 bg-secondary/50 border-t border-border/50">
       <Container>
         <SectionTitle
           title={t("home.faq.title")}

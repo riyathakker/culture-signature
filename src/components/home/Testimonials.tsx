@@ -39,11 +39,11 @@ export function Testimonials() {
   };
 
   return (
-    <section className="py-24 border-t border-border/50">
+    <section className="py-20 border-t border-border/50">
       <Container>
         <SectionTitle title={t("home.testimonials.title")} subtitle={t("home.testimonials.subtitle")} align="center" className="mb-16" />
           <div className="max-w-4xl mx-auto text-center space-y-12">
-            <Quote className="w-12 h-12 text-primary mx-auto opacity-30" />
+            <Quote className="w-12 h-12 text-primary mx-auto mb-1 opacity-30" />
 
             <div className="relative h-64 flex items-center justify-center overflow-hidden">
               <AnimatePresence mode="wait">

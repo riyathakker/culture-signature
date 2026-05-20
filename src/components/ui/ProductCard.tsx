@@ -69,7 +69,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
     <>
     <Link href={`/product/${product.id}${from ? `?from=${from}` : ""}`}>
       <div className={cn(
-        "group relative bg-background rounded-lg overflow-hidden transition-all duration-500",
+        "group relative bg-transparent rounded-lg overflow-hidden transition-all duration-500",
         isOutOfStock && "grayscale-[0.5]"
       )}>
         {/* Image Container */}
