@@ -68,12 +68,6 @@ export default function AdminCustomers() {
       header: "Joined",
       className: "text-muted-foreground text-xs",
       render: (customer) => format(new Date(customer.createdAt), "MMM dd, yyyy"),
-    },
-    {
-      header: "Total Orders",
-      headerClassName: "text-center",
-      className: "text-center font-medium",
-      render: (customer) => customer.orders?.length || 0,
     }
   ];
 
@@ -129,11 +123,6 @@ export default function AdminCustomers() {
                 </Badge>
               </div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-widest truncate">{customer.email}</p>
-              <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground uppercase tracking-widest">
-                <span>{customer.orders?.length || 0} orders</span>
-                <span>·</span>
-                <span>Joined {format(new Date(customer.createdAt), "MMM yyyy")}</span>
-              </div>
             </div>
           </div>
         )}
