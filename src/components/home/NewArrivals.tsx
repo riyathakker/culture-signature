@@ -57,7 +57,7 @@ export function NewArrivals() {
                 ))}
             </div>
             {newArrivals.length > 4 &&  (
-              <div className="flex justify-center mt-14">
+              <div className="flex justify-center mt-6">
                 <Link
                   href={ROUTES.NEW_ARRIVALS}
                   className="

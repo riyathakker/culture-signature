@@ -4,15 +4,12 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, User, ArrowRight, Mail, Lock } from "lucide-react";
-import Link from "next/link";
+import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
@@ -32,7 +29,6 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [view, setView] = useState<AuthView>("login");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuthStore();
   const router = useRouter();
 
   // Form states
@@ -98,7 +94,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] p-0 border-none bg-background rounded-2xl shadow-2xl [&>button]:text-white [&>button]:opacity-100">
+      <DialogContent className="sm:max-w-[450px] p-0 border-none bg-background rounded-2xl overflow-hidden shadow-2xl [&>button]:text-white [&>button]:opacity-100">
         {/* Banner */}
         <div className="relative h-18 bg-primary flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-luxury-gradient opacity-20" />

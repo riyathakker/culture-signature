@@ -79,8 +79,8 @@ export default function ShopPage() {
             <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {true ? (
+            <div className="grid-gallery">
               {[...Array(6)].map((_, i) => (
                 <ProductSkeleton key={i} />
               ))}
