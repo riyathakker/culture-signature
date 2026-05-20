@@ -46,6 +46,7 @@ export function CategoryDialog({
   onSuccess,
 }: CategoryDialogProps) {
   const { t } = useTranslation();
+  const { addCategory, updateCategory } = useCategoryStore();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -110,14 +111,16 @@ export function CategoryDialog({
       toast.success(category ? t("admin.categories.dialog.messages.updateSuccess") : t("admin.categories.dialog.messages.createSuccess"));
       setOpen?.(false);
       if (!category) reset();
-      
-      const { addCategory, updateCategory } = useCategoryStore.getState();
-      if (category) {
-        updateCategory(savedCategory);
+
+      if (onSuccess) {
+        onSuccess(savedCategory);
       } else {
-        addCategory(savedCategory);
+        if (category) {
+          updateCategory(savedCategory);
+        } else {
+          addCategory(savedCategory);
+        }
       }
-      if (onSuccess) onSuccess(savedCategory);
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || t("admin.common.error"));
@@ -128,13 +131,15 @@ export function CategoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        {trigger || (
+      {trigger ? (
+        <DialogTrigger>{trigger}</DialogTrigger>
+      ) : !isControlled ? (
+        <DialogTrigger>
           <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
-            <Plus className="w-4 h-4 mr-2" /> {t("admin.categories.newCategory")}
+            <Plus className="w-4 h-4 mr-2" /> {category ? t("admin.categories.dialog.buttons.edit") : t("admin.categories.newCategory")}
           </Button>
-        )}
-      </DialogTrigger>
+        </DialogTrigger>
+      ) : null}
       <DialogContent className="sm:max-w-[500px] bg-background border-none">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl tracking-tight">

@@ -164,7 +164,7 @@ export default function CategoriesPage() {
                     e.preventDefault();
                     handleEdit(cat);
                   }}
-                  className="gap-2 cursor-pointer focus:bg-primary focus:text-primary-foreground"
+                  className="gap-2 cursor-pointer"
                 >
                   <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
                 </DropdownMenuItem>
@@ -173,7 +173,7 @@ export default function CategoriesPage() {
                     e.preventDefault();
                     toggleArchive(cat);
                   }}
-                  className="gap-2 cursor-pointer focus:bg-primary focus:text-primary-foreground"
+                  className="gap-2 cursor-pointer"
                 >
                   {isArchived ? (
                     <>
@@ -186,11 +186,12 @@ export default function CategoriesPage() {
                   )}
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  variant="destructive"
                   onClick={(e) => {
                     e.preventDefault();
                     handleDeleteClick(cat);
                   }}
-                  className="gap-2 text-destructive cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
+                  className="gap-2 cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
                 </DropdownMenuItem>

@@ -66,7 +66,6 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
       value: 0,
       usageLimit: null,
       expiryDate: "",
-      status: "ACTIVE",
     },
   });
 
@@ -84,13 +83,11 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
         value: 0,
         usageLimit: null,
         expiryDate: "",
-        status: "ACTIVE",
       });
     }
   }, [discount, reset]);
 
   const discountType = watch("type");
-  const discountStatus = watch("status");
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
@@ -202,23 +199,6 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
                 {...register("expiryDate")}
                 className="h-12 border-border/50"
               />
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.status")}</Label>
-              <Select
-                value={discountStatus}
-                onValueChange={(val: any) => setValue("status", val)}
-              >
-                <SelectTrigger className="h-12 border-border/50">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                  <SelectItem value="EXPIRED">Expired</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
