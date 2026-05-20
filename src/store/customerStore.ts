@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { User } from '@/types';
+import { CustomerService } from '@/services/customer';
 
 interface CustomerState {
   customers: User[];
@@ -24,8 +25,7 @@ export const useCustomerStore = create<CustomerState>((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const response = await fetch("/api/admin/users");
-      const data = await response.json();
+      const data = await CustomerService.getAll();
       set({ customers: data, lastFetched: Date.now() });
     } catch (error) {
       console.error("Failed to fetch customers", error);

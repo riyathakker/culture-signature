@@ -30,7 +30,7 @@ import { useTranslation } from "@/context/TranslationContext";
 import { Category } from "@/types";
 
 export default function CategoriesPage() {
-  const { categories, isLoading, fetchCategories, updateCategory, addCategory, deleteCategory } = useCategoryStore();
+  const { categories, isLoading, fetchCategories, deleteCategoryById, updateCategoryById } = useCategoryStore();
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
   const router = useRouter();
@@ -63,15 +63,7 @@ export default function CategoriesPage() {
   const confirmDelete = async () => {
     if (selectedCategory) {
       try {
-        const response = await fetch(`/api/admin/categories?id=${selectedCategory.id}`, {
-          method: "DELETE",
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to delete category");
-        }
-
-        deleteCategory(selectedCategory.id);
+        await deleteCategoryById(selectedCategory.id);
         setIsDeleteDialogOpen(false);
         setSelectedCategory(null);
         toast.success("Collection removed successfully");
@@ -85,22 +77,7 @@ export default function CategoriesPage() {
   const toggleArchive = async (cat: Category) => {
     try {
       const newStatus = cat.status === "ARCHIVED" ? "ACTIVE" : "ARCHIVED";
-      const response = await fetch("/api/admin/categories", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: cat.id,
-          name: cat.name,
-          status: newStatus,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to toggle category status");
-      }
-
-      const updated = await response.json();
-      updateCategory(updated);
+      await updateCategoryById(cat.id, cat.name, newStatus);
       toast.success(newStatus === "ARCHIVED" ? "Collection archived successfully" : "Collection activated successfully");
       router.refresh();
     } catch (err) {
@@ -210,7 +187,6 @@ export default function CategoriesPage() {
         description={t("admin.categories.description")}
         action={
           <CategoryDialog
-            onSuccess={(newCat: Category) => addCategory(newCat)}
           />
         }
       />
@@ -237,7 +213,6 @@ export default function CategoriesPage() {
           setIsEditDialogOpen(val);
           if (!val) setTimeout(() => setSelectedCategory(null), 300);
         }}
-        onSuccess={(updatedCat: Category) => updateCategory(updatedCat)}
       />
 
       {/* Delete Confirmation Dialog */}

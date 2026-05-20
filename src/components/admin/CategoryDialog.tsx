@@ -46,7 +46,7 @@ export function CategoryDialog({
   onSuccess,
 }: CategoryDialogProps) {
   const { t } = useTranslation();
-  const { addCategory, updateCategory } = useCategoryStore();
+  const { createCategory, updateCategoryById } = useCategoryStore();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -89,37 +89,16 @@ export function CategoryDialog({
   const onSubmit = async (data: CategoryFormValues) => {
     setIsLoading(true);
     try {
-      const url = "/api/admin/categories";
-      const method = category ? "PATCH" : "POST";
+      const savedCategory = category
+        ? await updateCategoryById(category.id, data.name, data.status)
+        : await createCategory(data.name);
 
-      const payload = category
-        ? { id: category.id, name: data.name, status: data.status }
-        : { name: data.name };
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || t("admin.categories.dialog.saveError"));
-      }
-
-      const savedCategory = await response.json();
       toast.success(category ? t("admin.categories.dialog.messages.updateSuccess") : t("admin.categories.dialog.messages.createSuccess"));
       setOpen?.(false);
       if (!category) reset();
 
       if (onSuccess) {
         onSuccess(savedCategory);
-      } else {
-        if (category) {
-          updateCategory(savedCategory);
-        } else {
-          addCategory(savedCategory);
-        }
       }
       router.refresh();
     } catch (error: any) {

@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, MapPin, Loader2 } from "lucide-react";
 
+import { useAddressStore } from "@/store/addressStore";
+
 interface AddressFormValues {
   firstName: string;
   lastName: string;
@@ -36,6 +38,7 @@ interface AddressDialogProps {
 }
 
 export function AddressDialog({ address, trigger }: AddressDialogProps) {
+  const { createAddress, updateAddress } = useAddressStore();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -66,24 +69,18 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
   const onSubmit = async (data: AddressFormValues) => {
     setIsLoading(true);
     try {
-      const url = "/api/user/address";
-      const method = address ? "PATCH" : "POST";
-      const body = address ? { ...data, id: address.id } : data;
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) throw new Error("Failed to save address");
+      if (address) {
+        await updateAddress({ ...data, id: address.id });
+      } else {
+        await createAddress(data);
+      }
 
       toast.success(address ? "Address updated" : "Address added");
       setOpen(false);
       if (!address) reset();
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
     } finally {
       setIsLoading(false);
     }

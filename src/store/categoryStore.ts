@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Category } from "@/types";
+import { CategoryService } from "@/services/category";
 
 interface CategoryState {
   categories: Category[];
@@ -12,6 +13,9 @@ interface CategoryState {
   addCategory: (category: Category) => void;
   updateCategory: (category: Category) => void;
   deleteCategory: (id: string) => void;
+  createCategory: (name: string) => Promise<Category>;
+  updateCategoryById: (id: string, name: string, status: "ACTIVE" | "ARCHIVED") => Promise<Category>;
+  deleteCategoryById: (id: string) => Promise<void>;
 }
 
 export const useCategoryStore = create<CategoryState>((set, get) => ({
@@ -39,6 +43,23 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
       categories: state.categories.filter((c) => c.id !== id),
     })),
 
+  createCategory: async (name: string): Promise<Category> => {
+    const category = await CategoryService.create(name);
+    get().addCategory(category);
+    return category;
+  },
+
+  updateCategoryById: async (id: string, name: string, status: "ACTIVE" | "ARCHIVED"): Promise<Category> => {
+    const category = await CategoryService.update(id, name, status);
+    get().updateCategory(category);
+    return category;
+  },
+
+  deleteCategoryById: async (id: string): Promise<void> => {
+    await CategoryService.delete(id);
+    get().deleteCategory(id);
+  },
+
   fetchCategories: async (includeArchived = false) => {
     const state = get();
 
@@ -56,11 +77,7 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
 
     set({ isLoading: true, showingArchived: includeArchived });
     try {
-      const response = await fetch(
-        `/api/categories?includeArchived=${includeArchived}`
-      );
-
-      const data = await response.json();
+      const data = await CategoryService.getAll(includeArchived);
 
       if (Array.isArray(data)) {
         set({ categories: data, lastFetched: Date.now() });

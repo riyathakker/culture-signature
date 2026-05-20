@@ -6,13 +6,15 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AddressDialog } from "./AddressDialog";
 import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
-import { cn } from "@/lib/utils";
+
+import { useAddressStore } from "@/store/addressStore";
 
 interface AddressActionsProps {
   address: any;
 }
 
 export function AddressActions({ address }: AddressActionsProps) {
+  const { deleteAddress, setDefaultAddress } = useAddressStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const router = useRouter();
@@ -20,11 +22,7 @@ export function AddressActions({ address }: AddressActionsProps) {
   const onDelete = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/user/address?id=${address.id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete address");
+      await deleteAddress(address.id);
 
       toast.success("Address deleted");
       setIsDeleteDialogOpen(false);
@@ -39,13 +37,7 @@ export function AddressActions({ address }: AddressActionsProps) {
   const onSetDefault = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/user/address", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...address, isDefault: true }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update address");
+      await setDefaultAddress(address);
 
       toast.success("Default address updated");
       router.refresh();

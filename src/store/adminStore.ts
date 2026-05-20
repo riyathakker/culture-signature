@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { AdminOverview } from '@/types';
+import { AdminService } from '@/services/admin';
 
 interface AdminState {
   overview: AdminOverview | null;
@@ -21,9 +22,7 @@ export const useAdminStore = create<AdminState>((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const response = await fetch("/api/admin/overview");
-      if (!response.ok) throw new Error("Failed to fetch overview");
-      const data = await response.json();
+      const data = await AdminService.getOverview();
       set({ overview: data, lastFetched: Date.now() });
     } catch (error) {
       console.error("Failed to fetch overview", error);

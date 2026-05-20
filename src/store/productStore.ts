@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Product } from "@/types";
+import { ProductService } from "@/services/product";
 
 interface ProductState {
   products: Product[];
@@ -22,6 +23,11 @@ interface ProductState {
   fetchProducts: (force?: boolean) => Promise<void>;
   fetchNewArrivals: (force?: boolean) => Promise<void>;
   fetchFeaturedProducts: (force?: boolean) => Promise<void>;
+
+  createProduct: (data: any) => Promise<Product>;
+  updateProductById: (id: string, data: any) => Promise<Product>;
+  deleteProductById: (id: string) => Promise<void>;
+  fetchProductById: (id: string) => Promise<Product>;
 }
 
 export const useProductStore = create<ProductState>((set, get) => ({
@@ -70,6 +76,27 @@ export const useProductStore = create<ProductState>((set, get) => ({
       products: [product, ...state.products],
     })),
 
+  createProduct: async (data: any): Promise<Product> => {
+    const product = await ProductService.create(data);
+    get().addProduct(product);
+    return product;
+  },
+
+  updateProductById: async (id: string, data: any): Promise<Product> => {
+    const product = await ProductService.update(id, data);
+    get().updateProduct(product);
+    return product;
+  },
+
+  deleteProductById: async (id: string): Promise<void> => {
+    await ProductService.delete(id);
+    get().deleteProduct(id);
+  },
+
+  fetchProductById: async (id: string): Promise<Product> => {
+    return ProductService.getById(id);
+  },
+
   fetchProducts: async (force = false) => {
     const state = get();
 
@@ -86,13 +113,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch("/api/admin/products");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
-
-      const data = await response.json();
+      const data = await ProductService.getAllAdmin();
 
       set({
         products: data,
@@ -116,15 +137,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch(
-        "/api/products?isNew=true&limit=4"
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch new arrivals");
-      }
-
-      const data = await response.json();
+      const data = await ProductService.getNewArrivals();
 
       set({
         newArrivals: data,
@@ -148,13 +161,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch("/api/products?isFeatured=true");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch featured products");
-      }
-
-      const data = await response.json();
+      const data = await ProductService.getFeatured();
 
       set({
         featuredProducts: data,

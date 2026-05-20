@@ -32,8 +32,8 @@ interface ProductFormProps {
 export function ProductForm({ productId }: ProductFormProps) {
   const router = useRouter();
   const isEdit = !!productId;
-  const { addProduct, updateProduct } = useProductStore();
   const { categories, fetchCategories, addCategory: storeAddCategory } = useCategoryStore();
+  const { fetchProductById, createProduct, updateProductById } = useProductStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(isEdit);
@@ -82,9 +82,7 @@ export function ProductForm({ productId }: ProductFormProps) {
 
       if (isEdit) {
         setIsFetching(true);
-        const prodRes = await fetch(`/api/admin/products/${productId}`);
-        if (!prodRes.ok) throw new Error("Failed to fetch product");
-        const prod = await prodRes.json();
+        const prod = await fetchProductById(productId!);
 
         setFormData({
           title: prod.name || "",
@@ -109,32 +107,17 @@ export function ProductForm({ productId }: ProductFormProps) {
     setIsLoading(true);
 
     try {
-      const url = isEdit ? `/api/admin/products/${productId}` : "/api/admin/products";
-      const method = isEdit ? "PATCH" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const savedProduct = await response.json();
-        if (isEdit) {
-          updateProduct(savedProduct);
-        } else {
-          addProduct(savedProduct);
-        }
-
-        toast.success(isEdit ? "Masterpiece updated successfully" : "Masterpiece added to collection successfully");
-        if (!isEdit) localStorage.removeItem("product_draft");
-        router.push("/admin/products");
+      if (isEdit) {
+        await updateProductById(productId!, formData);
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        toast.error(errorData.error || (isEdit ? "Failed to update product" : "Failed to add product"));
+        await createProduct(formData);
       }
-    } catch (error) {
-      toast.error("Error saving product");
+
+      toast.success(isEdit ? "Masterpiece updated successfully" : "Masterpiece added to collection successfully");
+      if (!isEdit) localStorage.removeItem("product_draft");
+      router.push("/admin/products");
+    } catch (error: any) {
+      toast.error(error.message || (isEdit ? "Failed to update product" : "Failed to add product"));
     } finally {
       setIsLoading(false);
     }

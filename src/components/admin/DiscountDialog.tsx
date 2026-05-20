@@ -43,9 +43,9 @@ interface DiscountDialogProps {
 
 export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenChange: setExternalOpen }: DiscountDialogProps) {
   const { t } = useTranslation();
+  const { createDiscount, updateDiscountById } = useDiscountStore();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { fetchDiscounts } = useDiscountStore();
   const router = useRouter();
 
   const isControlled = externalOpen !== undefined;
@@ -92,9 +92,6 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      const url = discount ? `/api/admin/discounts/${discount.id}` : "/api/admin/discounts";
-      const method = discount ? "PATCH" : "POST";
-
       const payload = {
         ...data,
         value: parseFloat(data.value),
@@ -102,21 +99,15 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
         expiryDate: data.expiryDate ? new Date(data.expiryDate).toISOString() : null,
       };
 
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || t("admin.discounts.dialog.saveError"));
+      if (discount) {
+        await updateDiscountById(discount.id, payload);
+      } else {
+        await createDiscount(payload);
       }
 
       toast.success(discount ? t("admin.discounts.dialog.messages.updateSuccess") : t("admin.discounts.dialog.messages.createSuccess"));
       setOpen?.(false);
       if (!discount) reset();
-      await fetchDiscounts(true);
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || t("admin.common.error"));

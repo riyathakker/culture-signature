@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { toast } from 'sonner';
 import { Discount } from '@/types';
+import { DiscountService } from '@/services/discount';
 
 interface DiscountState {
   discounts: Discount[];
@@ -10,6 +11,8 @@ interface DiscountState {
   setLoading: (isLoading: boolean) => void;
   fetchDiscounts: (force?: boolean) => Promise<void>;
   deleteDiscount: (id: string) => Promise<void>;
+  createDiscount: (data: any) => Promise<Discount>;
+  updateDiscountById: (id: string, data: any) => Promise<Discount>;
 }
 
 export const useDiscountStore = create<DiscountState>((set, get) => ({
@@ -27,8 +30,7 @@ export const useDiscountStore = create<DiscountState>((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const response = await fetch("/api/admin/discounts");
-      const data = await response.json();
+      const data = await DiscountService.getAll();
       set({ discounts: Array.isArray(data) ? data : [], lastFetched: Date.now() });
     } catch (error) {
       console.error("Failed to fetch discounts", error);
@@ -38,11 +40,7 @@ export const useDiscountStore = create<DiscountState>((set, get) => ({
   },
   deleteDiscount: async (id: string) => {
     try {
-      const response = await fetch(`/api/admin/discounts/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete discount");
+      await DiscountService.delete(id);
 
       set((state) => ({
         discounts: state.discounts.filter((d) => d.id !== id),
@@ -51,5 +49,19 @@ export const useDiscountStore = create<DiscountState>((set, get) => ({
     } catch (error) {
       toast.error("Could not delete the discount.");
     }
+  },
+
+  createDiscount: async (data: any): Promise<Discount> => {
+    const discount = await DiscountService.create(data);
+    set((state) => ({ discounts: [...state.discounts, discount] }));
+    return discount;
+  },
+
+  updateDiscountById: async (id: string, data: any): Promise<Discount> => {
+    const discount = await DiscountService.update(id, data);
+    set((state) => ({
+      discounts: state.discounts.map((d) => (d.id === id ? discount : d)),
+    }));
+    return discount;
   },
 }));

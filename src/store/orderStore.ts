@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { toast } from 'sonner';
 import { Order } from '@/types';
+import { OrderService } from '@/services/order';
 
 interface OrderState {
   orders: Order[];
@@ -31,8 +32,7 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const response = await fetch("/api/admin/orders");
-      const data = await response.json();
+      const data = await OrderService.getAll();
       set({ orders: data, lastFetched: Date.now() });
     } catch (error) {
       console.error("Failed to fetch orders", error);
@@ -42,15 +42,7 @@ export const useOrderStore = create<OrderState>((set, get) => ({
   },
   updateOrderStatus: async (orderId, status) => {
     try {
-      const response = await fetch(`/api/admin/orders/${orderId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update status");
-
-      const updatedOrder = await response.json();
+      const updatedOrder = await OrderService.updateStatus(orderId, status);
       get().updateOrder(updatedOrder);
       toast.success(`Order ${status.toLowerCase()} successfully`);
     } catch (error) {

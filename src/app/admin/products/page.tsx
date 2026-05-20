@@ -119,7 +119,7 @@ const EditableCell = ({
 
 export default function AdminProducts() {
   const { t } = useTranslation();
-  const { products, isLoading, fetchProducts, deleteProduct: storeDeleteProduct } = useProductStore();
+  const { products, isLoading, fetchProducts, updateProductById, deleteProductById } = useProductStore();
   const { categories, fetchCategories } = useCategoryStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeStatus, setActiveStatus] = useState("");
@@ -131,16 +131,8 @@ export default function AdminProducts() {
 
   const handleInlineUpdate = async (id: string, field: string, value: any) => {
     try {
-      const response = await fetch(`/api/admin/products/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [field]: value }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update");
-
-      const updatedProduct = await response.json();
-      useProductStore.getState().updateProduct(updatedProduct);
+      const updatedValue = field === 'price' || field === 'stock' ? parseFloat(value) : value;
+      await updateProductById(id, { [field]: updatedValue });
       toast.success(t("admin.products.messages.updateSuccess", { field: field.charAt(0).toUpperCase() + field.slice(1) }));
     } catch (error) {
       toast.error(t("admin.products.messages.updateError"));
@@ -177,16 +169,7 @@ export default function AdminProducts() {
     if (!productToDelete) return;
 
     try {
-      const response = await fetch(`/api/admin/products/${productToDelete}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || t("admin.products.delete.error"));
-      }
-
-      storeDeleteProduct(productToDelete);
+      await deleteProductById(productToDelete);
       toast.success(t("admin.products.delete.success"));
     } catch (error: any) {
       toast.error(error.message);
@@ -198,16 +181,7 @@ export default function AdminProducts() {
 
   const toggleFeatured = async (id: string, currentFeatured: boolean) => {
     try {
-      const response = await fetch(`/api/admin/products/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isFeatured: !currentFeatured }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update status");
-
-      const updatedProduct = await response.json();
-      useProductStore.getState().updateProduct(updatedProduct);
+      const updatedProduct = await updateProductById(id, { isFeatured: !currentFeatured });
       toast.success(updatedProduct.isFeatured ? t("admin.products.messages.featuredSuccess") : t("admin.products.messages.unfeaturedSuccess"));
     } catch (error) {
       toast.error(t("admin.products.messages.updateError"));

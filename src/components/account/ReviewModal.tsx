@@ -14,6 +14,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+import { useReviewStore } from "@/store/reviewStore";
+
 interface ReviewModalProps {
   productId: string;
   productName: string;
@@ -22,6 +24,7 @@ interface ReviewModalProps {
 }
 
 export function ReviewModal({ productId, productName, orderId, onSuccess }: ReviewModalProps) {
+  const { submitReview } = useReviewStore();
   const [rating, setRating] = useState(5);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
@@ -31,26 +34,13 @@ export function ReviewModal({ productId, productName, orderId, onSuccess }: Revi
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/reviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId,
-          orderId,
-          rating,
-          comment,
-        }),
-      });
+      await submitReview({ productId, orderId, rating, comment });
 
-      if (response.ok) {
-        toast.success("Review submitted successfully");
-        setOpen(false);
-        onSuccess?.();
-      } else {
-        toast.error("Failed to submit review");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
+      toast.success("Review submitted successfully");
+      setOpen(false);
+      onSuccess?.();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to submit review");
     } finally {
       setIsSubmitting(false);
     }
