@@ -37,7 +37,7 @@ export function Footer() {
 
   if (isAdminPage) return null;
   return (
-    <footer className="bg-secondary/30 pt-20 pb-10 border-t">
+    <footer className="bg-secondary/30 pt-20 border-t">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr] gap-12 lg:gap-8 mb-20">
           {/* Brand Column */}
@@ -105,14 +105,15 @@ export function Footer() {
             ))}
           </div>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 pt-10 border-t border-muted-foreground/10">
+      </Container>
+      {/* Bottom Bar */}
+      <Container className="bg-black py-4 mx-0!">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground text-center md:text-left">
             © {new Date().getFullYear()} Culture Signature. {t("shop.footer.brand.rights")}
           </p>
 
-          <div className="flex items-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="flex items-center text-spaced">
             <span className="flex items-center text-center md:text-right">
               <Mail className="w-3 h-3 mr-2 shrink-0" />
               jalpathakkar@culturesignature.com
