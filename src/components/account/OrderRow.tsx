@@ -57,7 +57,7 @@ export function OrderRow({ order }: { order: any }) {
             <div className="p-6 space-y-4 animate-in slide-in-from-top-2 duration-300">
               <h4 className="text-xs uppercase tracking-[0.2em] font-bold opacity-60">Order Items</h4>
               <div className="space-y-4">
-                {order.items.map((item: any) => (
+                {order.items && order.items.map((item: any) => (
                   <div key={item.id} className="flex items-center justify-between bg-background p-4 rounded-sm border border-border/50">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-secondary/30 rounded-sm overflow-hidden relative">

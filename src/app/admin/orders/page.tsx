@@ -94,7 +94,7 @@ export default function AdminOrders() {
       className: "min-w-[120px]",
       render: (order) => (
         <div className="flex -space-x-2 overflow-hidden">
-          {order.items.slice(0, 3).map((item: any, idx: number) => (
+          {order.items && order.items.slice(0, 3).map((item: any, idx: number) => (
             <div
               key={item.id}
               className="relative inline-block h-8 w-8 rounded-full ring-2 ring-background overflow-hidden bg-muted"
@@ -107,7 +107,7 @@ export default function AdminOrders() {
               />
             </div>
           ))}
-          {order.items.length > 3 && (
+          {order.items && order.items.length > 3 && (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-[10px] font-bold ring-2 ring-background">
               +{order.items.length - 3}
             </div>
@@ -291,12 +291,12 @@ export default function AdminOrders() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-2 overflow-hidden">
-                  {order.items.slice(0, 3).map((item: any) => (
+                  {order.items && order.items.slice(0, 3).map((item: any) => (
                     <div key={item.id} className="h-8 w-8 rounded-full ring-2 ring-background overflow-hidden bg-muted">
                       <img src={item.product.images?.[0]} alt={item.product.name} className="h-full w-full object-cover" />
                     </div>
                   ))}
-                  {order.items.length > 3 && (
+                  {order.items && order.items.length > 3 && (
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-[10px] font-bold ring-2 ring-background">
                       +{order.items.length - 3}
                     </div>
