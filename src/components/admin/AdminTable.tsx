@@ -52,9 +52,9 @@ export function AdminTable<T>({
         <TableHeader className="bg-secondary/20">
           <TableRow>
             {columns.map((column, idx) => (
-              <TableHead 
-                key={idx} 
-                className={`text-[10px] uppercase tracking-widest font-bold h-14 ${column.headerClassName || ""}`}
+              <TableHead
+                key={idx}
+                className={`text-spaced-bold h-14 ${column.headerClassName || ""}`}
               >
                 {column.header}
               </TableHead>
@@ -64,7 +64,7 @@ export function AdminTable<T>({
         <TableBody>
           {data.length === 0 && !isLoading ? (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-40 text-center text-muted-foreground font-serif italic">
+              <TableCell colSpan={columns.length} className="h-40 text-center muted-italic">
                 {emptyMessage}
               </TableCell>
             </TableRow>
@@ -78,10 +78,10 @@ export function AdminTable<T>({
                   <TableRow className={`hover:bg-secondary/5 transition-colors ${isExpanded ? 'bg-secondary/10' : ''}`}>
                     {columns.map((column, idx) => (
                       <TableCell key={idx} className={column.className}>
-                        {column.render 
-                          ? column.render(item) 
-                          : column.accessor 
-                            ? (item[column.accessor] as ReactNode) 
+                        {column.render
+                          ? column.render(item)
+                          : column.accessor
+                            ? (item[column.accessor] as ReactNode)
                             : null}
                       </TableCell>
                     ))}

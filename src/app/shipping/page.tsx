@@ -14,7 +14,7 @@ export default function ShippingPage() {
         <Container>
           <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.shipping.breadcrumb") }]} />
           <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2 text-primary">{t("legal.shipping.title")}</h1>
-          <p className="text-muted-foreground font-serif italic text-lg max-w-2xl">
+          <p className="muted-italic text-lg max-w-2xl">
             {t("legal.shipping.subtitle")}
           </p>
         </Container>
@@ -28,21 +28,21 @@ export default function ShippingPage() {
                 <Truck className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-heading text-xl">{t("legal.shipping.badges.discrete.title")}</h3>
-              <p className="text-sm text-muted-foreground font-serif italic">{t("legal.shipping.badges.discrete.desc")}</p>
+              <p className="text-sm muted-italic">{t("legal.shipping.badges.discrete.desc")}</p>
             </div>
             <div className="text-center space-y-4">
               <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto">
                 <ShieldCheck className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-heading text-xl">{t("legal.shipping.badges.insured.title")}</h3>
-              <p className="text-sm text-muted-foreground font-serif italic">{t("legal.shipping.badges.insured.desc")}</p>
+              <p className="text-sm muted-italic">{t("legal.shipping.badges.insured.desc")}</p>
             </div>
             <div className="text-center space-y-4">
               <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto">
                 <Globe className="w-8 h-8 text-primary" />
               </div>
               <h3 className="font-heading text-xl">{t("legal.shipping.badges.global.title")}</h3>
-              <p className="text-sm text-muted-foreground font-serif italic">{t("legal.shipping.badges.global.desc")}</p>
+              <p className="text-sm muted-italic">{t("legal.shipping.badges.global.desc")}</p>
             </div>
           </div>
 

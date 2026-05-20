@@ -17,7 +17,7 @@ export function HomePageContainer({ label, heading, description, children }: Pro
                 <Container>
                     <Breadcrumbs items={label} />
                     {heading && <h1 className="text-4xl md:text-6xl font-heading mt-3 md:mt-6 mb-2"> {heading}</h1>}
-                    {description && <p className="text-muted-foreground font-serif italic text-lg max-w-2xl">
+                    {description && <p className="muted-italic text-lg max-w-2xl">
                         {description}
                     </p>}
                 </Container>

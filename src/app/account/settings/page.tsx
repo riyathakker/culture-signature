@@ -91,7 +91,7 @@ export default function SettingsPage() {
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="space-y-2">
         <h2 className="text-3xl font-heading">Account Settings</h2>
-        <p className="text-muted-foreground font-serif italic">Preferences and security for your Inner Circle membership.</p>
+        <p className="muted-italic">Preferences and security for your Inner Circle membership.</p>
       </div>
 
       {/* Security Section */}
@@ -100,7 +100,7 @@ export default function SettingsPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid-split">
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold">Full Name</Label>
+              <Label className="text-spaced-bold">Full Name</Label>
               <Input 
                 value={formData.name} 
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -108,11 +108,11 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold">Email Address</Label>
+              <Label className="text-spaced-bold">Email Address</Label>
               <Input value={formData.email} disabled className=" bg-secondary/20 h-10" />
             </div>
              <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold">Mobile Number</Label>
+              <Label className="text-spaced-bold">Mobile Number</Label>
               <Input 
                 value={formData.mobileNo} 
                 onChange={(e) => setFormData({ ...formData, mobileNo: e.target.value })}
@@ -124,7 +124,7 @@ export default function SettingsPage() {
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="text-[10px] uppercase tracking-widest h-10 px-8"
+            className="text-spaced h-10 px-8"
           >
             {isLoading && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
             Save Changes
@@ -141,14 +141,14 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm">
             <div className="space-y-0.5">
               <p className="text-sm font-bold uppercase tracking-widest">New Collection Updates</p>
-              <p className="text-xs text-muted-foreground font-serif italic">Receive notifications when we release new artisanal pieces.</p>
+              <p className="text-xs muted-italic">Receive notifications when we release new artisanal pieces.</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm">
             <div className="space-y-0.5">
               <p className="text-sm font-bold uppercase tracking-widest">Boutique Event Invitations</p>
-              <p className="text-xs text-muted-foreground font-serif italic">Priority access to private viewings and exhibitions.</p>
+              <p className="text-xs muted-italic">Priority access to private viewings and exhibitions.</p>
             </div>
             <Switch defaultChecked />
           </div>
@@ -163,7 +163,7 @@ export default function SettingsPage() {
         <div className="p-6 border border-destructive/20 rounded-sm bg-destructive/5 space-y-4">
           <div className="space-y-1">
             <p className="text-sm font-bold uppercase tracking-widest text-destructive">Deactivate Account</p>
-            <p className="text-xs text-muted-foreground font-serif italic">This will permanently remove your Inner Circle membership and order history.</p>
+            <p className="text-xs muted-italic">This will permanently remove your Inner Circle membership and order history.</p>
           </div>
           <Button 
             variant="destructive" 

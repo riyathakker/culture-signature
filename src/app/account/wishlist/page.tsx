@@ -35,12 +35,12 @@ export default async function WishlistPage() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="space-y-2">
         <h2 className="text-3xl font-heading">My Wishlist</h2>
-        <p className="text-muted-foreground font-serif italic">Pieces you've curated for your future collection.</p>
+        <p className="muted-italic">Pieces you've curated for your future collection.</p>
       </div>
 
       {wishlist.length === 0 ? (
         <div className="py-20 text-center border-2 border-dashed rounded-sm">
-          <p className="text-muted-foreground font-serif italic">Your wishlist is currently empty.</p>
+          <p className="muted-italic">Your wishlist is currently empty.</p>
         </div>
       ) : (
         <div className="grid grid-cols-3 md:grid-cols-4 gap-8">

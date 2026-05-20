@@ -166,8 +166,16 @@
     @apply !text-[10px] !uppercase !tracking-widest !font-bold;
   }
 
+  .text-spaced {
+    @apply !text-[10px] !uppercase !tracking-widest text-primary-foreground;
+  }
+
   .header-spaced-bold {
     @apply !text-[14px] !uppercase !tracking-[0.3em] !font-bold !text-primary;
+  }
+
+  .muted-italic {
+    @apply !text-muted-foreground !font-serif !italic;
   }
 }
 

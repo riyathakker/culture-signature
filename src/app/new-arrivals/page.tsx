@@ -17,9 +17,9 @@ export default function NewArrivalsPage() {
   }, []);
 
   return (
-    <HomePageContainer 
-      label={[{ label: t("home.newArrivals.title") }]} 
-      heading={t("home.newArrivals.title")} 
+    <HomePageContainer
+      label={[{ label: t("home.newArrivals.title") }]}
+      heading={t("home.newArrivals.title")}
       description={t("home.newArrivals.description")}
     >
 
@@ -31,7 +31,7 @@ export default function NewArrivalsPage() {
         </div>
       ) : newArrivals.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-muted-foreground font-serif italic text-lg">{t("home.newArrivals.empty")}</p>
+          <p className="muted-italic text-lg">{t("home.newArrivals.empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 animate-in fade-in duration-700">

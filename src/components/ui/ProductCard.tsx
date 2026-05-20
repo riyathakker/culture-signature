@@ -85,12 +85,12 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
           {/* Badges */}
           <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
             {discountPercentage && !isOutOfStock && (
-              <span className="text-[10px] uppercase tracking-widest bg-destructive/60 text-white px-2 py-1 font-bold">
+              <span className="text-spaced-bold bg-destructive/60 text-white px-2 py-1">
                 -{discountPercentage}% {t("shop.product.off")}
               </span>
             )}
             {product.isNew && !isOutOfStock && (
-              <span className="text-[10px] uppercase tracking-widest bg-primary text-primary-foreground px-2 py-1 font-bold">
+              <span className="text-spaced-bold bg-primary text-primary-foreground px-2 py-1">
                 {t("shop.product.new")}
               </span>
             )}
@@ -139,7 +139,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
                   onClick={(e) => { e.stopPropagation(); e.preventDefault(); setIsQuickViewOpen(true); }}
                   className={cn(
                     "bg-background/90 border-none backdrop-blur-sm hover:text-primary h-10 w-10 rounded-full",
-                    isAdmin && "flex-1 w-auto px-4 gap-2 text-[10px] uppercase tracking-widest font-bold"
+                    isAdmin && "flex-1 w-auto px-4 gap-2 text-spaced-bold"
                   )}
                 >
                   <Eye className="w-4 h-4" />

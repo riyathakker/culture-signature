@@ -22,26 +22,26 @@ export function ProductTabs({ details }: ProductTabsProps) {
     <div className="py-20 border-t">
       <Tabs defaultValue="description" className="w-full">
         <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-8 mb-10">
-          <TabsTrigger 
-            value="description" 
+          <TabsTrigger
+            value="description"
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-4 text-[10px] uppercase tracking-[0.3em] font-bold"
           >
             {t("shop.product.details.tabs.story")}
           </TabsTrigger>
-          <TabsTrigger 
-            value="specifications" 
+          <TabsTrigger
+            value="specifications"
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-4 text-[10px] uppercase tracking-[0.3em] font-bold"
           >
             {t("shop.product.details.tabs.specs")}
           </TabsTrigger>
-          <TabsTrigger 
-            value="shipping" 
+          <TabsTrigger
+            value="shipping"
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-4 text-[10px] uppercase tracking-[0.3em] font-bold"
           >
             {t("shop.product.details.tabs.shipping")}
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="description" className="max-w-3xl animate-in fade-in duration-500">
           <div className="space-y-6 font-serif italic text-lg text-muted-foreground leading-relaxed">
             {details.description.split("\n").map((para, i) => (
@@ -54,7 +54,7 @@ export function ProductTabs({ details }: ProductTabsProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-6">
             {details.specifications.map((spec, i) => (
               <div key={i} className="flex justify-between items-center py-2 border-b border-border/50">
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">{spec.label}</span>
+                <span className="text-spaced-bold text-muted-foreground font-bold">{spec.label}</span>
                 <span className="font-medium">{spec.value}</span>
               </div>
             ))}

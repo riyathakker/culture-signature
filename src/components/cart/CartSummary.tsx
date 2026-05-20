@@ -190,7 +190,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       {/* Coupon Section - Only for Cart */}
       {variant === "cart" && (
         <div className="space-y-3 pt-4 border-t border-border/20">
-          <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{t("cart.summary.promotionalCode")}</p>
+          <p className="text-spaced-bold text-muted-foreground">{t("cart.summary.promotionalCode")}</p>
           <div className="flex gap-2">
             <Input
               placeholder={t("cart.summary.codePlaceholder")}
@@ -231,7 +231,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
           )
         ) : (
           <div className="p-4 bg-primary/5 border border-primary/20 rounded-sm text-center">
-            <p className="text-[10px] uppercase tracking-widest font-bold text-primary">{t("cart.summary.adminPreview.title")}</p>
+            <p className="text-spaced-bold text-primary">{t("cart.summary.adminPreview.title")}</p>
             <p className="text-[9px] text-muted-foreground mt-1 uppercase tracking-widest leading-relaxed">
               {t("cart.summary.adminPreview.description")}
             </p>

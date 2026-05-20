@@ -138,7 +138,7 @@ export function FilterSidebar({ showCategories = false, onCategoryChange, active
                     if (Array.isArray(val)) handlePriceChange(val as number[]);
                   }}
                 />
-                <div className="flex justify-between text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
+                <div className="flex justify-between text-spaced-bold text-muted-foreground">
                   <span>₹{priceRange[0].toLocaleString("en-IN")}</span>
                   <span>₹{priceRange[1].toLocaleString("en-IN")}{priceRange[1] === 10000 ? "+" : ""}</span>
                 </div>

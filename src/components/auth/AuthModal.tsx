@@ -114,7 +114,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               {view === "signup" && t("auth.signup.title")}
               {view === "forgot-password" && t("auth.forgotPassword.title")}
             </h3>
-            <p className="text-sm text-muted-foreground font-serif italic">
+            <p className="text-sm muted-italic">
               {view === "login" && t("auth.login.description")}
               {view === "signup" && t("auth.signup.description")}
               {view === "forgot-password" && t("auth.forgotPassword.description")}
@@ -227,7 +227,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
           <div className="text-center">
             {view === "login" ? (
-              <p className="text-sm text-muted-foreground font-serif italic">
+              <p className="text-sm muted-italic">
                 {t("auth.login.newToBrand")}{"  "}
                 <button
                   onClick={() => setView("signup")}

@@ -20,7 +20,7 @@ export default function WishlistPage() {
           </div>
           <div className="space-y-2">
             <h2 className="text-3xl font-heading">Your collection is empty</h2>
-            <p className="text-muted-foreground font-serif italic max-w-md mx-auto">
+            <p className="muted-italic max-w-md mx-auto">
               Discover our range of handcrafted masterpieces and save your favorites here.
             </p>
           </div>

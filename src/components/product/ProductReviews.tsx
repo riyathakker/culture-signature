@@ -29,7 +29,7 @@ export function ProductReviews() {
     if (productId) fetchReviews();
   }, [productId]);
 
-  const avgRating = reviews.length > 0 
+  const avgRating = reviews.length > 0
     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
     : "5.0";
 
@@ -62,7 +62,7 @@ export function ProductReviews() {
               <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Based on {reviews.length} Reviews</p>
             </div>
           </div>
-          
+
           <div className="space-y-3 pt-4">
             {ratingCounts.map(({ rating, count, percentage }) => (
               <div key={rating} className="flex items-center gap-4">
@@ -78,7 +78,7 @@ export function ProductReviews() {
         <div className="lg:col-span-2 space-y-12">
           {reviews.length === 0 ? (
             <div className="py-10 text-center border-2 border-dashed rounded-sm">
-              <p className="text-muted-foreground font-serif italic">No reviews yet. Be the first to share your experience from your Order History.</p>
+              <p className="muted-italic">No reviews yet. Be the first to share your experience from your Order History.</p>
             </div>
           ) : (
             reviews.map((review) => (
@@ -92,7 +92,7 @@ export function ProductReviews() {
                     </div>
                     <h4 className="font-heading text-xl">Artesian Choice</h4>
                   </div>
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+                  <span className="text-spaced-bold text-muted-foreground">
                     {new Date(review.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                   </span>
                 </div>
@@ -103,7 +103,7 @@ export function ProductReviews() {
                   <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold">
                     {review.user?.name?.[0] || "C"}
                   </div>
-                  <span className="text-[10px] uppercase tracking-widest font-bold">{review.user?.name || "Verified Client"}</span>
+                  <span className="text-spaced-bold">{review.user?.name || "Verified Client"}</span>
                 </div>
               </div>
             ))

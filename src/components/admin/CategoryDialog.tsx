@@ -124,7 +124,7 @@ export function CategoryDialog({
           <DialogTitle className="font-heading text-2xl tracking-tight">
             {category ? t("admin.categories.dialog.titleEdit") : t("admin.categories.dialog.titleCreate")}
           </DialogTitle>
-          <p className="text-muted-foreground font-serif italic text-sm">
+          <p className="muted-italic text-sm">
             {category ? t("admin.categories.dialog.descEdit") : t("admin.categories.dialog.descCreate")}
           </p>
         </DialogHeader>
@@ -132,7 +132,7 @@ export function CategoryDialog({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto px-2">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.categories.dialog.labels.name")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.categories.dialog.labels.name")}</Label>
               <Input
                 placeholder="e.g., Heritage Gold"
                 {...register("name", { required: "Name is required" })}
@@ -143,7 +143,7 @@ export function CategoryDialog({
 
             {category && (
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">Status</Label>
+                <Label className="text-spaced-bold opacity-60">Status</Label>
                 <Select
                   value={categoryStatus}
                   onValueChange={(val: any) => setValue("status", val)}

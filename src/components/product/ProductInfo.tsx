@@ -70,7 +70,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         )}
       </div>
 
-      <p className="text-muted-foreground font-serif italic text-lg leading-relaxed">
+      <p className="muted-italic text-lg leading-relaxed">
         {product.description}
       </p>
 

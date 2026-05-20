@@ -130,7 +130,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
           <DialogTitle className="font-heading text-2xl tracking-tight">
             {discount ? t("admin.discounts.dialog.titleEdit") : t("admin.discounts.dialog.titleCreate")}
           </DialogTitle>
-          <p className="text-muted-foreground font-serif italic text-sm">
+          <p className="muted-italic text-sm">
             {discount ? t("admin.discounts.dialog.descEdit") : t("admin.discounts.dialog.descCreate")}
           </p>
         </DialogHeader>
@@ -138,7 +138,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto px-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2 md:col-span-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.code")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.code")}</Label>
               <Input
                 placeholder="e.g., ROYAL20"
                 {...register("code", { required: "Code is required" })}
@@ -148,7 +148,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.type")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.type")}</Label>
               <Select
                 value={discountType}
                 onValueChange={(val: any) => setValue("type", val)}
@@ -164,7 +164,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.value")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.value")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -174,7 +174,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.usageLimit")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.usageLimit")}</Label>
               <Input
                 type="number"
                 placeholder="Unlimited"
@@ -184,7 +184,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.expiryDate")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.expiryDate")}</Label>
               <Input
                 type="date"
                 {...register("expiryDate")}

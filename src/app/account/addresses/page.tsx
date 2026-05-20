@@ -24,7 +24,7 @@ export default async function AddressesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div className="space-y-2">
           <h2 className="text-3xl font-heading">Saved Addresses</h2>
-          <p className="text-muted-foreground font-serif italic">Manage your delivery and billing locations for a seamless checkout.</p>
+          <p className="muted-italic">Manage your delivery and billing locations for a seamless checkout.</p>
         </div>
         <AddressDialog />
       </div>
@@ -32,7 +32,7 @@ export default async function AddressesPage() {
       {addresses.length === 0 ? (
         <div className="py-24 text-center border border-dashed rounded-sm bg-secondary/10">
           <div className="max-w-xs mx-auto space-y-6">
-            <p className="text-muted-foreground font-serif italic">Your address book is empty. Curate your delivery locations for faster acquisition of masterpieces.</p>
+            <p className="muted-italic">Your address book is empty. Curate your delivery locations for faster acquisition of masterpieces.</p>
           </div>
         </div>
       ) : (
@@ -46,7 +46,7 @@ export default async function AddressesPage() {
                 <div className="space-y-4 flex-1">
                   <div className="space-y-1">
                     <h3 className="font-heading text-xl">{session.user?.name}</h3>
-                    <div className="space-y-0.5 text-sm text-muted-foreground font-serif italic leading-relaxed">
+                    <div className="space-y-0.5 text-sm muted-italic leading-relaxed">
                       <p>{addr.street}</p>
                       <p>{addr.city}, {addr.state} {addr.zipCode}</p>
                       <p className="uppercase tracking-[0.2em] text-[10px] font-sans font-bold opacity-60 mt-1">{addr.country}</p>

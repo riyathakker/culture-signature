@@ -144,7 +144,7 @@ export function ProductForm({ productId }: ProductFormProps) {
           <h1 className="text-4xl font-heading tracking-tight">
             {isEdit ? "Refine Masterpiece" : "New Masterpiece"}
           </h1>
-          {isEdit && <p className="text-muted-foreground font-serif italic">Update the details of your artisanal creation.</p>}
+          {isEdit && <p className="muted-italic">Update the details of your artisanal creation.</p>}
         </div>
       </div>
 
@@ -153,7 +153,7 @@ export function ProductForm({ productId }: ProductFormProps) {
           <div className="bg-background border border-border/50 p-8 rounded-sm space-y-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Product Name</Label>
+                <Label className="text-spaced-bold">Product Name</Label>
                 <Input
                   placeholder="e.g., Aurelia Diamond Ring"
                   className="h-12 border-border/50"
@@ -163,7 +163,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Description</Label>
+                <Label className="text-spaced-bold">Description</Label>
                 <Textarea
                   placeholder="Describe the inspiration, materials, and craftsmanship..."
                   className="min-h-[200px] border-border/50 resize-none"
@@ -188,7 +188,7 @@ export function ProductForm({ productId }: ProductFormProps) {
           <div className="bg-background border border-border/50 p-8 rounded-sm space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Category</Label>
+                <Label className="text-spaced-bold">Category</Label>
               </div>
               <Select
                 value={formData.categoryId}
@@ -208,7 +208,7 @@ export function ProductForm({ productId }: ProductFormProps) {
               </Select>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Price (₹)</Label>
+                <Label className="text-spaced-bold">Price (₹)</Label>
                 <Input
                   type="number"
                   placeholder="0.00"
@@ -220,7 +220,7 @@ export function ProductForm({ productId }: ProductFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Discount (₹)</Label>
+                <Label className="text-spaced-bold">Discount (₹)</Label>
                 <Input
                   type="number"
                   placeholder="0.00"
@@ -231,7 +231,7 @@ export function ProductForm({ productId }: ProductFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">
+                <Label className="text-spaced-bold">
                   {isEdit ? "Stock Count" : "Initial Stock"}
                 </Label>
                 <Input
@@ -247,7 +247,7 @@ export function ProductForm({ productId }: ProductFormProps) {
 
               <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm bg-secondary/5">
                 <div className="space-y-1">
-                  <Label className="text-[10px] uppercase tracking-widest font-bold">Featured Product</Label>
+                  <Label className="text-spaced-bold">Featured Product</Label>
                   <p className="text-[9px] text-muted-foreground uppercase tracking-widest">Show in featured collection</p>
                 </div>
                 <Switch

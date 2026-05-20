@@ -70,8 +70,8 @@ export default function ShopPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
             <div className="flex items-center gap-4">
               <FilterDrawer showCategories
-            activeCategoryIds={activeCategoryIds}
-            onCategoryChange={setActiveCategoryIds}/>
+                activeCategoryIds={activeCategoryIds}
+                onCategoryChange={setActiveCategoryIds} />
               <p className="text-spaced-bold text-muted-foreground">
                 {t("shop.showing").replace("{count}", products.length.toString())}
               </p>
@@ -87,7 +87,7 @@ export default function ShopPage() {
             </div>
           ) : products.length === 0 ? (
             <div className="py-32 text-center space-y-4">
-              <p className="text-muted-foreground font-serif italic text-lg">{t("shop.noMatches")}</p>
+              <p className="muted-italic text-lg">{t("shop.noMatches")}</p>
               <button
                 onClick={() => window.location.href = "/shop"}
                 className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"

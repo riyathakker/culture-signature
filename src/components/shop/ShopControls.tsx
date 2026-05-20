@@ -16,7 +16,7 @@ interface ShopControlsProps {
 export function ShopControls({ sortBy, onSortChange }: ShopControlsProps) {
   return (
     <div className="flex items-center gap-4">
-      <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground whitespace-nowrap">Sort By</span>
+      <span className="text-spaced-bold text-muted-foreground whitespace-nowrap">Sort By</span>
       <Select value={sortBy} onValueChange={(val) => {
         if (val)
           onSortChange(val)

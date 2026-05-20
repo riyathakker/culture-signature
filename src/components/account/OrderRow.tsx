@@ -24,14 +24,14 @@ export function OrderRow({ order }: { order: any }) {
           })}
         </TableCell>
         <TableCell>
-          <Badge 
-            variant="outline" 
+          <Badge
+            variant="outline"
             className={
-              order.status === "DELIVERED" 
-                ? "border-green-500 text-green-500" 
+              order.status === "DELIVERED"
+                ? "border-green-500 text-green-500"
                 : order.status === "PENDING"
-                ? "border-amber-500 text-amber-500"
-                : "border-primary text-primary"
+                  ? "border-amber-500 text-amber-500"
+                  : "border-primary text-primary"
             }
           >
             {order.status}
@@ -39,18 +39,18 @@ export function OrderRow({ order }: { order: any }) {
         </TableCell>
         <TableCell className="text-right font-medium">₹{order.totalPrice.toLocaleString()}</TableCell>
         <TableCell className="text-right">
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-[10px] uppercase tracking-widest gap-2"
+            className="text-spaced-bold gap-2"
           >
             {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             {isExpanded ? "Hide" : "Details"}
           </Button>
         </TableCell>
       </TableRow>
-      
+
       {isExpanded && (
         <TableRow className="bg-secondary/10 border-b-2 border-primary/10">
           <TableCell colSpan={5} className="p-0">
@@ -61,8 +61,8 @@ export function OrderRow({ order }: { order: any }) {
                   <div key={item.id} className="flex items-center justify-between bg-background p-4 rounded-sm border border-border/50">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-secondary/30 rounded-sm overflow-hidden relative">
-                        <img 
-                          src={item.product.images?.[0]} 
+                        <img
+                          src={item.product.images?.[0]}
                           alt={item.product.name}
                           className="w-full h-full object-cover"
                         />
@@ -73,10 +73,10 @@ export function OrderRow({ order }: { order: any }) {
                       </div>
                     </div>
                     {order.status === "DELIVERED" && (
-                      <ReviewModal 
-                        productId={item.product.id} 
-                        productName={item.product.name} 
-                        orderId={order.id} 
+                      <ReviewModal
+                        productId={item.product.id}
+                        productName={item.product.name}
+                        orderId={order.id}
                       />
                     )}
                   </div>

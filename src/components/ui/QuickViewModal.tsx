@@ -24,7 +24,7 @@ interface QuickViewModalProps {
 }
 
 export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalProps) {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const [quantity, setQuantity] = useState(0);
   const [selectedImage, setSelectedImage] = useState(0);
   const { data: session } = useSession();
@@ -118,7 +118,7 @@ export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalPr
                 )}
               </div>
 
-              <p className="text-muted-foreground font-serif italic leading-relaxed text-xs md:text-sm">
+              <p className="muted-italic leading-relaxed text-xs md:text-sm">
                 {product.description}
               </p>
 

@@ -26,7 +26,7 @@ export function StatCard({ label, value, trend, trendType, icon: Icon }: StatCar
         </span>
       </div>
       <div className="space-y-1">
-        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{label}</p>
+        <p className="text-spaced-bold text-muted-foreground">{label}</p>
         <h3 className="text-3xl font-heading tracking-tight">{value}</h3>
       </div>
     </div>

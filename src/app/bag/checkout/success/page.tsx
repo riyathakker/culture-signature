@@ -26,7 +26,7 @@ function SuccessContent() {
 
       <div className="space-y-4">
         <h2 className="text-4xl font-heading tracking-tight">{t("cart.checkout.success.title")}</h2>
-        <p className="text-muted-foreground font-serif italic text-lg">
+        <p className="muted-italic text-lg">
           {t("cart.checkout.success.description")}
         </p>
       </div>

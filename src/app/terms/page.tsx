@@ -13,7 +13,7 @@ export default function TermsPage() {
         <Container>
           <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.terms.breadcrumb") }]} />
           <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2 text-primary">{t("legal.terms.title")}</h1>
-          <p className="text-muted-foreground font-serif italic text-lg max-w-2xl">
+          <p className="muted-italic text-lg max-w-2xl">
             {t("legal.terms.subtitle")}
           </p>
         </Container>

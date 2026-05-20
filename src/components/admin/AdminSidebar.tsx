@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  Package, 
-  ShoppingBag, 
-  Users, 
-  Tag, 
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  Users,
+  Tag,
   ChevronRight,
   Home,
   LayoutGrid
@@ -41,8 +41,8 @@ export function AdminSidebar() {
 
       <nav className="flex-1 px-4 space-y-1">
         {menuItems.map((item) => {
-          const isActive = item.href === "/admin" 
-            ? pathname === "/admin" 
+          const isActive = item.href === "/admin"
+            ? pathname === "/admin"
             : pathname.startsWith(item.href);
           return (
             <Link
@@ -50,8 +50,8 @@ export function AdminSidebar() {
               href={item.href}
               className={cn(
                 "flex items-center justify-between px-4 py-3 rounded-sm transition-all group",
-                isActive 
-                  ? "bg-primary-foreground text-primary shadow-sm" 
+                isActive
+                  ? "bg-primary-foreground text-primary shadow-sm"
                   : "hover:bg-primary-foreground/60 text-primary-foreground"
               )}
             >
@@ -71,7 +71,7 @@ export function AdminSidebar() {
           className="flex items-center gap-3 px-4 py-3 text-primary-foreground hover:text-foreground transition-all group"
         >
           <Home className="w-4 h-4 opacity-60 group-hover:opacity-100" />
-          <span className="text-[10px] uppercase tracking-widest font-bold">{t("admin.sidebar.home")}</span>
+          <span className="text-spaced-bold font-bold">{t("admin.sidebar.home")}</span>
         </Link>
       </div>
     </aside>

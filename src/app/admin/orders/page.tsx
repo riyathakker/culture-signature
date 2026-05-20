@@ -283,12 +283,12 @@ export default function AdminOrders() {
                     {(order.shippedAt || order.deliveredAt) && (
                       <div className="space-y-2 pt-2 border-t border-border/50">
                         {order.shippedAt && (
-                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+                          <p className="text-spaced-bold text-muted-foreground font-bold">
                             Shipped: <span className="text-primary ml-1">{format(new Date(order.shippedAt), "MMM dd, yyyy")}</span>
                           </p>
                         )}
                         {order.deliveredAt && (
-                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
+                          <p className="text-spaced-bold text-muted-foreground font-bold">
                             Delivered: <span className="text-primary ml-1">{format(new Date(order.deliveredAt), "MMM dd, yyyy")}</span>
                           </p>
                         )}

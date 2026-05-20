@@ -80,7 +80,7 @@ export default function NewDiscountPage() {
           </Link>
           <div className="space-y-1">
             <h1 className="text-3xl font-heading tracking-tight">Create Discount</h1>
-            <p className="text-muted-foreground font-serif italic text-sm">Design an exclusive offer for your patrons.</p>
+            <p className="muted-italic text-sm">Design an exclusive offer for your patrons.</p>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function NewDiscountPage() {
 
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Coupon Code</Label>
+                <Label className="text-spaced-bold">Coupon Code</Label>
                 <Input
                   placeholder="e.g., ROYAL20"
                   className="h-12 rounded-none border-border/50 font-mono tracking-wider uppercase"
@@ -109,7 +109,7 @@ export default function NewDiscountPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-[10px] uppercase tracking-widest font-bold">Discount Type</Label>
+                  <Label className="text-spaced-bold">Discount Type</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(val) => val && setFormData({ ...formData, type: val })}
@@ -133,7 +133,7 @@ export default function NewDiscountPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[10px] uppercase tracking-widest font-bold">Value</Label>
+                  <Label className="text-spaced-bold">Value</Label>
                   <Input
                     type="number"
                     placeholder={formData.type === "PERCENTAGE" ? "20" : "500"}
@@ -156,7 +156,7 @@ export default function NewDiscountPage() {
 
             <div className="grid-split">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Usage Limit</Label>
+                <Label className="text-spaced-bold">Usage Limit</Label>
                 <div className="relative">
                   <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -170,7 +170,7 @@ export default function NewDiscountPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Expiry Date</Label>
+                <Label className="text-spaced-bold">Expiry Date</Label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -193,7 +193,7 @@ export default function NewDiscountPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold">Initial Status</Label>
+              <Label className="text-spaced-bold">Initial Status</Label>
               <Select
                 value={formData.status}
                 onValueChange={(val) => val && setFormData({ ...formData, status: val })}

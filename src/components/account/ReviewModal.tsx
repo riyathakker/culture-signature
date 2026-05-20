@@ -49,14 +49,14 @@ export function ReviewModal({ productId, productName, orderId, onSuccess }: Revi
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <Button variant="outline" size="sm" className="text-[10px] uppercase tracking-widest gap-2">
+        <Button variant="outline" size="sm" className="text-spaced-bold gap-2">
           <Star className="w-3 h-3" /> Review
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-background border-none">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl tracking-tight">Write a Review</DialogTitle>
-          <p className="text-muted-foreground font-serif italic text-sm">
+          <p className="muted-italic text-sm">
             Sharing your experience with the {productName}.
           </p>
         </DialogHeader>

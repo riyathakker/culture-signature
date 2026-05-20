@@ -27,7 +27,7 @@ export default function CollectionsPage() {
         <CommonLoader />
       ) : categories.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="text-muted-foreground font-serif italic text-lg">{t("collections.empty")}</p>
+          <p className="muted-italic text-lg">{t("collections.empty")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
@@ -48,12 +48,12 @@ export default function CollectionsPage() {
               <div className="space-y-2">
                 <div className="flex justify-between items-end">
                   <h3 className="text-3xl font-heading group-hover:text-primary transition-colors">{category.name}</h3>
-                  <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mb-1">{category._count?.products || 0} {t("home.categories.pieces")}</span>
+                  <span className="text-spaced-bold font-bold text-muted-foreground mb-1">{category._count?.products || 0} {t("home.categories.pieces")}</span>
                 </div>
-                <p className="text-muted-foreground font-serif italic text-sm leading-relaxed max-w-xs">
+                <p className="muted-italic text-sm leading-relaxed max-w-xs">
                   Curated selection of artisanal {category.name.toLowerCase()} masterpieces.
                 </p>
-                <div className="pt-2 flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-primary group-hover:gap-4 transition-all">
+                <div className="pt-2 flex items-center gap-2 text-spaced-bold font-bold text-primary group-hover:gap-4 transition-all">
                   {t("cart.page.browseCollection")} <ArrowRight className="w-3 h-3" />
                 </div>
               </div>
