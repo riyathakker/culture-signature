@@ -14,16 +14,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Plus, Loader2, Save } from "lucide-react";
 import { useCategoryStore } from "@/store/categoryStore";
 import { useTranslation } from "@/context/TranslationContext";
 
 interface CategoryFormValues {
   name: string;
-  slug: string;
-  description?: string;
-  isArchived: boolean;
+  status: "ACTIVE" | "ARCHIVED";
 }
 
 interface CategoryDialogProps {
@@ -31,6 +35,7 @@ interface CategoryDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  onSuccess?: (category: any) => void;
 }
 
 export function CategoryDialog({
@@ -38,8 +43,8 @@ export function CategoryDialog({
   trigger,
   open: externalOpen,
   onOpenChange: setExternalOpen,
+  onSuccess,
 }: CategoryDialogProps) {
-  const { addCategory, updateCategory} = useCategoryStore();
   const { t } = useTranslation();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,31 +64,41 @@ export function CategoryDialog({
   } = useForm<CategoryFormValues>({
     defaultValues: {
       name: "",
+      status: "ACTIVE",
     },
   });
 
   // Reset form when category changes
   useEffect(() => {
     if (category) {
-      reset(category);
+      reset({
+        name: category.name || "",
+        status: category.status || "ACTIVE",
+      });
     } else {
       reset({
         name: "",
+        status: "ACTIVE",
       });
     }
   }, [category, reset]);
 
+  const categoryStatus = watch("status");
 
   const onSubmit = async (data: CategoryFormValues) => {
     setIsLoading(true);
     try {
-      const url = category ? `/api/categories/${category.id}` : "/api/categories";
+      const url = "/api/admin/categories";
       const method = category ? "PATCH" : "POST";
+
+      const payload = category
+        ? { id: category.id, name: data.name, status: data.status }
+        : { name: data.name };
 
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -95,11 +110,14 @@ export function CategoryDialog({
       toast.success(category ? t("admin.categories.dialog.messages.updateSuccess") : t("admin.categories.dialog.messages.createSuccess"));
       setOpen?.(false);
       if (!category) reset();
+      
+      const { addCategory, updateCategory } = useCategoryStore.getState();
       if (category) {
         updateCategory(savedCategory);
       } else {
         addCategory(savedCategory);
       }
+      if (onSuccess) onSuccess(savedCategory);
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || t("admin.common.error"));
@@ -138,6 +156,24 @@ export function CategoryDialog({
               />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
+
+            {category && (
+              <div className="space-y-2">
+                <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">Status</Label>
+                <Select
+                  value={categoryStatus}
+                  onValueChange={(val: any) => setValue("status", val)}
+                >
+                  <SelectTrigger className="h-12 border-border/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="ARCHIVED">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <Button

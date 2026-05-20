@@ -5,8 +5,8 @@ import {
   Edit2,
   Trash2,
   Plus,
-  Search,
-  Filter,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,27 +16,99 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { useCategoryStore } from "@/store/categoryStore";
 import { AdminTable, Column } from "@/components/admin/AdminTable";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { CategoryDialog } from "@/components/admin/CategoryDialog";
+import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
 import { useTranslation } from "@/context/TranslationContext";
+import { Category } from "@/types";
 
 export default function CategoriesPage() {
-  const { categories, isLoading, updateCategory, addCategory } = useCategoryStore();
+  const { categories, isLoading, fetchCategories, updateCategory, addCategory, deleteCategory } = useCategoryStore();
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
+  const router = useRouter();
+
+  // State for Edit/Delete dialogs
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  useEffect(() => {
+    fetchCategories(true); // Force fetch on mount including archived
+  }, []);
 
   const filteredCategories = useMemo(() => {
     return categories.filter((cat) =>
-      cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cat.slug.toLowerCase().includes(searchQuery.toLowerCase())
+      cat.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [categories, searchQuery]);
 
-  const columns: Column<any>[] = [
+  const handleEdit = useCallback((cat: Category) => {
+    setSelectedCategory(cat);
+    setIsEditDialogOpen(true);
+  }, []);
+
+  const handleDeleteClick = useCallback((cat: Category) => {
+    setSelectedCategory(cat);
+    setIsDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = async () => {
+    if (selectedCategory) {
+      try {
+        const response = await fetch(`/api/admin/categories?id=${selectedCategory.id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete category");
+        }
+
+        deleteCategory(selectedCategory.id);
+        setIsDeleteDialogOpen(false);
+        setSelectedCategory(null);
+        toast.success("Collection removed successfully");
+        router.refresh();
+      } catch (err) {
+        toast.error("Failed to delete collection");
+      }
+    }
+  };
+
+  const toggleArchive = async (cat: Category) => {
+    try {
+      const newStatus = cat.status === "ARCHIVED" ? "ACTIVE" : "ARCHIVED";
+      const response = await fetch("/api/admin/categories", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: cat.id,
+          name: cat.name,
+          status: newStatus,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to toggle category status");
+      }
+
+      const updated = await response.json();
+      updateCategory(updated);
+      toast.success(newStatus === "ARCHIVED" ? "Collection archived successfully" : "Collection activated successfully");
+      router.refresh();
+    } catch (err) {
+      toast.error("Failed to change collection status");
+    }
+  };
+
+  const columns: Column<Category>[] = [
     {
       header: t("admin.categories.table.collection"),
       render: (cat) => (
@@ -49,16 +121,6 @@ export default function CategoriesPage() {
       ),
     },
     {
-      header: t("admin.categories.table.slug"),
-      className: "font-mono text-[10px] text-muted-foreground",
-      accessor: "slug",
-    },
-    {
-      header: t("admin.categories.table.description"),
-      className: "max-w-[300px] truncate text-xs italic font-serif opacity-60",
-      accessor: "description",
-    },
-    {
       header: t("admin.categories.table.products"),
       headerClassName: "text-center",
       className: "text-center font-bold text-xs",
@@ -66,42 +128,89 @@ export default function CategoriesPage() {
     },
     {
       header: t("admin.categories.table.status"),
-      render: (cat) => (
-        <Badge
-          variant="outline"
-          className={`text-[9px] tracking-widest font-bold h-5 uppercase rounded-none px-2 ${cat.isArchived
-            ? "border-muted-foreground/30 text-muted-foreground bg-muted/5"
-            : "border-primary/30 text-primary bg-primary/5"
-            }`}
-        >
-          {cat.isArchived ? "Archived" : "Active"}
-        </Badge>
-      ),
+      render: (cat) => {
+        const isArchived = cat.status === "ARCHIVED";
+        return (
+          <Badge
+            variant="outline"
+            className={cn(
+              "text-[9px] tracking-widest font-bold h-5 uppercase rounded-none px-2",
+              isArchived
+                ? "border-muted-foreground/30 text-muted-foreground bg-muted/5"
+                : "border-primary/30 text-primary bg-primary/5"
+            )}
+          >
+            {isArchived ? "Archived" : "Active"}
+          </Badge>
+        );
+      },
     },
     {
-      header: t("admin.common.actions"),
-      render: (cat) => (
-        <div className="flex justify-center gap-2">
-          <CategoryDialog
-            category={cat}
-            trigger={
-              <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary">
-                <Edit2 className="w-4 h-4" />
-              </Button>
-            }
-          />
-        </div>
-      ),
+      header: "",
+      className: "text-right",
+      render: (cat) => {
+        const isArchived = cat.status === "ARCHIVED";
+        return (
+          <div className="flex justify-end gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40 bg-background border border-border/50 shadow-xl z-[100]">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleEdit(cat);
+                  }}
+                  className="gap-2 cursor-pointer focus:bg-primary focus:text-primary-foreground"
+                >
+                  <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleArchive(cat);
+                  }}
+                  className="gap-2 cursor-pointer focus:bg-primary focus:text-primary-foreground"
+                >
+                  {isArchived ? (
+                    <>
+                      <ArchiveRestore className="w-4 h-4" /> Activate
+                    </>
+                  ) : (
+                    <>
+                      <Archive className="w-4 h-4" /> Archive
+                    </>
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeleteClick(cat);
+                  }}
+                  className="gap-2 text-destructive cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
+                >
+                  <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      },
     },
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
       <AdminPageHeader
         title={t("admin.categories.title")}
         description={t("admin.categories.description")}
         action={
-          <CategoryDialog />
+          <CategoryDialog
+            onSuccess={(newCat: Category) => addCategory(newCat)}
+          />
         }
       />
 
@@ -117,6 +226,31 @@ export default function CategoriesPage() {
         isLoading={isLoading}
         emptyMessage={t("admin.categories.empty")}
         rowKey={(cat) => cat.id}
+      />
+
+      {/* Edit Category Dialog */}
+      <CategoryDialog
+        category={selectedCategory}
+        open={isEditDialogOpen}
+        onOpenChange={(val) => {
+          setIsEditDialogOpen(val);
+          if (!val) setTimeout(() => setSelectedCategory(null), 300);
+        }}
+        onSuccess={(updatedCat: Category) => updateCategory(updatedCat)}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={(val) => {
+          setIsDeleteDialogOpen(val);
+          if (!val) setTimeout(() => setSelectedCategory(null), 300);
+        }}
+        title="Remove Collection"
+        description={selectedCategory ? `Are you sure you want to remove the collection "${selectedCategory.name}"? This will soft-delete the category.` : ""}
+        onConfirm={confirmDelete}
+        cancelText={t("admin.common.cancel")}
+        confirmText={t("admin.common.delete")}
       />
     </div>
   );
