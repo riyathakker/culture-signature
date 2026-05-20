@@ -157,6 +157,7 @@ export default function AdminProducts() {
     });
   }, [products, searchQuery, selectedCategoryId, activeStatus]);
 
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
@@ -193,7 +194,10 @@ export default function AdminProducts() {
       header: t("admin.products.columns.product"),
       render: (product) => (
         <div className="flex items-center gap-4 py-2">
-          <div className="w-12 h-16 bg-secondary/20 rounded-sm overflow-hidden flex-shrink-0">
+          <div
+            className="w-12 h-16 bg-secondary/20 rounded-sm overflow-hidden flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => product.images?.[0] && setLightboxSrc(product.images[0])}
+          >
             {product.images?.[0] ? (
               <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
             ) : (
@@ -393,6 +397,28 @@ export default function AdminProducts() {
         confirmText={t("admin.products.delete.confirm")}
         variant="destructive"
       />
+
+      {/* Fullscreen image lightbox */}
+      {lightboxSrc && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4 cursor-zoom-out"
+          onClick={() => setLightboxSrc(null)}
+          onKeyDown={(e) => e.key === "Escape" && setLightboxSrc(null)}
+        >
+          <img
+            src={lightboxSrc}
+            alt="Product fullscreen"
+            className="max-w-full max-h-full object-contain rounded-sm shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            onClick={() => setLightboxSrc(null)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white bg-black/40 rounded-full w-9 h-9 flex items-center justify-center text-xl leading-none transition-colors"
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 }

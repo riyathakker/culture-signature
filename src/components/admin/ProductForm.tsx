@@ -72,6 +72,15 @@ export function ProductForm({ productId }: ProductFormProps) {
     }
   }, [formData, isEdit, isFetching]);
 
+  // Clear draft when navigating away without submitting
+  useEffect(() => {
+    if (!isEdit) {
+      return () => {
+        localStorage.removeItem("product_draft");
+      };
+    }
+  }, [isEdit]);
+
   useEffect(() => {
     fetchInitialData();
   }, [productId]);
@@ -195,7 +204,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                 onValueChange={(val) => setFormData({ ...formData, categoryId: val || "" })}
                 required
               >
-                <SelectTrigger className="h-12 border-border/50 uppercase text-[10px] tracking-widest font-bold">
+                <SelectTrigger className="h-12 w-full border-border/50 uppercase text-[10px] tracking-widest font-bold">
                   <SelectValue placeholder="Select Category">
                     {categories.find(c => c.id === formData.categoryId)?.name}
                   </SelectValue>
