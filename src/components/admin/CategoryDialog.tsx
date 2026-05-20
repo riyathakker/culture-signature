@@ -10,13 +10,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Save } from "lucide-react";
+import { useCategoryStore } from "@/store/categoryStore";
 import { useTranslation } from "@/context/TranslationContext";
 
 interface CategoryFormValues {
@@ -29,14 +29,25 @@ interface CategoryFormValues {
 interface CategoryDialogProps {
   category?: any;
   trigger?: React.ReactNode;
-  onSuccess?: (category: any) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogProps) {
+export function CategoryDialog({
+  category,
+  trigger,
+  open: externalOpen,
+  onOpenChange: setExternalOpen,
+}: CategoryDialogProps) {
+  const { addCategory, updateCategory} = useCategoryStore();
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen : internalOpen;
+  const setOpen = isControlled ? setExternalOpen : setInternalOpen;
 
   const {
     register,
@@ -46,26 +57,22 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
     watch,
     formState: { errors },
   } = useForm<CategoryFormValues>({
-    defaultValues: category || {
+    defaultValues: {
       name: "",
-      slug: "",
-      description: "",
-      isArchived: false,
     },
   });
 
-  const categoryName = watch("name");
-
-  // Auto-generate slug from name
+  // Reset form when category changes
   useEffect(() => {
-    if (!category && categoryName) {
-      const slug = categoryName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      setValue("slug", slug);
+    if (category) {
+      reset(category);
+    } else {
+      reset({
+        name: "",
+      });
     }
-  }, [categoryName, setValue, category]);
+  }, [category, reset]);
+
 
   const onSubmit = async (data: CategoryFormValues) => {
     setIsLoading(true);
@@ -86,9 +93,13 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
 
       const savedCategory = await response.json();
       toast.success(category ? t("admin.categories.dialog.messages.updateSuccess") : t("admin.categories.dialog.messages.createSuccess"));
-      setOpen(false);
+      setOpen?.(false);
       if (!category) reset();
-      if (onSuccess) onSuccess(savedCategory);
+      if (category) {
+        updateCategory(savedCategory);
+      } else {
+        addCategory(savedCategory);
+      }
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || t("admin.common.error"));
@@ -101,8 +112,8 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         {trigger || (
-          <Button className="btn-luxury px-6 gap-2">
-            <Plus className="w-4 h-4" /> {t("admin.categories.newCategory")}
+          <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
+            <Plus className="w-4 h-4 mr-2" /> {t("admin.categories.newCategory")}
           </Button>
         )}
       </DialogTrigger>
@@ -127,37 +138,16 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
               />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.categories.dialog.labels.slug")}</Label>
-              <Input
-                placeholder="heritage-gold"
-                {...register("slug", { required: "Slug is required" })}
-                className="h-12 border-border/50 font-mono text-xs"
-              />
-              {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.categories.dialog.labels.description")}</Label>
-              <Textarea
-                placeholder="Describe the thematic essence of this collection..."
-                {...register("description")}
-                className="min-h-[100px] border-border/50 font-serif italic"
-              />
-            </div>
           </div>
 
-          <DialogFooter>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-14 uppercase tracking-[0.2em] text-[10px] font-bold mt-4"
-            >
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              {category ? t("admin.categories.dialog.buttons.edit") : t("admin.categories.dialog.buttons.create")}
-            </Button>
-          </DialogFooter>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-14 uppercase tracking-[0.2em] text-[10px] font-bold mt-4"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+            {category ? t("admin.categories.dialog.buttons.edit") : t("admin.categories.dialog.buttons.create")}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

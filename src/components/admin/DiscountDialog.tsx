@@ -130,14 +130,13 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {trigger && <DialogTrigger>{trigger}</DialogTrigger>}
-      {!trigger && !isControlled && (
-        <DialogTrigger>
+      <DialogTrigger>
+        {trigger || (
           <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
             <Plus className="w-4 h-4 mr-2" /> {t("admin.discounts.newOffer")}
           </Button>
-        </DialogTrigger>
-      )}
+        )}
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[550px] bg-background border-none">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl tracking-tight">

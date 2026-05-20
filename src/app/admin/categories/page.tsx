@@ -69,11 +69,10 @@ export default function CategoriesPage() {
       render: (cat) => (
         <Badge
           variant="outline"
-          className={`text-[9px] tracking-widest font-bold h-5 uppercase rounded-none px-2 ${
-            cat.isArchived 
-              ? "border-muted-foreground/30 text-muted-foreground bg-muted/5" 
-              : "border-primary/30 text-primary bg-primary/5"
-          }`}
+          className={`text-[9px] tracking-widest font-bold h-5 uppercase rounded-none px-2 ${cat.isArchived
+            ? "border-muted-foreground/30 text-muted-foreground bg-muted/5"
+            : "border-primary/30 text-primary bg-primary/5"
+            }`}
         >
           {cat.isArchived ? "Archived" : "Active"}
         </Badge>
@@ -85,7 +84,6 @@ export default function CategoriesPage() {
         <div className="flex justify-center gap-2">
           <CategoryDialog
             category={cat}
-            onSuccess={(updatedCat) => updateCategory(updatedCat)}
             trigger={
               <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary">
                 <Edit2 className="w-4 h-4" />
@@ -103,14 +101,7 @@ export default function CategoriesPage() {
         title={t("admin.categories.title")}
         description={t("admin.categories.description")}
         action={
-          <CategoryDialog
-            onSuccess={(newCat) => addCategory(newCat)}
-            trigger={
-              <Button className="btn-luxury px-6 gap-2">
-                <Plus className="w-4 h-4" /> {t("admin.categories.newCategory")}
-              </Button>
-            }
-          />
+          <CategoryDialog />
         }
       />
 

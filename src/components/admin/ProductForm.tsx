@@ -23,7 +23,6 @@ import { toast } from "sonner";
 import { useProductStore } from "@/store/productStore";
 import { useCategoryStore } from "@/store/categoryStore";
 import { CommonLoader } from "../common/Loader";
-import { CategoryDialog } from "./CategoryDialog";
 import { ImageUpload } from "./ImageUpload";
 
 interface ProductFormProps {
@@ -103,12 +102,6 @@ export function ProductForm({ productId }: ProductFormProps) {
     } finally {
       setIsFetching(false);
     }
-  };
-
-  const handleCategoryCreated = (data: any) => {
-    storeAddCategory(data);
-    setFormData((prev) => ({ ...prev, categoryId: data.id }));
-    toast.success("Category added and selected.");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -213,14 +206,6 @@ export function ProductForm({ productId }: ProductFormProps) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-[10px] uppercase tracking-widest font-bold">Category</Label>
-                <CategoryDialog
-                  onSuccess={handleCategoryCreated}
-                  trigger={
-                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-secondary/50">
-                      <Plus className="w-3 h-3" />
-                    </Button>
-                  }
-                />
               </div>
               <Select
                 value={formData.categoryId}

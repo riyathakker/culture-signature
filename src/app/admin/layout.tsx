@@ -7,7 +7,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="bg-[#fcfcfc] min-h-screen">
       <AdminSidebar />
       <div className="lg:ml-64 flex flex-col min-h-screen">
-        <AdminHeader />
         <AdminMobileNav />
         <main className="flex-1 p-8">
           {children}

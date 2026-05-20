@@ -12,7 +12,7 @@ export function AdminPageHeader({ title, description, action }: AdminPageHeaderP
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
       <div className="space-y-2">
-        <h1 className="text-4xl font-heading tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-heading tracking-tight">{title}</h1>
         <p className="text-muted-foreground font-serif italic">{description}</p>
       </div>
       {action}

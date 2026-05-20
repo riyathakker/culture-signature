@@ -31,11 +31,12 @@ export function AdminSidebar() {
   ];
 
   return (
-    <aside className="w-64 h-screen bg-secondary/10 border-r border-border/50 fixed left-0 top-0 hidden lg:flex flex-col">
+    <aside className="w-64 h-screen bg-primary border-r border-border/50 fixed left-0 top-0 hidden lg:flex flex-col">
       <div className="p-8">
-        <Link href="/" className="text-2xl font-heading tracking-tighter">
+        <Link href="/" className="text-2xl text-primary-foreground font-heading tracking-tighter">
           Culture Signature
         </Link>
+        <p className="text-primary-foreground font-serif italic text-sm">Admin</p>
       </div>
 
       <nav className="flex-1 px-4 space-y-1">
@@ -50,12 +51,12 @@ export function AdminSidebar() {
               className={cn(
                 "flex items-center justify-between px-4 py-3 rounded-sm transition-all group",
                 isActive 
-                  ? "bg-primary text-primary-foreground shadow-sm" 
-                  : "hover:bg-background text-muted-foreground hover:text-foreground"
+                  ? "bg-primary-foreground text-primary shadow-sm" 
+                  : "hover:bg-primary-foreground/80 text-primary-foreground hover:text-foreground"
               )}
             >
               <div className="flex items-center gap-3">
-                <item.icon className={cn("w-4 h-4", isActive ? "" : "text-primary opacity-60 group-hover:opacity-100")} />
+                <item.icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-primary-foreground")} />
                 <span className="text-[10px] uppercase tracking-widest font-bold">{item.label}</span>
               </div>
               {isActive && <ChevronRight className="w-3 h-3" />}
@@ -67,7 +68,7 @@ export function AdminSidebar() {
       <div className="p-4 border-t border-border/50">
         <Link
           href={ROUTES.HOME}
-          className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground transition-all group"
+          className="flex items-center gap-3 px-4 py-3 text-primary-foreground hover:text-foreground transition-all group"
         >
           <Home className="w-4 h-4 opacity-60 group-hover:opacity-100" />
           <span className="text-[10px] uppercase tracking-widest font-bold">{t("admin.sidebar.home")}</span>
