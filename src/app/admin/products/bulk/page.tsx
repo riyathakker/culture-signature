@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useCategoryStore } from "@/store/categoryStore";
+import { useProductStore } from "@/store/productStore";
 import { ProductService } from "@/services/product";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 
@@ -70,6 +71,7 @@ const makeRow = (): BulkRow => ({
 export default function BulkProductUpload() {
   const router = useRouter();
   const { categories, fetchCategories } = useCategoryStore();
+  const { fetchProducts } = useProductStore();
   const initialRows = [makeRow(), makeRow()];
   const [rows, setRows] = useState<BulkRow[]>(initialRows);
   const [openUid, setOpenUid] = useState<string | null>(initialRows[0].uid);
@@ -166,6 +168,7 @@ export default function BulkProductUpload() {
     setIsSubmitting(false);
     if (failCount === 0) {
       toast.success(`${successCount} product${successCount > 1 ? "s" : ""} published successfully.`);
+      await fetchProducts(true);
       router.push("/admin/products");
     } else {
       toast.error(`${failCount} product${failCount > 1 ? "s" : ""} failed. Review errors below.`);
