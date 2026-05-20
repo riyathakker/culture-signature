@@ -200,6 +200,68 @@ export default function DiscountsPage() {
         isLoading={isLoading}
         emptyMessage={t("admin.discounts.empty")}
         rowKey={(d) => d.id}
+        mobileCard={(discount) => (
+          <div className="bg-background border border-border/50 rounded-sm p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                <span className="font-mono text-sm font-bold tracking-wider">{discount.code}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-[9px] tracking-widest font-bold h-5 uppercase rounded-none px-2",
+                    discount.status === "ACTIVE" ? "border-green-500 text-green-500 bg-green-500/5" :
+                    discount.status === "SCHEDULED" ? "border-blue-500 text-blue-500 bg-blue-500/5" :
+                    "border-red-500 text-red-500 bg-red-500/5"
+                  )}
+                >
+                  {discount.status}
+                </Badge>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40 bg-background border border-border/50 shadow-xl z-[100]">
+                    <DropdownMenuItem onClick={(e) => { e.preventDefault(); handleEdit(discount); }} className="gap-2 cursor-pointer focus:bg-primary focus:text-primary-foreground">
+                      <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={(e) => { e.preventDefault(); handleDeleteClick(discount); }} className="gap-2 text-destructive cursor-pointer focus:bg-destructive focus:text-destructive-foreground">
+                      <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{discount.type}</span>
+              <span className="font-bold text-sm">
+                {discount.type === "PERCENTAGE" ? `${discount.value}%` : `₹${discount.value.toLocaleString()}`}
+              </span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-muted-foreground">
+                <span>{t("admin.discounts.table.usage")}</span>
+                <span>{discount.usageLimit ? `${discount.usedCount}/${discount.usageLimit}` : "Unlimited"}</span>
+              </div>
+              <div className="w-full h-1 bg-secondary/30 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary"
+                  style={{ width: discount.usageLimit ? `${(discount.usedCount / discount.usageLimit) * 100}%` : "0%" }}
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between border-t border-border/30 pt-2">
+              <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{t("admin.discounts.table.expires")}</span>
+              <span className="text-xs text-muted-foreground">
+                {discount.expiryDate ? format(new Date(discount.expiryDate), "MMM dd, yyyy") : "Never"}
+              </span>
+            </div>
+          </div>
+        )}
       />
 
       {/* Edit Dialog - Outside the table loop */}

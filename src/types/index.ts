@@ -4,7 +4,7 @@ export type OrderStatus = "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCEL
 
 export type CategoryStatus = "ACTIVE" | "ARCHIVED";
 
-export type DiscountStatus = "ACTIVE" | "EXPIRED";
+export type DiscountStatus = "ACTIVE" | "EXPIRED" | "SCHEDULED";
 
 export type DiscountType = "PERCENTAGE" | "FIXED";
 

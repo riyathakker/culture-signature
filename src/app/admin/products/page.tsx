@@ -36,6 +36,7 @@ import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { Category } from "@/types";
 
 const EditableCell = ({
   productId,
@@ -386,6 +387,66 @@ export default function AdminProducts() {
         isLoading={isLoading}
         emptyMessage={t("admin.products.noResults")}
         rowKey={(p) => p.id}
+        mobileCard={(product) => (
+          <div className="bg-background border border-border/50 rounded-sm p-3 flex gap-3">
+            <div
+              className="w-12 h-16 bg-secondary/20 rounded-sm overflow-hidden flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => product.images?.[0] && setLightboxSrc(product.images[0])}
+            >
+              {product.images?.[0] ? (
+                <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Package className="w-4 h-4 text-muted-foreground/40" />
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-1">
+                <div className="min-w-0">
+                  <p className="font-bold text-sm tracking-tight truncate">{product.name}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
+                    {(product.category as Category)?.name || "Uncategorized"}
+                  </p>
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 flex-shrink-0">
+                      <MoreVertical className="w-3.5 h-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40">
+                    <Link href={ROUTES.ADMIN.PRODUCTS_EDIT(product.id)}>
+                      <DropdownMenuItem className="gap-2 cursor-pointer">
+                        <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuItem
+                      className="gap-2 text-destructive focus:text-destructive cursor-pointer"
+                      onClick={() => handleDeleteClick(product.id)}
+                    >
+                      <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <div className="mt-1.5 flex items-center justify-between flex-wrap gap-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-sm">₹{product.price?.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                    {t("admin.products.columns.featured")}
+                  </span>
+                  <Switch
+                    checked={product.isFeatured}
+                    onCheckedChange={() => toggleFeatured(product.id, product.isFeatured)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       />
 
       <ConfirmationDialog

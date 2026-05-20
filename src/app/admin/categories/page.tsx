@@ -203,6 +203,59 @@ export default function CategoriesPage() {
         isLoading={isLoading}
         emptyMessage={t("admin.categories.empty")}
         rowKey={(cat) => cat.id}
+        mobileCard={(cat) => {
+          const isArchived = cat.status === "ARCHIVED";
+          return (
+            <div className="bg-background border border-border/50 rounded-sm p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded bg-secondary/50 flex items-center justify-center font-bold text-primary flex-shrink-0">
+                {cat.name.charAt(0)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-sm tracking-tight truncate">{cat.name}</span>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "text-[9px] tracking-widest font-bold h-5 uppercase rounded-none px-2 flex-shrink-0",
+                      isArchived
+                        ? "border-muted-foreground/30 text-muted-foreground bg-muted/5"
+                        : "border-primary/30 text-primary bg-primary/5"
+                    )}
+                  >
+                    {isArchived ? "Archived" : "Active"}
+                  </Badge>
+                </div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
+                  {cat._count?.products || 0} {t("admin.categories.table.products").toLowerCase()}
+                </p>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary flex-shrink-0">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40 bg-background border border-border/50 shadow-xl z-[100]">
+                  <DropdownMenuItem onClick={(e) => { e.preventDefault(); handleEdit(cat); }} className="gap-2 cursor-pointer">
+                    <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={(e) => { e.preventDefault(); toggleArchive(cat); }} className="gap-2 cursor-pointer">
+                    {isArchived
+                      ? <><ArchiveRestore className="w-4 h-4" /> Activate</>
+                      : <><Archive className="w-4 h-4" /> Archive</>}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={(e) => { e.preventDefault(); handleDeleteClick(cat); }}
+                    className="gap-2 cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        }}
       />
 
       {/* Edit Category Dialog */}
