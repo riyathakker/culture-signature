@@ -22,21 +22,21 @@ import { Footer } from "@/components/layout/Footer";
 import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "Culture Signature | Luxury Jewellery & Timepieces",
-  description: "Experience the pinnacle of artisanal craftsmanship and timeless elegance.",
+  title: "Culture Signature by Jalpa Thakkar | Luxury Jewellery & Timepieces",
+  description: "Culture Signature by Jalpa Thakkar — experience the pinnacle of artisanal craftsmanship and timeless elegance.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Culture Signature",
+    title: "Culture Signature by Jalpa Thakkar",
   },
   formatDetection: { telephone: false },
   themeColor: "#1a1a1a",
   openGraph: {
     type: "website",
-    title: "Culture Signature",
-    description: "Luxury jewellery & fashion — artisanal craftsmanship, timeless elegance.",
-    siteName: "Culture Signature",
+    title: "Culture Signature by Jalpa Thakkar",
+    description: "Culture Signature by Jalpa Thakkar — luxury jewellery & fashion, artisanal craftsmanship, timeless elegance.",
+    siteName: "Culture Signature by Jalpa Thakkar",
   },
   icons: {
     icon: "/icons/icon-32.png",
