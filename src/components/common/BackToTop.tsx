@@ -59,7 +59,8 @@ export function BackToTop() {
           exit={{ opacity: 0, scale: 0.5, y: 20 }}
           onClick={scrollToTop}
           className={cn(
-            "fixed bottom-8 right-8 z-50 p-4 rounded-full bg-primary text-primary-foreground shadow-2xl transition-transform hover:scale-110 active:scale-95 group overflow-hidden"
+            "fixed right-6 z-50 p-4 rounded-full bg-primary text-primary-foreground shadow-2xl transition-transform hover:scale-110 active:scale-95 group overflow-hidden",
+            "bottom-8 pwa-back-to-top"
           )}
           aria-label="Back to top"
         >

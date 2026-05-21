@@ -50,6 +50,7 @@ import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import { BackToTop } from "@/components/common/BackToTop";
 import { MobileFloatingCart } from "@/components/cart/MobileFloatingCart";
 import { PWABottomNav } from "@/components/pwa/PWABottomNav";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 
 export default function RootLayout({
   children,
@@ -72,6 +73,7 @@ export default function RootLayout({
           <BackToTop />
           <div className="pwa-hide"><MobileFloatingCart /></div>
           <PWABottomNav />
+          <PWAInstallPrompt />
         </Providers>
       </body>
     </html>

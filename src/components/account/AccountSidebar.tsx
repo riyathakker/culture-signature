@@ -87,8 +87,8 @@ export function AccountSidebar() {
         variant="destructive"
       />
 
-      {/* Mobile Horizontal Nav */}
-      <div className="lg:hidden relative">
+      {/* Mobile Horizontal Nav — hidden in PWA mode (bottom tabs handle navigation) */}
+      <div className="lg:hidden pwa-hide relative">
         <div className="flex overflow-x-auto no-scrollbar gap-2 pb-4 px-1 scroll-smooth">
           {filteredNavItems.map((item) => {
             const isActive = pathname === item.href;

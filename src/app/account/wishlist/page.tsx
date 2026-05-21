@@ -10,17 +10,7 @@ export default async function WishlistPage() {
     redirect("/");
   }
 
-  // Debug check
-  if (!(prisma as any).wishlistItem) {
-    console.error("Prisma wishlistItem model is missing! Available keys:", Object.keys(prisma));
-    return (
-      <div className="py-20 text-center border-2 border-dashed rounded-sm">
-        <p className="text-destructive font-serif italic">Database configuration error. Please try again later.</p>
-      </div>
-    );
-  }
-
-  const wishlist = await (prisma as any).wishlistItem.findMany({
+  const wishlist = await prisma.wishlistItem.findMany({
     where: { userId: (session.user as any).id },
     include: {
       product: {

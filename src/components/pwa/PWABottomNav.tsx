@@ -4,17 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home, Sparkles, ShoppingBag, User,
-  LayoutDashboard, Package, Heart, MapPin, Settings, ChevronLeft,
+  Package, Heart, MapPin, Settings, ChevronLeft, Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { AuthModal } from "@/components/auth/AuthModal";
+
+import { SearchDialog } from "@/components/common/SearchDialog";
 import { ROUTES } from "@/constants/routes";
 
 const mainTabs = [
   { label: "Home", href: ROUTES.HOME, icon: Home },
+  { label: "Search", href: "#search", icon: Search, isSearch: true },
   { label: "New In", href: ROUTES.NEW_ARRIVALS, icon: Sparkles },
   { label: "Bag", href: "/bag", icon: ShoppingBag, showBadge: true },
   { label: "Account", href: "/account", icon: User, authRequired: true },
@@ -22,9 +24,9 @@ const mainTabs = [
 
 const accountTabs = [
   { label: "Back", href: ROUTES.HOME, icon: ChevronLeft, isBack: true },
-  { label: "Profile", href: "/account", icon: LayoutDashboard, exact: true },
   { label: "Orders", href: ROUTES.ACCOUNT.ORDERS, icon: Package },
   { label: "Wishlist", href: ROUTES.ACCOUNT.WISHLIST, icon: Heart },
+  { label: "Addresses", href: ROUTES.ACCOUNT.ADDRESSES, icon: MapPin },
   { label: "Settings", href: ROUTES.ACCOUNT.SETTINGS, icon: Settings },
 ];
 
@@ -43,12 +45,12 @@ function NavTab({
       href={href}
       onClick={onClick}
       className={cn(
-        "relative flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors",
+        "relative flex-1 flex flex-col items-center justify-center gap-1 transition-colors min-w-0",
         isActive ? "text-primary" : "text-muted-foreground"
       )}
     >
       <div className="relative">
-        <Icon className={cn("w-5 h-5 transition-all duration-200", isActive && "scale-110")} />
+        <Icon className={cn("w-[22px] h-[22px] transition-all duration-200", isActive && "scale-110")} />
         {badge != null && badge > 0 && (
           <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
             {badge > 9 ? "9+" : badge}
@@ -56,13 +58,13 @@ function NavTab({
         )}
       </div>
       <span className={cn(
-        "text-[8px] uppercase tracking-widest font-bold transition-colors leading-none",
+        "text-[8px] uppercase tracking-widest font-bold transition-colors leading-none truncate w-full text-center",
         isActive ? "text-primary" : "text-muted-foreground/60"
       )}>
         {label}
       </span>
       {isActive && (
-        <span className="absolute bottom-0 inset-x-0 mx-auto w-8 h-0.5 bg-primary rounded-full" />
+        <span className="absolute top-0 inset-x-0 mx-auto w-8 h-0.5 bg-primary rounded-full" />
       )}
     </Link>
   );
@@ -71,42 +73,40 @@ function NavTab({
 export function PWABottomNav() {
   const pathname = usePathname();
   const { items } = useCartStore();
-  const { status, data: session } = useSession();
-  const [authOpen, setAuthOpen] = useState(false);
+  const { data: session } = useSession();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
   const isAdmin = (session?.user as any)?.role === "ADMIN";
   const isOnAccount = pathname.startsWith("/account");
+
 
   const tabs = isOnAccount ? accountTabs : mainTabs;
 
   return (
     <>
       <nav
-        className="pwa-bottom-nav fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border/50 hidden"
+        className="pwa-bottom-nav fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/40 hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        {/* Section label */}
         {isOnAccount && (
-          <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-0.5 rounded-full border border-border/50">
-            <span className="text-[8px] uppercase tracking-widest font-bold text-muted-foreground">My Account</span>
+          <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary/10 backdrop-blur-sm px-4 py-1 rounded-full border border-primary/20">
+            <span className="text-[8px] uppercase tracking-[0.2em] font-bold text-primary">My Account</span>
           </div>
         )}
 
-        <div className="flex items-stretch h-16">
+        <div className="flex items-stretch h-16 px-2">
           {tabs.map((tab) => {
-            const { label, href, icon, isBack, exact, showBadge, authRequired } = tab as any;
+            const { label, href, icon, isBack, isSearch, showBadge, authRequired } = tab as any;
 
-            const isActive = exact
-              ? pathname === href
-              : isBack
+            const isActive = isBack || isSearch
               ? false
-              : pathname.startsWith(href);
+              : pathname === href || pathname.startsWith(href + "/");
 
             const handleClick = (e: React.MouseEvent) => {
-              if (authRequired && status !== "authenticated") {
+              if (isSearch) {
                 e.preventDefault();
-                setAuthOpen(true);
+                setSearchOpen(true);
               }
             };
 
@@ -116,20 +116,20 @@ export function PWABottomNav() {
 
             return (
               <NavTab
-                key={href}
+                key={label}
                 label={label}
                 href={resolvedHref}
                 icon={icon}
                 isActive={isActive}
                 badge={showBadge ? cartCount : undefined}
-                onClick={authRequired ? handleClick : undefined}
+                onClick={isSearch ? handleClick : undefined}
               />
             );
           })}
         </div>
       </nav>
 
-      <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </>
   );
 }

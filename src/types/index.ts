@@ -172,9 +172,11 @@ export interface Exhibition {
 
 export interface AdminOverview {
   revenue: number;
+  revenueTrend: number;
   activeOrders: number;
+  ordersTrend: number;
   customers: number;
-  totalProducts: number;
+  customersTrend: number;
   recentOrders: Order[];
   lowStockProducts: Product[];
 }

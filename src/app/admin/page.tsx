@@ -1,11 +1,10 @@
 "use client";
 
 import { StatCard } from "@/components/admin/StatCard";
-import { 
-  IndianRupee, 
-  ShoppingBag, 
-  Users, 
-  Activity,
+import {
+  IndianRupee,
+  ShoppingBag,
+  Users,
   ArrowUpRight,
   Package,
 } from "lucide-react";
@@ -66,10 +65,10 @@ export default function AdminOverview() {
         description="Real-time pulse of the Culture Signature house."
       />
       <div className="grid-split lg:grid-cols-4">
-        <StatCard label="Total Revenue" value={formatPrice(data.revenue)} trend="+12.5%" trendType="up" icon={IndianRupee} />
-        <StatCard label="Active Orders" value={data.activeOrders.toString()} trend="+4.2%" trendType="up" icon={ShoppingBag} />
-        <StatCard label="Total Customers" value={data.customers.toString()} trend="+8.1%" trendType="up" icon={Users} />
-        <StatCard label="Conv. Rate" value="3.8%" trend="-0.4%" trendType="down" icon={Activity} />
+        <StatCard label="Total Revenue" value={formatPrice(data.revenue)} trend={data.revenueTrend} icon={IndianRupee} />
+        <StatCard label="Active Orders" value={data.activeOrders.toString()} trend={data.ordersTrend} icon={ShoppingBag} />
+        <StatCard label="Total Customers" value={data.customers.toString()} trend={data.customersTrend} icon={Users} />
+        <StatCard label="Low Stock" value={data.lowStockProducts.length.toString()} icon={Package} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
