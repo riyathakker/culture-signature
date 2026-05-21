@@ -24,6 +24,25 @@ import { Providers } from "@/components/Providers";
 export const metadata: Metadata = {
   title: "Culture Signature | Luxury Jewellery & Timepieces",
   description: "Experience the pinnacle of artisanal craftsmanship and timeless elegance.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Culture Signature",
+  },
+  formatDetection: { telephone: false },
+  themeColor: "#1a1a1a",
+  openGraph: {
+    type: "website",
+    title: "Culture Signature",
+    description: "Luxury jewellery & fashion — artisanal craftsmanship, timeless elegance.",
+    siteName: "Culture Signature",
+  },
+  icons: {
+    icon: "/icons/icon-32.png",
+    apple: "/icons/apple-touch-icon.png",
+    shortcut: "/icons/icon-192.png",
+  },
 };
 
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
