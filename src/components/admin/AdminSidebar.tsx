@@ -11,7 +11,8 @@ import {
   Tag,
   ChevronRight,
   Home,
-  LayoutGrid
+  LayoutGrid,
+  Sparkles,
 } from "lucide-react";
 
 import { ROUTES } from "@/constants/routes";
@@ -28,6 +29,7 @@ export function AdminSidebar() {
     { label: t("admin.sidebar.customers"), href: ROUTES.ADMIN.CUSTOMERS, icon: Users },
     { label: t("admin.sidebar.discounts"), href: ROUTES.ADMIN.DISCOUNTS, icon: Tag },
     { label: t("admin.sidebar.categories"), href: ROUTES.ADMIN.CATEGORIES, icon: LayoutGrid },
+    { label: t("admin.sidebar.content"), href: ROUTES.ADMIN.CONTENT, icon: Sparkles },
   ];
 
   return (

@@ -8,38 +8,38 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
+  id        String         @id @default(cuid())
   name      String?
-  email     String     @unique
+  email     String         @unique
   password  String
-  role      Role       @default(USER)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  isDeleted Boolean    @default(false)
+  role      Role           @default(USER)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  isDeleted Boolean        @default(false)
   mobileNo  String?
   addresses Address[]
+  cart      CartItem[]
   orders    Order[]
   reviews   Review[]
   wishlist  WishlistItem[]
-  cart      CartItem[]
 }
 
 model Address {
   id        String   @id @default(cuid())
   userId    String
-  firstName String?
-  lastName  String?
   street    String
   city      String
   state     String
   zipCode   String
   country   String   @default("India")
-  phone     String?
   isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
   isDeleted Boolean  @default(false)
+  firstName String?
+  lastName  String?
+  phone     String?
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model WishlistItem {
@@ -49,71 +49,74 @@ model WishlistItem {
   createdAt DateTime @default(now())
   product   Product  @relation(fields: [productId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+
   @@unique([userId, productId])
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name       String
-  description String?
-  price       Float
-  discount    Float @default(0)
-  stock       Int
-  images      String[]
-  categoryId  String
-  isFeatured  Boolean     @default(false)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  isDeleted   Boolean       @default(false)
-  category    Category      @relation(fields: [categoryId], references: [id])
-  orderItems  OrderItem[]
-  reviews     Review[]
-  wishlist    WishlistItem[]
-  cart        CartItem[]
+  id            String         @id @default(cuid())
+  description   String?
+  price         Float
+  stock         Int
+  images        String[]
+  categoryId    String
+  isFeatured    Boolean        @default(false)
+  discount      Float          @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  isDeleted     Boolean        @default(false)
+  name          String
+  isLimitedDrop Boolean        @default(false)
+  cart          CartItem[]
+  orderItems    OrderItem[]
+  category      Category       @relation(fields: [categoryId], references: [id])
+  reviews       Review[]
+  wishlist      WishlistItem[]
 }
 
 model Category {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   name      String
-  status    CategoryStatus  @default(ACTIVE)
-  createdAt DateTime  @default(now())
-  isDeleted   Boolean         @default(false)
+  createdAt DateTime       @default(now())
+  isDeleted Boolean        @default(false)
+  status    CategoryStatus @default(ACTIVE)
+  image     String?
   products  Product[]
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  userId          String?
-  totalPrice      Float
-  discountAmount  Float       @default(0)
-  promoCode       String?
-  customerName    String?
-  street          String?
-  city            String?
-  state           String?
-  zipCode         String?
-  country         String      @default("India")
-  phone           String?
-  status          OrderStatus @default(PENDING)
-  shippedAt       DateTime?
-  deliveredAt     DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  isDeleted       Boolean     @default(false)
-  user            User?        @relation(fields: [userId], references: [id])
-  items           OrderItem[]
+  id             String      @id @default(cuid())
+  userId         String?
+  totalPrice     Float
+  status         OrderStatus @default(PENDING)
+  createdAt      DateTime    @default(now())
+  isDeleted      Boolean     @default(false)
+  city           String?
+  customerName   String?
+  discountAmount Float       @default(0)
+  phone          String?
+  promoCode      String?
+  state          String?
+  zipCode        String?
+  country        String      @default("India")
+  deliveredAt    DateTime?
+  shippedAt      DateTime?
+  street         String?
+  updatedAt      DateTime    @updatedAt
+  user           User?       @relation(fields: [userId], references: [id])
+  items          OrderItem[]
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   orderId   String
   productId String
   quantity  Int
   price     Float
-  order     Order   @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
-  createdAt    DateTime    @default(now())
-  isDeleted    Boolean     @default(false)
+  createdAt DateTime @default(now())
+  isDeleted Boolean  @default(false)
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 }
 
 model Review {
@@ -129,17 +132,46 @@ model Review {
 }
 
 model Discount {
-  id          String   @id @default(cuid())
-  code        String
-  type        DiscountType
-  value       Float
-  usageLimit  Int?
-  usedCount   Int      @default(0)
-  status       DiscountStatus  @default(ACTIVE)
-  expiryDate  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isDeleted    Boolean         @default(false)
+  id         String         @id @default(cuid())
+  code       String
+  type       DiscountType
+  value      Float
+  usageLimit Int?
+  usedCount  Int            @default(0)
+  status     DiscountStatus @default(ACTIVE)
+  expiryDate DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  isDeleted  Boolean        @default(false)
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, productId])
+}
+
+model Exhibition {
+  id          String           @id @default(cuid())
+  title       String
+  description String?
+  images      String[]
+  location    String?
+  date        DateTime
+  endDate     DateTime?
+  status      ExhibitionStatus @default(UPCOMING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  isDeleted   Boolean          @default(false)
+  endTime     String?
+  startTime   String?
 }
 
 enum Role {
@@ -170,15 +202,8 @@ enum DiscountType {
   FIXED
 }
 
-model CartItem {
-  id        String   @id @default(cuid())
-  userId    String
-  productId String
-  quantity  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  product   Product  @relation(fields: [productId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, productId])
+enum ExhibitionStatus {
+  UPCOMING
+  ONGOING
+  PAST
 }

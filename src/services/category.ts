@@ -17,19 +17,19 @@ export class CategoryService {
     });
   }
 
-  static async create(name: string): Promise<Category> {
+  static async create(name: string, image?: string | null): Promise<Category> {
     return api<Category>({
       method: "POST",
       endpoint: "/admin/categories",
-      body: { name },
+      body: { name, image },
     });
   }
 
-  static async update(id: string, name: string, status: "ACTIVE" | "ARCHIVED"): Promise<Category> {
+  static async update(id: string, name: string, status: "ACTIVE" | "ARCHIVED", image?: string | null): Promise<Category> {
     return api<Category>({
       method: "PATCH",
       endpoint: "/admin/categories",
-      body: { id, name, status },
+      body: { id, name, status, image },
     });
   }
 

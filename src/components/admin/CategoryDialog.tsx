@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Loader2, Save } from "lucide-react";
 import { useCategoryStore } from "@/store/categoryStore";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useTranslation } from "@/context/TranslationContext";
 
 interface CategoryFormValues {
@@ -49,6 +50,7 @@ export function CategoryDialog({
   const { createCategory, updateCategoryById } = useCategoryStore();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState<string[]>([]);
   const router = useRouter();
 
   const isControlled = externalOpen !== undefined;
@@ -63,24 +65,16 @@ export function CategoryDialog({
     watch,
     formState: { errors },
   } = useForm<CategoryFormValues>({
-    defaultValues: {
-      name: "",
-      status: "ACTIVE",
-    },
+    defaultValues: { name: "", status: "ACTIVE" },
   });
 
-  // Reset form when category changes
   useEffect(() => {
     if (category) {
-      reset({
-        name: category.name || "",
-        status: category.status || "ACTIVE",
-      });
+      reset({ name: category.name || "", status: category.status || "ACTIVE" });
+      setImage(category.image ? [category.image] : []);
     } else {
-      reset({
-        name: "",
-        status: "ACTIVE",
-      });
+      reset({ name: "", status: "ACTIVE" });
+      setImage([]);
     }
   }, [category, reset]);
 
@@ -89,17 +83,15 @@ export function CategoryDialog({
   const onSubmit = async (data: CategoryFormValues) => {
     setIsLoading(true);
     try {
+      const img = image[0] ?? null;
       const savedCategory = category
-        ? await updateCategoryById(category.id, data.name, data.status)
-        : await createCategory(data.name);
+        ? await updateCategoryById(category.id, data.name, data.status, img)
+        : await createCategory(data.name, img);
 
       toast.success(category ? t("admin.categories.dialog.messages.updateSuccess") : t("admin.categories.dialog.messages.createSuccess"));
       setOpen?.(false);
-      if (!category) reset();
-
-      if (onSuccess) {
-        onSuccess(savedCategory);
-      }
+      if (!category) { reset(); setImage([]); }
+      if (onSuccess) onSuccess(savedCategory);
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || t("admin.common.error"));
@@ -134,37 +126,35 @@ export function CategoryDialog({
             <div className="space-y-2">
               <Label className="text-spaced-bold opacity-60">{t("admin.categories.dialog.labels.name")}</Label>
               <Input
-                placeholder="e.g., Heritage Gold"
-                {...register("name", { required: "Name is required" })}
+                placeholder={t("admin.categories.dialog.placeholders.name")}
+                {...register("name", { required: t("admin.categories.dialog.validation.nameRequired") })}
                 className="h-12 border-border/50"
               />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-spaced-bold opacity-60">{t("admin.categories.dialog.labels.image")}</Label>
+              <ImageUpload value={image} onChange={setImage} maxFiles={1} />
+            </div>
+
             {category && (
               <div className="space-y-2">
-                <Label className="text-spaced-bold opacity-60">Status</Label>
-                <Select
-                  value={categoryStatus}
-                  onValueChange={(val: any) => setValue("status", val)}
-                >
+                <Label className="text-spaced-bold opacity-60">{t("admin.categories.dialog.labels.status")}</Label>
+                <Select value={categoryStatus} onValueChange={(val: any) => setValue("status", val)}>
                   <SelectTrigger className="h-12 border-border/50">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ACTIVE">Active</SelectItem>
-                    <SelectItem value="ARCHIVED">Archived</SelectItem>
+                    <SelectItem value="ACTIVE">{t("admin.categories.dialog.status.active")}</SelectItem>
+                    <SelectItem value="ARCHIVED">{t("admin.categories.dialog.status.archived")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             )}
           </div>
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full h-14 uppercase tracking-[0.2em] text-[10px] font-bold mt-4"
-          >
+          <Button type="submit" disabled={isLoading} className="w-full h-14 uppercase tracking-[0.2em] text-[10px] font-bold mt-4">
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
             {category ? t("admin.categories.dialog.buttons.edit") : t("admin.categories.dialog.buttons.create")}
           </Button>

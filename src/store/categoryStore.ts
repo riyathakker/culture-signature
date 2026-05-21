@@ -14,8 +14,8 @@ interface CategoryState {
   addCategory: (category: Category) => void;
   updateCategory: (category: Category) => void;
   deleteCategory: (id: string) => void;
-  createCategory: (name: string) => Promise<Category>;
-  updateCategoryById: (id: string, name: string, status: "ACTIVE" | "ARCHIVED") => Promise<Category>;
+  createCategory: (name: string, image?: string | null) => Promise<Category>;
+  updateCategoryById: (id: string, name: string, status: "ACTIVE" | "ARCHIVED", image?: string | null) => Promise<Category>;
   deleteCategoryById: (id: string) => Promise<void>;
 }
 
@@ -45,14 +45,14 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
       categories: state.categories.filter((c) => c.id !== id),
     })),
 
-  createCategory: async (name: string): Promise<Category> => {
-    const category = await CategoryService.create(name);
+  createCategory: async (name: string, image?: string | null): Promise<Category> => {
+    const category = await CategoryService.create(name, image);
     get().addCategory(category);
     return category;
   },
 
-  updateCategoryById: async (id: string, name: string, status: "ACTIVE" | "ARCHIVED"): Promise<Category> => {
-    const category = await CategoryService.update(id, name, status);
+  updateCategoryById: async (id: string, name: string, status: "ACTIVE" | "ARCHIVED", image?: string | null): Promise<Category> => {
+    const category = await CategoryService.update(id, name, status, image);
     get().updateCategory(category);
     return category;
   },

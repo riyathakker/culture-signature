@@ -19,12 +19,18 @@ function CategoryCards() {
             href={`/categories/${cat.id}`}
             className="group flex flex-col items-center p-8 bg-secondary/60 hover:bg-primary transition-all duration-700 relative overflow-hidden flex-shrink-0 min-w-[160px] md:min-w-[200px]"
           >
+            {cat.image && (
+              <img
+                src={cat.image}
+                alt={cat.name}
+                className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-30 group-hover:scale-105 transition-all duration-700"
+              />
+            )}
             <div className="absolute inset-0 bg-luxury-gradient opacity-0 group-hover:opacity-20 transition-opacity" />
-            <div className="w-10 h-10 mb-4 relative z-10">
-              <div className="w-full h-full bg-primary/20 rounded-full group-hover:bg-background/20 transition-colors" />
-              <div className="absolute inset-0 flex items-center justify-center text-[10px] font-heading group-hover:text-white transition-colors uppercase">
+            <div className="w-10 h-10 mb-4 relative z-10 flex items-center justify-center">
+              <span className="text-2xl font-heading uppercase group-hover:text-white transition-colors">
                 {cat.name ? cat.name[0] : "?"}
-              </div>
+              </span>
             </div>
             <h4 className="font-heading text-xl group-hover:text-primary-foreground transition-all duration-500 relative z-10 text-center">{cat.name}</h4>
             <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground group-hover:text-primary-foreground/70 transition-colors mt-2 relative z-10">

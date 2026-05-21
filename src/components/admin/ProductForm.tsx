@@ -49,6 +49,7 @@ export function ProductForm({ productId }: ProductFormProps) {
     categoryId: "",
     images: [] as string[],
     isFeatured: false,
+    isLimitedDrop: false,
   });
 
   // Persist form to localStorage
@@ -102,6 +103,7 @@ export function ProductForm({ productId }: ProductFormProps) {
           categoryId: prod.categoryId || "",
           images: prod.images || [],
           isFeatured: prod.isFeatured || false,
+          isLimitedDrop: prod.isLimitedDrop || false,
         });
       }
     } catch (error) {
@@ -262,6 +264,17 @@ export function ProductForm({ productId }: ProductFormProps) {
                 <Switch
                   checked={formData.isFeatured}
                   onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm bg-secondary/5">
+                <div className="space-y-1">
+                  <Label className="text-spaced-bold">Limited Drop</Label>
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-widest">Highlight as limited / scarce piece</p>
+                </div>
+                <Switch
+                  checked={formData.isLimitedDrop}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isLimitedDrop: checked })}
                 />
               </div>
             </div>

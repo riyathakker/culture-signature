@@ -7,6 +7,7 @@ export const en = {
       customers: "Customers",
       discounts: "Discounts",
       categories: "Categories",
+      content: "Content",
       home: "Home",
     },
     orders: {
@@ -77,6 +78,25 @@ export const en = {
         status: "Status"
       },
       empty: "No collections match your search.",
+      messages: {
+        deleteSuccess: "Collection removed successfully",
+        deleteError: "Failed to delete collection",
+        archiveSuccess: "Collection archived successfully",
+        activateSuccess: "Collection activated successfully",
+        statusError: "Failed to change collection status",
+      },
+      status: {
+        active: "Active",
+        archived: "Archived",
+      },
+      actions: {
+        activate: "Activate",
+        archive: "Archive",
+      },
+      delete: {
+        title: "Remove Collection",
+        description: "Are you sure you want to remove the collection \"{name}\"? This will soft-delete the category.",
+      },
       dialog: {
         titleCreate: "Initiate Collection",
         titleEdit: "Refine Collection",
@@ -85,11 +105,27 @@ export const en = {
         labels: {
           name: "Collection Name",
           slug: "Slug",
-          description: "Thematic Description"
+          description: "Thematic Description",
+          image: "Collection Image",
+          status: "Status",
+        },
+        placeholders: {
+          name: "e.g., Heritage Gold",
+        },
+        validation: {
+          nameRequired: "Name is required",
+        },
+        status: {
+          active: "Active",
+          archived: "Archived",
         },
         buttons: {
           create: "Establish Collection",
           edit: "Update Collection"
+        },
+        messages: {
+          createSuccess: "Collection established successfully.",
+          updateSuccess: "Collection updated successfully.",
         }
       }
     },
@@ -100,6 +136,59 @@ export const en = {
       delete: "Delete",
       actions: "Actions",
       noResults: "No results found.",
+      error: "Something went wrong",
+    },
+    content: {
+      title: "Exhibitions & Shoots",
+      description: "Manage pop-ups, photo shoots, and events.",
+      addButton: "Add Exhibition",
+      empty: "No exhibitions yet — add your first event",
+      messages: {
+        deleted: "Exhibition deleted",
+        deleteError: "Failed to delete",
+      },
+      dialog: {
+        titleCreate: "Add Exhibition / Shoot",
+        titleEdit: "Edit Exhibition / Shoot",
+        desc: "Add exhibitions, shoots, or pop-ups. Location opens in Google Maps.",
+        labels: {
+          title: "Title",
+          description: "Description",
+          location: "Location",
+          locationHint: "(opens in Google Maps)",
+          startDate: "Start Date",
+          endDate: "End Date",
+          startTime: "Start Time",
+          endTime: "End Time",
+          status: "Status",
+          images: "Images",
+        },
+        placeholders: {
+          title: "e.g., Summer Lookbook Shoot — Jaipur",
+          description: "Tell people about this event...",
+          location: "e.g., Jaipur, Rajasthan or full address",
+        },
+        status: {
+          upcoming: "Upcoming",
+          ongoing: "Ongoing",
+          past: "Past",
+        },
+        buttons: {
+          save: "Save Changes",
+          add: "Add Exhibition",
+        },
+        messages: {
+          updated: "Exhibition updated",
+          added: "Exhibition added",
+          error: "Something went wrong",
+        },
+      },
+      delete: {
+        title: "Delete Exhibition",
+        description: "Are you sure you want to delete \"{title}\"?",
+        confirm: "Delete",
+        cancel: "Cancel",
+      },
     },
     products: {
       title: "Artisanal Catalog",
@@ -356,7 +445,7 @@ export const en = {
       imageAlt: "Luxury Jewelry"
     },
     categories: {
-      title: "The Collections",
+      title: "The Categories",
       subtitle: "Curated Heritage",
       pieces: "Pieces"
     },

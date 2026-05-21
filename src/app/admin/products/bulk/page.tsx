@@ -138,6 +138,7 @@ export default function BulkProductUpload() {
   };
 
   const validRows = rows.filter((r) => r.status !== "success");
+  const allRowsReady = validRows.length > 0 && validRows.every((r) => r.title && r.categoryId && r.price);
 
   const handlePublishAll = async () => {
     const toPublish = rows.filter((r) => r.status !== "success");
@@ -250,7 +251,7 @@ export default function BulkProductUpload() {
 
       <Button
         onClick={handlePublishAll}
-        disabled={isSubmitting || validRows.length === 0}
+        disabled={isSubmitting || !allRowsReady}
         className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20 flex-shrink-0"
       >
         {isSubmitting

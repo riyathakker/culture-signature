@@ -79,10 +79,10 @@ export default function CategoriesPage() {
         await deleteCategoryById(selectedCategory.id);
         setIsDeleteDialogOpen(false);
         setSelectedCategory(null);
-        toast.success("Collection removed successfully");
+        toast.success(t("admin.categories.messages.deleteSuccess"));
         router.refresh();
       } catch (err) {
-        toast.error("Failed to delete collection");
+        toast.error(t("admin.categories.messages.deleteError"));
       }
     }
   };
@@ -91,10 +91,10 @@ export default function CategoriesPage() {
     try {
       const newStatus = cat.status === "ARCHIVED" ? "ACTIVE" : "ARCHIVED";
       await updateCategoryById(cat.id, cat.name, newStatus);
-      toast.success(newStatus === "ARCHIVED" ? "Collection archived successfully" : "Collection activated successfully");
+      toast.success(newStatus === "ARCHIVED" ? t("admin.categories.messages.archiveSuccess") : t("admin.categories.messages.activateSuccess"));
       router.refresh();
     } catch (err) {
-      toast.error("Failed to change collection status");
+      toast.error(t("admin.categories.messages.statusError"));
     }
   };
 
@@ -130,7 +130,7 @@ export default function CategoriesPage() {
                 : "border-primary/30 text-primary bg-primary/5"
             )}
           >
-            {isArchived ? "Archived" : "Active"}
+            {isArchived ? t("admin.categories.status.archived") : t("admin.categories.status.active")}
           </Badge>
         );
       },
@@ -167,11 +167,11 @@ export default function CategoriesPage() {
                 >
                   {isArchived ? (
                     <>
-                      <ArchiveRestore className="w-4 h-4" /> Activate
+                      <ArchiveRestore className="w-4 h-4" /> {t("admin.categories.actions.activate")}
                     </>
                   ) : (
                     <>
-                      <Archive className="w-4 h-4" /> Archive
+                      <Archive className="w-4 h-4" /> {t("admin.categories.actions.archive")}
                     </>
                   )}
                 </DropdownMenuItem>
@@ -235,7 +235,7 @@ export default function CategoriesPage() {
                         : "border-primary/30 text-primary bg-primary/5"
                     )}
                   >
-                    {isArchived ? "Archived" : "Active"}
+                    {isArchived ? t("admin.categories.status.archived") : t("admin.categories.status.active")}
                   </Badge>
                 </div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">
@@ -296,8 +296,8 @@ export default function CategoriesPage() {
           setIsDeleteDialogOpen(val);
           if (!val) setTimeout(() => setSelectedCategory(null), 300);
         }}
-        title="Remove Collection"
-        description={selectedCategory ? `Are you sure you want to remove the collection "${selectedCategory.name}"? This will soft-delete the category.` : ""}
+        title={t("admin.categories.delete.title")}
+        description={selectedCategory ? t("admin.categories.delete.description").replace("{name}", selectedCategory.name) : ""}
         onConfirm={confirmDelete}
         cancelText={t("admin.common.cancel")}
         confirmText={t("admin.common.delete")}

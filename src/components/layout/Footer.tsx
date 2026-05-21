@@ -107,13 +107,13 @@ export function Footer() {
         </div>
       </Container>
       {/* Bottom Bar */}
-      <Container className="bg-black py-4 mx-0!">
+      <Container className="bg-primary/20 py-4 mx-0!">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground text-center md:text-left">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-primary text-center md:text-left">
             © {new Date().getFullYear()} Culture Signature. {t("shop.footer.brand.rights")}
           </p>
 
-          <div className="flex items-center text-spaced">
+          <div className="flex items-center text-spaced text-primary">
             <span className="flex items-center text-center md:text-right">
               <Mail className="w-3 h-3 mr-2 shrink-0" />
               jalpathakkar@culturesignature.com

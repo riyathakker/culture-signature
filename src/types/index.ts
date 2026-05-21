@@ -39,6 +39,7 @@ export interface Address {
 export interface Category {
   id: string;
   name: string;
+  image?: string | null;
   slug: string;
   description?: string | null;
   status?: CategoryStatus;
@@ -61,6 +62,7 @@ export interface Product {
   images: string[];
   categoryId: string;
   isFeatured: boolean;
+  isLimitedDrop?: boolean;
   isNew?: boolean;
   rating?: number;
   createdAt?: string | Date;
@@ -148,6 +150,24 @@ export interface Discount {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   isDeleted?: boolean;
+}
+
+export type ExhibitionStatus = "UPCOMING" | "ONGOING" | "PAST";
+
+export interface Exhibition {
+  id: string;
+  title: string;
+  description: string | null;
+  images: string[];
+  location: string | null;
+  date: string | Date;
+  endDate: string | Date | null;
+  startTime: string | null;
+  endTime: string | null;
+  status: ExhibitionStatus;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  isDeleted: boolean;
 }
 
 export interface AdminOverview {

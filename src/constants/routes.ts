@@ -17,7 +17,7 @@ export const ROUTES = {
     DISCOUNTS: "/admin/discounts",
     DISCOUNTS_NEW: "/admin/discounts/new",
     CATEGORIES: "/admin/categories",
-    
+    CONTENT: "/admin/content",
   },
   ACCOUNT: {
     ORDERS: "/account/orders",
@@ -39,5 +39,7 @@ export const API_ROUTES = {
     CUSTOMERS: "/api/admin/users",
     DISCOUNTS: "/api/admin/discounts",
     CATEGORIES: "/api/admin/categories",
+    EXHIBITIONS: "/api/admin/content/exhibitions",
+    EXHIBITION_BY_ID: (id: string) => `/api/admin/content/exhibitions/${id}`,
   }
 };

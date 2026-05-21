@@ -10,9 +10,9 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
   }
 
   try {
-    const { name } = await req.json();
+    const { name, image } = await req.json();
     const category = await prisma.category.create({
-      data: { name },
+      data: { name, image: image || null },
     });
     return NextResponse.json(category);
   } catch (error) {

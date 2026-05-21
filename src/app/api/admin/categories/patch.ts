@@ -10,10 +10,10 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
   }
 
   try {
-    const { id, name, status } = await req.json();
+    const { id, name, status, image } = await req.json();
     const category = await prisma.category.update({
       where: { id },
-      data: { name, status },
+      data: { name, status, ...(image !== undefined && { image: image || null }) },
     });
     return NextResponse.json(category);
   } catch (error) {
