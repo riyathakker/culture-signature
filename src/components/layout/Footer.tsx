@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { Container } from "./Container";
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/common/IconButton";
 import { usePathname } from "next/navigation";
 import { socialLinks } from "@/constants/constants";
 
@@ -69,9 +69,9 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    // className="flex items-center justify-center w-11 h-11 rounded-full border border-border text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:border-primary hover:text-primary hover:-translate-y-1"
+                  // className="flex items-center justify-center w-11 h-11 rounded-full border border-border text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:border-primary hover:text-primary hover:-translate-y-1"
                   >
-                     <IconButton icon={Icon} aria-label={social.label} />
+                    <IconButton icon={Icon} aria-label={social.label} />
                   </a>
                   // <Link href={social.href} key={index}>
                   //   <IconButton icon={Icon} aria-label={social.label} />

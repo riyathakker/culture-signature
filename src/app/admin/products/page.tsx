@@ -19,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";

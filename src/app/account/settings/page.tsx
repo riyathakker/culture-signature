@@ -9,9 +9,9 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SectionHeader } from "@/components/common/SectionHeader";
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
@@ -77,7 +77,7 @@ export default function SettingsPage() {
       }
 
       toast.success("Account deleted successfully. Farewell.");
-      
+
       window.location.href = "/api/auth/signout";
     } catch (error: any) {
       toast.error(error.message);
@@ -101,28 +101,28 @@ export default function SettingsPage() {
           <div className="grid-split">
             <div className="space-y-2">
               <Label className="text-spaced-bold">Full Name</Label>
-              <Input 
-                value={formData.name} 
+              <Input
+                value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="border-border/50 h-10" 
+                className="border-border/50 h-10"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-spaced-bold">Email Address</Label>
               <Input value={formData.email} disabled className=" bg-secondary/20 h-10" />
             </div>
-             <div className="space-y-2">
+            <div className="space-y-2">
               <Label className="text-spaced-bold">Mobile Number</Label>
-              <Input 
-                value={formData.mobileNo} 
+              <Input
+                value={formData.mobileNo}
                 onChange={(e) => setFormData({ ...formData, mobileNo: e.target.value })}
                 placeholder="+91 99999 99999"
-                className="border-border/50 h-10" 
+                className="border-border/50 h-10"
               />
             </div>
           </div>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={isLoading}
             className="text-spaced h-10 px-8"
           >
@@ -165,8 +165,8 @@ export default function SettingsPage() {
             <p className="text-sm font-bold uppercase tracking-widest text-destructive">Deactivate Account</p>
             <p className="text-xs muted-italic">This will permanently remove your Inner Circle membership and order history.</p>
           </div>
-          <Button 
-            variant="destructive" 
+          <Button
+            variant="destructive"
             className="uppercase tracking-widest text-[10px] h-10"
             onClick={() => setIsDeleteDialogOpen(true)}
             disabled={isLoading}

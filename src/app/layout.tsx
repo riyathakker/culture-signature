@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 
-import { BackToTop } from "@/components/ui/BackToTop";
+import { BackToTop } from "@/components/common/BackToTop";
 import { MobileFloatingCart } from "@/components/cart/MobileFloatingCart";
 
 export default function RootLayout({

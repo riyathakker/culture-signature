@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useCategoryStore } from "@/store/categoryStore";
-import { SectionTitle } from "../ui/SectionTitle";
+import { SectionTitle } from "@/components/common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
 
 function CategoryCards() {

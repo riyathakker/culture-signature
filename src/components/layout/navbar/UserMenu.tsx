@@ -17,9 +17,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/common/IconButton";
 
 interface UserMenuProps {
   isLoggedIn: boolean;
@@ -49,12 +49,12 @@ export function UserMenu({
     () => [
       ...(isAdmin
         ? [
-            {
-              href: "/admin",
-              label: t("nav.account.adminPanel"),
-              icon: LayoutDashboard,
-            },
-          ]
+          {
+            href: "/admin",
+            label: t("nav.account.adminPanel"),
+            icon: LayoutDashboard,
+          },
+        ]
         : []),
 
       {
@@ -74,9 +74,9 @@ export function UserMenu({
 
   if (!isLoggedIn) {
     return (
-      <IconButton 
-        icon={User} 
-        onClick={onAuthModalOpen} 
+      <IconButton
+        icon={User}
+        onClick={onAuthModalOpen}
         aria-label={t("nav.account.label")}
       />
     );

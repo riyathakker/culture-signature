@@ -6,7 +6,7 @@ import { Quote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useTranslation } from "@/context/TranslationContext";
-import { SectionTitle } from "../ui/SectionTitle";
+import { SectionTitle } from "@/components/common/SectionTitle";
 
 export function Testimonials() {
   const { t } = useTranslation();

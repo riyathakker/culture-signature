@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag } from "lucide-react";
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/common/IconButton";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";

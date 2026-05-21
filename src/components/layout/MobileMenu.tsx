@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/common/IconButton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { useState } from "react";
@@ -16,7 +16,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { navigationLinks } from "@/constants/constants";
 import { useCartStore } from "@/store/cartStore";
 
@@ -156,7 +156,7 @@ export function MobileMenu() {
       </Sheet>
 
       <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} />
-      
+
       <ConfirmationDialog
         open={isSignOutDialogOpen}
         onOpenChange={setIsSignOutDialogOpen}

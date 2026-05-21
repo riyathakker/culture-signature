@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { SectionTitle } from "@/components/ui/SectionTitle";
+import { SectionTitle } from "@/components/common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
 
 const DEFAULT_IMAGES = [

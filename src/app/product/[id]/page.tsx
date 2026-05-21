@@ -1,13 +1,12 @@
 "use client";
 
 import { Container } from "@/components/layout/Container";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductInfo } from "@/components/product/ProductInfo";
-import { ProductTabs } from "@/components/product/ProductTabs";
 import { ProductReviews } from "@/components/product/ProductReviews";
-import { ProductCard } from "@/components/ui/ProductCard";
-import { SectionTitle } from "@/components/ui/SectionTitle";
+import { ProductCard } from "@/components/common/ProductCard";
+import { SectionTitle } from "@/components/common/SectionTitle";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";

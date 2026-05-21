@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductCard } from "@/components/ui/ProductCard";
+import { ProductCard } from "@/components/common/ProductCard";
 import { useEffect } from "react";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useProductStore } from "@/store/productStore";

@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 
 import { Container } from "@/components/layout/Container";
-import { SectionTitle } from "@/components/ui/SectionTitle";
-import { ProductCard } from "@/components/ui/ProductCard";
+import { SectionTitle } from "@/components/common/SectionTitle";
+import { ProductCard } from "@/components/common/ProductCard";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 
 import { useProductStore } from "@/store/productStore";
@@ -56,7 +56,7 @@ export function NewArrivals() {
                   />
                 ))}
             </div>
-            {newArrivals.length > 4 &&  (
+            {newArrivals.length > 4 && (
               <div className="flex justify-center mt-6">
                 <Link
                   href={ROUTES.NEW_ARRIVALS}
@@ -74,10 +74,10 @@ export function NewArrivals() {
                   hover:bg-primary
                   hover:text-white
                 "
-              >
-                View More
-              </Link>
-            </div>
+                >
+                  {t("home.newArrivals.viewMore")}
+                </Link>
+              </div>
             )}
           </>
         )}

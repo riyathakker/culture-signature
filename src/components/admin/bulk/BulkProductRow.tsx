@@ -1,0 +1,255 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronUp, ChevronDown, Trash2, CheckCircle2, Loader2, Check } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { ImageUpload } from "@/components/admin/ImageUpload";
+import { useTranslation } from "@/context/TranslationContext";
+import { BulkRow, PoolImage, RowStatus } from "@/types/bulk";
+
+interface BulkProductRowProps {
+  row: BulkRow;
+  index: number;
+  isOpen: boolean;
+  onToggle: () => void;
+  categories: { id: string; name: string }[];
+  imagePool: PoolImage[];
+  rows: BulkRow[];
+  onUpdate: (patch: Partial<BulkRow>) => void;
+  onRemove: () => void;
+  disabled: boolean;
+}
+
+export function BulkProductRow({
+  row,
+  index,
+  isOpen,
+  onToggle,
+  categories,
+  imagePool,
+  rows,
+  onUpdate,
+  onRemove,
+  disabled,
+}: BulkProductRowProps) {
+  const { t } = useTranslation();
+  const [imageTab, setImageTab] = useState<"pool" | "direct">("pool");
+
+  const statusColor: Record<RowStatus, string> = {
+    idle: "border-border/50",
+    loading: "border-primary/40",
+    success: "border-success/60 bg-success/5",
+    error: "border-destructive/60 bg-destructive/5",
+  };
+
+  const togglePoolImage = (url: string) => {
+    const already = row.images.includes(url);
+    if (already) {
+      onUpdate({ images: row.images.filter((u) => u !== url) });
+    } else if (row.images.length < 4) {
+      onUpdate({ images: [...row.images, url] });
+    } else {
+      toast.error(t("admin.products.bulk.toast.maxImages"));
+    }
+  };
+
+  const isAssignedElsewhere = (url: string) =>
+    rows.some((r) => r.uid !== row.uid && r.images.includes(url));
+
+  return (
+    <div className={cn("border rounded-lg overflow-hidden transition-colors", statusColor[row.status])}>
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-3 bg-secondary/30 min-w-0">
+        <span className="text-[10px] font-bold text-muted-foreground flex-shrink-0 w-5">
+          #{index + 1}
+        </span>
+        <Input
+          placeholder={t("admin.products.bulk.placeholders.productName")}
+          value={row.title}
+          onChange={(e) => onUpdate({ title: e.target.value })}
+          disabled={disabled || row.status === "success"}
+          className="flex-1 min-w-0 h-9 border-0 bg-transparent p-0 text-sm font-semibold placeholder:text-muted-foreground/50 focus-visible:ring-0"
+        />
+
+        {!isOpen && row.categoryId && (
+          <span className="hidden sm:inline text-[9px] uppercase tracking-widest text-muted-foreground bg-secondary px-2 py-1 rounded flex-shrink-0">
+            {categories.find((c) => c.id === row.categoryId)?.name}
+          </span>
+        )}
+        {!isOpen && row.price && (
+          <span className="hidden sm:inline text-[9px] font-bold text-muted-foreground flex-shrink-0">
+            ₹{row.price}
+          </span>
+        )}
+
+        {row.status === "loading" && <Loader2 className="w-4 h-4 text-primary animate-spin flex-shrink-0" />}
+        {row.status === "success" && <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />}
+        {row.status === "error" && (
+          <Badge variant="outline" className="text-[9px] border-destructive text-destructive flex-shrink-0">
+            {row.errorMsg || t("admin.products.bulk.toast.failed")}
+          </Badge>
+        )}
+
+        <Button variant="ghost" size="icon" type="button" onClick={onToggle}
+          className="h-7 w-7 text-muted-foreground hover:text-foreground flex-shrink-0">
+          {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </Button>
+        <Button variant="ghost" size="icon" onClick={onRemove} disabled={disabled}
+          className="h-7 w-7 text-muted-foreground hover:text-destructive flex-shrink-0">
+          <Trash2 className="w-3.5 h-3.5" />
+        </Button>
+      </div>
+
+      {/* Accordion body */}
+      <div className={cn("grid transition-all duration-200 ease-in-out", isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+        <div className="overflow-hidden">
+          <div className="border-t border-inherit">
+            {/* Fields */}
+            <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+              <div className="space-y-1.5 sm:col-span-2 lg:col-span-2">
+                <Label className="text-spaced-bold">{t("admin.products.bulk.labels.categoryRequired")}</Label>
+                <Select value={row.categoryId}
+                  onValueChange={(val) => val && onUpdate({ categoryId: val })}
+                  disabled={disabled || row.status === "success"}>
+                  <SelectTrigger className="h-11 w-full border-border/50 text-[10px] uppercase tracking-widest font-bold">
+                    <SelectValue placeholder={t("admin.products.bulk.placeholders.select")}>
+                      {categories.find((c) => c.id === row.categoryId)?.name ?? t("admin.products.bulk.placeholders.select")}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-spaced-bold">{t("admin.products.bulk.labels.priceRequired")}</Label>
+                <Input type="number" placeholder="0" value={row.price}
+                  onChange={(e) => onUpdate({ price: e.target.value })}
+                  disabled={disabled || row.status === "success"} className="h-9 border-border/50" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-spaced-bold">{t("admin.products.bulk.labels.discountShort")}</Label>
+                <Input type="number" placeholder="0" value={row.discount}
+                  onChange={(e) => onUpdate({ discount: e.target.value })}
+                  disabled={disabled || row.status === "success"} className="h-9 border-border/50" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-spaced-bold">{t("admin.products.bulk.labels.stock")}</Label>
+                <Input type="number" placeholder="1" min={0} value={row.stock}
+                  onChange={(e) => onUpdate({ stock: e.target.value })}
+                  disabled={disabled || row.status === "success"} className="h-9 border-border/50" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-spaced-bold">{t("admin.products.bulk.labels.featured")}</Label>
+                <div className="h-9 flex items-center">
+                  <Switch checked={row.isFeatured}
+                    onCheckedChange={(v) => onUpdate({ isFeatured: v })}
+                    disabled={disabled || row.status === "success"} />
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="px-4 pb-4">
+              <Textarea placeholder={t("admin.products.bulk.labels.description")} value={row.description}
+                onChange={(e) => onUpdate({ description: e.target.value })}
+                disabled={disabled || row.status === "success"}
+                className="min-h-[72px] resize-none border-border/50 text-sm" />
+            </div>
+
+            {/* Images section */}
+            <div className="border-t border-inherit">
+              {/* Tab toggle */}
+              <div className="flex items-center gap-0 border-b border-inherit">
+                <button type="button"
+                  onClick={() => setImageTab("pool")}
+                  className={cn(
+                    "flex-1 py-2.5 text-[10px] uppercase tracking-[0.2em] font-bold transition-colors",
+                    imageTab === "pool"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}>
+                  {t("admin.products.bulk.imagePool.tabPool")} {imagePool.length > 0 && `(${row.images.filter(u => imagePool.some(p => p.url === u)).length}/${imagePool.length})`}
+                </button>
+                <button type="button"
+                  onClick={() => setImageTab("direct")}
+                  className={cn(
+                    "flex-1 py-2.5 text-[10px] uppercase tracking-[0.2em] font-bold transition-colors",
+                    imageTab === "direct"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}>
+                  {t("admin.products.bulk.imagePool.tabDirect")}
+                </button>
+              </div>
+
+              <div className="p-4">
+                {imageTab === "pool" ? (
+                  imagePool.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic text-center py-4">
+                      {t("admin.products.bulk.imagePool.emptyPool")}
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-[9px] uppercase tracking-widest text-muted-foreground mb-3">
+                        {t("admin.products.bulk.labels.poolImageAssign")}
+                      </p>
+                      <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                        {imagePool.map((img) => {
+                          const selected = row.images.includes(img.url);
+                          const elsewhere = !selected && isAssignedElsewhere(img.url);
+                          return (
+                            <button
+                               key={img.id}
+                              type="button"
+                              onClick={() => !disabled && row.status !== "success" && togglePoolImage(img.url)}
+                              disabled={disabled || row.status === "success"}
+                              className={cn(
+                                "relative aspect-square rounded-sm overflow-hidden border-2 transition-all",
+                                selected ? "border-primary shadow-md" : "border-transparent",
+                                elsewhere && "opacity-40",
+                                !disabled && row.status !== "success" && "cursor-pointer hover:opacity-90"
+                              )}
+                            >
+                              <img src={img.url} alt="" className="w-full h-full object-cover" />
+                              {selected && (
+                                <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                                  <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                                    <Check className="w-3 h-3 text-white" />
+                                  </div>
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )
+                ) : (
+                  <ImageUpload
+                    value={row.images.filter((u) => !imagePool.some((p) => p.url === u))}
+                    onChange={(urls) => {
+                      const poolUrls = row.images.filter((u) => imagePool.some((p) => p.url === u));
+                      onUpdate({ images: [...poolUrls, ...urls] });
+                    }}
+                    maxFiles={Math.max(0, 4 - row.images.filter((u) => imagePool.some((p) => p.url === u)).length)}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

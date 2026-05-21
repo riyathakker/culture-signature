@@ -8,7 +8,6 @@ import {
   Activity,
   ArrowUpRight,
   Package,
-  Loader2
 } from "lucide-react";
 import { 
   Table, 
@@ -26,6 +25,7 @@ import {cn} from "@/lib/utils"
 import { useAdminStore } from "@/store/adminStore";
 import { Button } from "@/components/ui/button";
 import { CommonLoader } from "@/components/common/Loader";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export default function AdminOverview() {
   const { overview: data, isLoading, fetchOverview } = useAdminStore();
@@ -61,11 +61,10 @@ export default function AdminOverview() {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
-      <div className="space-y-2">
-        <h1 className="text-4xl font-heading tracking-tight">Executive Overview</h1>
-        <p className="muted-italic">Real-time pulse of the Culture Signature house.</p>
-      </div>
-
+      <AdminPageHeader
+        title="Executive Overview"
+        description="Real-time pulse of the Culture Signature house."
+      />
       <div className="grid-split lg:grid-cols-4">
         <StatCard label="Total Revenue" value={formatPrice(data.revenue)} trend="+12.5%" trendType="up" icon={IndianRupee} />
         <StatCard label="Active Orders" value={data.activeOrders.toString()} trend="+4.2%" trendType="up" icon={ShoppingBag} />

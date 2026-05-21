@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductCard } from "@/components/ui/ProductCard";
+import { ProductCard } from "@/components/common/ProductCard";
 import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";

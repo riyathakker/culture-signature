@@ -1,7 +1,7 @@
 "use client";
 
 import { HomePageContainer } from "@/components/common/HomePageContainer";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import { useTranslation } from "@/context/TranslationContext";
 
 export default function AboutPage() {

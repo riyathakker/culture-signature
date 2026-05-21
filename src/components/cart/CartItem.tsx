@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { X } from "lucide-react";
 import { useCartStore, CartItem as CartItemType } from "@/store/cartStore";
+import { QuantitySelector } from "@/components/common/QuantitySelector";
 import { cn } from "@/lib/utils";
 
 interface CartItemProps {
@@ -10,7 +11,6 @@ interface CartItemProps {
   variant?: "drawer" | "page";
 }
 
-import { QuantitySelector } from "@/components/ui/QuantitySelector";
 
 export function CartItem({ item, variant = "drawer" }: CartItemProps) {
   const { removeItem, updateQuantity } = useCartStore();

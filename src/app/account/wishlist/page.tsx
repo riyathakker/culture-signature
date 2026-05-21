@@ -1,4 +1,4 @@
-import { ProductCard } from "@/components/ui/ProductCard";
+import { ProductCard } from "@/components/common/ProductCard";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";

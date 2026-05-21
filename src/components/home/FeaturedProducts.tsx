@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 
 import { Container } from "@/components/layout/Container";
-import { SectionTitle } from "@/components/ui/SectionTitle";
-import { ProductCard } from "@/components/ui/ProductCard";
+import { SectionTitle } from "@/components/common/SectionTitle";
+import { ProductCard } from "@/components/common/ProductCard";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 
 import { useProductStore } from "@/store/productStore";
@@ -76,7 +76,7 @@ export function FeaturedProducts() {
                   hover:text-white
                 "
               >
-                View Collection
+                {t("home.featured.viewCollection")}
               </Link>
             </div>
           </>

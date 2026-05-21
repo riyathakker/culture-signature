@@ -1,7 +1,7 @@
 "use client";
 
 import { Container } from "@/components/layout/Container";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { useTranslation } from "@/context/TranslationContext";
 
 export default function TermsPage() {

@@ -5,7 +5,7 @@ import { Edit2, Trash2, MapPin, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AddressDialog } from "./AddressDialog";
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
 import { useAddressStore } from "@/store/addressStore";
 

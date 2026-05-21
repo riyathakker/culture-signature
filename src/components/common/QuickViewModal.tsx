@@ -11,8 +11,8 @@ import { useCartStore, CartItem } from "@/store/cartStore";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-import { QuantitySelector } from "@/components/ui/QuantitySelector";
-import { IconButton } from "@/components/ui/IconButton";
+import { QuantitySelector } from "@/components/common/QuantitySelector";
+import { IconButton } from "@/components/common/IconButton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";

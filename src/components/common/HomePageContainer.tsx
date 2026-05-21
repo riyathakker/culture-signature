@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Container } from "../layout/Container";
-import { BreadcrumbItem, Breadcrumbs } from "../ui/Breadcrumbs";
+import { BreadcrumbItem, Breadcrumbs } from "./Breadcrumbs";
 
 interface Props {
     label: BreadcrumbItem[];

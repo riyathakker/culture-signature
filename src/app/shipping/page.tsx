@@ -1,7 +1,7 @@
 "use client";
 
 import { Container } from "@/components/layout/Container";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Truck, ShieldCheck, Globe } from "lucide-react";
 import { useTranslation } from "@/context/TranslationContext";
 

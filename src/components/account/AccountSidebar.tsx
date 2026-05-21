@@ -15,7 +15,7 @@ import {
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useState } from "react";
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
 const navItems = [
   { label: "Profile Overview", href: "/account", icon: User },

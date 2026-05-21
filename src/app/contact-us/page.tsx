@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { HomePageContainer } from "@/components/common/HomePageContainer";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import { socialLinks } from "@/constants/constants";
 
 export default function ContactPage() {
