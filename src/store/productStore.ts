@@ -4,6 +4,7 @@ import { ProductService } from "@/services/product";
 
 interface ProductState {
   products: Product[];
+  totalProducts: number;
   newArrivals: Product[];
   featuredProducts: Product[];
   isLoading: boolean;
@@ -20,7 +21,7 @@ interface ProductState {
   deleteProduct: (id: string) => void;
   addProduct: (product: Product) => void;
 
-  fetchProducts: (force?: boolean) => Promise<void>;
+  fetchProducts: (force?: boolean, params?: { page?: number; limit?: number; query?: string; categoryId?: string; status?: string }) => Promise<void>;
   fetchNewArrivals: (force?: boolean) => Promise<void>;
   fetchFeaturedProducts: (force?: boolean) => Promise<void>;
 
@@ -32,6 +33,7 @@ interface ProductState {
 
 export const useProductStore = create<ProductState>((set, get) => ({
   products: [],
+  totalProducts: 0,
   newArrivals: [],
   featuredProducts: [],
   isLoading: false,
@@ -42,6 +44,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
   setProducts: (products) =>
     set({
       products,
+      totalProducts: products.length,
       lastFetched: Date.now(),
     }),
 
@@ -97,12 +100,13 @@ export const useProductStore = create<ProductState>((set, get) => ({
     return ProductService.getById(id);
   },
 
-  fetchProducts: async (force = false) => {
+  fetchProducts: async (force = false, params) => {
     const state = get();
 
-    // Cache for 5 minutes
+    // Cache for 5 minutes (skip cache if pagination params are active)
     if (
       !force &&
+      !params &&
       state.products.length > 0 &&
       state.lastFetched &&
       Date.now() - state.lastFetched < 300000
@@ -113,12 +117,22 @@ export const useProductStore = create<ProductState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const data = await ProductService.getAllAdmin();
+      const data = await ProductService.getAllAdmin(params);
 
-      set({
-        products: data,
-        lastFetched: Date.now(),
-      });
+      if (data && typeof data === "object" && "items" in data) {
+        set({
+          products: data.items,
+          totalProducts: data.total,
+          lastFetched: Date.now(),
+        });
+      } else {
+        const prodList = Array.isArray(data) ? data : [];
+        set({
+          products: prodList,
+          totalProducts: prodList.length,
+          lastFetched: Date.now(),
+        });
+      }
     } catch (error) {
       console.error("Failed to fetch products", error);
     } finally {

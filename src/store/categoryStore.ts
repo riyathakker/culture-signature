@@ -4,12 +4,13 @@ import { CategoryService } from "@/services/category";
 
 interface CategoryState {
   categories: Category[];
+  totalCategories: number;
   isLoading: boolean;
   showingArchived: boolean;
   lastFetched: number | null;
   setCategories: (categories: Category[]) => void;
   setLoading: (isLoading: boolean) => void;
-  fetchCategories: (includeArchived?: boolean) => Promise<void>;
+  fetchCategories: (includeArchived?: boolean, params?: { page?: number; limit?: number; query?: string }) => Promise<void>;
   addCategory: (category: Category) => void;
   updateCategory: (category: Category) => void;
   deleteCategory: (id: string) => void;
@@ -20,10 +21,11 @@ interface CategoryState {
 
 export const useCategoryStore = create<CategoryState>((set, get) => ({
   categories: [],
+  totalCategories: 0,
   isLoading: false,
   showingArchived: false,
   lastFetched: null,
-  setCategories: (categories) => set({ categories, lastFetched: Date.now() }),
+  setCategories: (categories) => set({ categories, totalCategories: categories.length, lastFetched: Date.now() }),
   setLoading: (isLoading) => set({ isLoading }),
 
   addCategory: (category) =>
@@ -60,7 +62,7 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
     get().deleteCategory(id);
   },
 
-  fetchCategories: async (includeArchived = false) => {
+  fetchCategories: async (includeArchived = false, params) => {
     const state = get();
 
     // Invalidate cache if we need a different set of categories (active-only vs including archived)
@@ -68,6 +70,7 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
 
     if (
       !needsRefetch &&
+      !params &&
       state.categories.length > 0 &&
       state.lastFetched &&
       Date.now() - state.lastFetched < 600000
@@ -77,17 +80,27 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
 
     set({ isLoading: true, showingArchived: includeArchived });
     try {
-      const data = await CategoryService.getAll(includeArchived);
+      const data = await CategoryService.getAll(includeArchived, params);
 
-      if (Array.isArray(data)) {
-        set({ categories: data, lastFetched: Date.now() });
+      if (data && typeof data === "object" && "items" in data) {
+        set({
+          categories: data.items,
+          totalCategories: data.total,
+          lastFetched: Date.now(),
+        });
+      } else if (Array.isArray(data)) {
+        set({
+          categories: data,
+          totalCategories: data.length,
+          lastFetched: Date.now(),
+        });
       } else {
-        console.error("Categories response is not an array:", data);
-        set({ categories: [] });
+        console.error("Categories response is not recognized:", data);
+        set({ categories: [], totalCategories: 0 });
       }
     } catch (error) {
       console.error("Failed to fetch categories", error);
-      set({ categories: [] });
+      set({ categories: [], totalCategories: 0 });
     } finally {
       set({ isLoading: false });
     }

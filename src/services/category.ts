@@ -2,10 +2,18 @@ import { api } from "./api";
 import { Category } from "@/types";
 
 export class CategoryService {
-  static async getAll(includeArchived = false): Promise<Category[]> {
-    return api<Category[]>({
+  static async getAll(includeArchived = false, params?: { page?: number; limit?: number; query?: string }): Promise<Category[] | { items: Category[]; total: number }> {
+    const queryParams = new URLSearchParams(
+      Object.entries({
+        includeArchived: String(includeArchived),
+        ...params
+      })
+      .filter(([_, v]) => v !== undefined && v !== "")
+      .map(([k, v]) => [k, String(v)])
+    ).toString();
+    return api<Category[] | { items: Category[]; total: number }>({
       method: "GET",
-      endpoint: `/categories?includeArchived=${includeArchived}`,
+      endpoint: `/categories?${queryParams}`,
     });
   }
 

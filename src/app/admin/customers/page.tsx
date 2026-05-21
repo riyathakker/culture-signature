@@ -13,27 +13,36 @@ import { AdminTable, Column } from "@/components/admin/AdminTable";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
+import { TablePagination } from "@/components/admin/TablePagination";
+import { usePagination } from "@/hooks/usePagination";
 
 export default function AdminCustomers() {
-  const { customers, isLoading, fetchCustomers } = useCustomerStore();
+  const { customers, totalCustomers, isLoading, fetchCustomers } = useCustomerStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeRole, setActiveRole] = useState("");
 
+  const {
+    currentPage,
+    pageSize,
+    setCurrentPage,
+    setPageSize,
+    paginatedData: paginatedCustomers,
+    totalItems,
+  } = usePagination({
+    data: customers,
+    totalItems: totalCustomers,
+    isServerSide: true,
+    dependencies: [searchQuery, activeRole],
+  });
+
   useEffect(() => {
-    fetchCustomers();
-  }, []);
-
-  const filteredCustomers = useMemo(() => {
-    return customers.filter((customer) => {
-      const matchesSearch = 
-        customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        customer.email?.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesRole = !activeRole || customer.role === activeRole;
-
-      return matchesSearch && matchesRole;
+    fetchCustomers({
+      page: currentPage,
+      limit: pageSize,
+      query: searchQuery,
+      role: activeRole,
     });
-  }, [customers, searchQuery, activeRole]);
+  }, [currentPage, pageSize, searchQuery, activeRole, fetchCustomers]);
 
   const columns: Column<any>[] = [
     {
@@ -98,7 +107,7 @@ export default function AdminCustomers() {
 
       <AdminTable
         columns={columns}
-        data={filteredCustomers}
+        data={paginatedCustomers}
         isLoading={isLoading}
         emptyMessage="No customers found matching your criteria."
         rowKey={(c) => c.id}
@@ -126,6 +135,14 @@ export default function AdminCustomers() {
             </div>
           </div>
         )}
+      />
+
+      <TablePagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
       />
     </div>
   );

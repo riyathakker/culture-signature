@@ -145,6 +145,63 @@ export const en = {
         updateError: "Failed to update",
         featuredSuccess: "Marked as Featured",
         unfeaturedSuccess: "Removed from Featured",
+      },
+      bulk: {
+        title: "Bulk Upload",
+        applyAll: "Apply Same Value to All Rows",
+        applyBtn: "Apply to All",
+        labels: {
+          name: "Name",
+          category: "Category",
+          price: "Price (₹)",
+          discount: "Discount (₹)",
+          stock: "Stock",
+          featured: "Featured",
+          description: "Description (optional)",
+          categoryRequired: "Category *",
+          priceRequired: "Price (₹) *",
+          discountShort: "Disc (₹)",
+          poolImageAssign: "Click to assign — max 4 per product",
+        },
+        placeholders: {
+          sameForAll: "Same for all",
+          productName: "Product name *",
+          select: "Select",
+        },
+        imagePool: {
+          title: "Image Pool",
+          imageCount: "image",
+          imagesCount: "images",
+          description: "Upload all your product images here at once, then assign them to individual products below.",
+          dropzoneActive: "Drop images here",
+          dropzoneInactive: "Click or drag to upload multiple images",
+          dropzoneNote: "JPEG, PNG, WebP — no limit",
+          tabPool: "From Pool",
+          tabDirect: "Upload Direct",
+          emptyPool: "No images in pool yet. Upload images to the pool above, then select them here.",
+        },
+        buttons: {
+          addAnother: "Add Another Product",
+          uploading: "Uploading...",
+          upload: "Upload",
+        },
+        stats: {
+          published: "published",
+          failed: "failed",
+        },
+        toast: {
+          appliedAll: "Applied to all pending rows.",
+          validationError: "Fill in Name, Price, and Category for at least one product.",
+          uploadSuccessSingle: "1 product published successfully.",
+          uploadSuccessPlural: "{count} products published successfully.",
+          uploadFailSingle: "1 product failed. Review errors below.",
+          uploadFailPlural: "{count} products failed. Review errors below.",
+          imagesAddedSingle: "1 image added to pool.",
+          imagesAddedPlural: "{count} images added to pool.",
+          imagesUploadFailed: "Some images failed to upload.",
+          maxImages: "Max 4 images per product.",
+          failed: "Failed",
+        }
       }
     }
   },
@@ -305,13 +362,15 @@ export const en = {
     },
     featured: {
       title: "Iconic Pieces",
-      subtitle: "Handcrafted Legacy"
+      subtitle: "Handcrafted Legacy",
+      viewCollection: "View Collection"
     },
     newArrivals: {
       title: "New Arrivals",
       subtitle: "Freshly Crafted",
       description: "The latest masterpieces to join the Culture Signature house.",
-      empty: "New masterpieces are being curated as we speak."
+      empty: "New masterpieces are being curated as we speak.",
+      viewMore: "View More"
     },
     celebSpotting: {
       title: "Celeb Spotting",

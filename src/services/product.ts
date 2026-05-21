@@ -2,10 +2,15 @@ import { api } from "./api";
 import { Product } from "@/types";
 
 export class ProductService {
-  static async getAllAdmin(): Promise<Product[]> {
-    return api<Product[]>({
+  static async getAllAdmin(params?: { page?: number; limit?: number; query?: string; categoryId?: string; status?: string }): Promise<Product[] | { items: Product[]; total: number }> {
+    const queryParams = params ? new URLSearchParams(
+      Object.entries(params)
+        .filter(([_, v]) => v !== undefined && v !== "")
+        .map(([k, v]) => [k, String(v)])
+    ).toString() : "";
+    return api<Product[] | { items: Product[]; total: number }>({
       method: "GET",
-      endpoint: "/admin/products",
+      endpoint: `/admin/products${queryParams ? `?${queryParams}` : ""}`,
     });
   }
 

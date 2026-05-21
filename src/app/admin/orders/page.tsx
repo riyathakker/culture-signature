@@ -29,16 +29,14 @@ import { AdminTable, Column } from "@/components/admin/AdminTable";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
+import { TablePagination } from "@/components/admin/TablePagination";
+import { usePagination } from "@/hooks/usePagination";
 
 export default function AdminOrders() {
-  const { orders, isLoading, fetchOrders, updateOrderStatus } = useOrderStore();
+  const { orders, totalOrders, isLoading, fetchOrders, updateOrderStatus } = useOrderStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeStatus, setActiveStatus] = useState("");
   const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    fetchOrders(true);
-  }, []);
 
   const toggleOrderExpansion = (orderId: string) => {
     const newExpanded = new Set(expandedOrders);
@@ -50,18 +48,28 @@ export default function AdminOrders() {
     setExpandedOrders(newExpanded);
   };
 
-  const filteredOrders = useMemo(() => {
-    return orders.filter((order) => {
-      const matchesSearch =
-        order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (order.user?.name ?? order.customerName ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (order.user?.email ?? "").toLowerCase().includes(searchQuery.toLowerCase());
+  const {
+    currentPage,
+    pageSize,
+    setCurrentPage,
+    setPageSize,
+    paginatedData: paginatedOrders,
+    totalItems,
+  } = usePagination({
+    data: orders,
+    totalItems: totalOrders,
+    isServerSide: true,
+    dependencies: [searchQuery, activeStatus],
+  });
 
-      const matchesStatus = !activeStatus || order.status === activeStatus;
-
-      return matchesSearch && matchesStatus;
+  useEffect(() => {
+    fetchOrders(true, {
+      page: currentPage,
+      limit: pageSize,
+      query: searchQuery,
+      status: activeStatus,
     });
-  }, [orders, searchQuery, activeStatus]);
+  }, [currentPage, pageSize, searchQuery, activeStatus, fetchOrders]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -227,7 +235,7 @@ export default function AdminOrders() {
 
       <AdminTable
         columns={columns}
-        data={filteredOrders}
+        data={paginatedOrders}
         isLoading={isLoading}
         emptyMessage="No orders found matching your criteria."
         rowKey={(o) => o.id}
@@ -457,6 +465,14 @@ export default function AdminOrders() {
             </div>
           )
         }}
+      />
+
+      <TablePagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
       />
     </div>
   );

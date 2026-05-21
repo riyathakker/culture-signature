@@ -2,10 +2,15 @@ import { api } from "./api";
 import { Discount } from "@/types";
 
 export class DiscountService {
-  static async getAll(): Promise<Discount[]> {
-    return api<Discount[]>({
+  static async getAll(params?: { page?: number; limit?: number; query?: string }): Promise<Discount[] | { items: Discount[]; total: number }> {
+    const queryParams = params ? new URLSearchParams(
+      Object.entries(params)
+        .filter(([_, v]) => v !== undefined && v !== "")
+        .map(([k, v]) => [k, String(v)])
+    ).toString() : "";
+    return api<Discount[] | { items: Discount[]; total: number }>({
       method: "GET",
-      endpoint: "/admin/discounts",
+      endpoint: `/admin/discounts${queryParams ? `?${queryParams}` : ""}`,
     });
   }
 

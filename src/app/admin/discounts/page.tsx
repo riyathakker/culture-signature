@@ -23,33 +23,43 @@ import { AdminTable, Column } from "@/components/admin/AdminTable";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminFilterDropdown } from "@/components/admin/AdminFilterDropdown";
+import { TablePagination } from "@/components/admin/TablePagination";
+import { usePagination } from "@/hooks/usePagination";
 import { DiscountDialog } from "@/components/admin/DiscountDialog";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useTranslation } from "@/context/TranslationContext";
-
 export default function DiscountsPage() {
-  const { discounts, isLoading, fetchDiscounts, deleteDiscount } = useDiscountStore();
+  const { discounts, totalDiscounts, isLoading, fetchDiscounts, deleteDiscount } = useDiscountStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeStatus, setActiveStatus] = useState("");
   const { t } = useTranslation();
-  
+
   // State for Edit/Delete modals
   const [selectedDiscount, setSelectedDiscount] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+  const {
+    currentPage,
+    pageSize,
+    setCurrentPage,
+    setPageSize,
+    paginatedData: paginatedDiscounts,
+    totalItems,
+  } = usePagination({
+    data: discounts,
+    totalItems: totalDiscounts,
+    isServerSide: true,
+    dependencies: [searchQuery, activeStatus],
+  });
+
   useEffect(() => {
-    fetchDiscounts(true); // Force fetch on mount
-  }, []);
-
-  const filteredDiscounts = useMemo(() => {
-    return discounts.filter((discount) => {
-      const matchesSearch = discount.code.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = !activeStatus || discount.status === activeStatus;
-
-      return matchesSearch && matchesStatus;
+    fetchDiscounts(true, {
+      page: currentPage,
+      limit: pageSize,
+      query: searchQuery,
     });
-  }, [discounts, searchQuery, activeStatus]);
+  }, [currentPage, pageSize, searchQuery, fetchDiscounts]);
 
   const handleEdit = useCallback((discount: any) => {
     setSelectedDiscount(discount);
@@ -143,20 +153,20 @@ export default function DiscountsPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40 bg-background border border-border/50 shadow-xl z-[100]">
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={(e) => {
                   e.preventDefault();
                   handleEdit(discount);
-                }} 
+                }}
                 className="gap-2 cursor-pointer focus:bg-primary focus:text-primary-foreground"
               >
                 <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={(e) => {
                   e.preventDefault();
                   handleDeleteClick(discount);
-                }} 
+                }}
                 className="gap-2 text-destructive cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
               >
                 <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
@@ -196,7 +206,7 @@ export default function DiscountsPage() {
 
       <AdminTable
         columns={columns}
-        data={filteredDiscounts}
+        data={paginatedDiscounts}
         isLoading={isLoading}
         emptyMessage={t("admin.discounts.empty")}
         rowKey={(d) => d.id}
@@ -264,8 +274,16 @@ export default function DiscountsPage() {
         )}
       />
 
+      <TablePagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+      />
+
       {/* Edit Dialog - Outside the table loop */}
-      <DiscountDialog 
+      <DiscountDialog
         discount={selectedDiscount}
         open={isEditDialogOpen}
         onOpenChange={(val) => {

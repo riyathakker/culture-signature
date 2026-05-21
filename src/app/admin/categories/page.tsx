@@ -4,7 +4,6 @@ import {
   MoreVertical,
   Edit2,
   Trash2,
-  Plus,
   Archive,
   ArchiveRestore,
 } from "lucide-react";
@@ -24,13 +23,15 @@ import { useCategoryStore } from "@/store/categoryStore";
 import { AdminTable, Column } from "@/components/admin/AdminTable";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
+import { TablePagination } from "@/components/admin/TablePagination";
 import { CategoryDialog } from "@/components/admin/CategoryDialog";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useTranslation } from "@/context/TranslationContext";
+import { usePagination } from "@/hooks/usePagination";
 import { Category } from "@/types";
 
 export default function CategoriesPage() {
-  const { categories, isLoading, fetchCategories, deleteCategoryById, updateCategoryById } = useCategoryStore();
+  const { categories, totalCategories, isLoading, fetchCategories, deleteCategoryById, updateCategoryById } = useCategoryStore();
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
   const router = useRouter();
@@ -40,15 +41,27 @@ export default function CategoriesPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  useEffect(() => {
-    fetchCategories(true); // Force fetch on mount including archived
-  }, []);
+  const {
+    currentPage,
+    pageSize,
+    setCurrentPage,
+    setPageSize,
+    paginatedData: paginatedCategories,
+    totalItems,
+  } = usePagination({
+    data: categories,
+    totalItems: totalCategories,
+    isServerSide: true,
+    dependencies: [searchQuery],
+  });
 
-  const filteredCategories = useMemo(() => {
-    return categories.filter((cat) =>
-      cat.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [categories, searchQuery]);
+  useEffect(() => {
+    fetchCategories(true, {
+      page: currentPage,
+      limit: pageSize,
+      query: searchQuery,
+    });
+  }, [currentPage, pageSize, searchQuery, fetchCategories]);
 
   const handleEdit = useCallback((cat: Category) => {
     setSelectedCategory(cat);
@@ -199,7 +212,7 @@ export default function CategoriesPage() {
 
       <AdminTable
         columns={columns}
-        data={filteredCategories}
+        data={paginatedCategories}
         isLoading={isLoading}
         emptyMessage={t("admin.categories.empty")}
         rowKey={(cat) => cat.id}
@@ -256,6 +269,14 @@ export default function CategoriesPage() {
             </div>
           );
         }}
+      />
+
+      <TablePagination
+        currentPage={currentPage}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
       />
 
       {/* Edit Category Dialog */}
