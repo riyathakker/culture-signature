@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 
 import { useTranslation } from "@/context/TranslationContext";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
+import { ROUTES } from "@/constants/routes";
 
 export default function ShopPage() {
   const { t } = useTranslation();
@@ -89,7 +90,7 @@ export default function ShopPage() {
             <div className="py-32 text-center space-y-4">
               <p className="muted-italic text-lg">{t("shop.noMatches")}</p>
               <button
-                onClick={() => window.location.href = "/shop"}
+                onClick={() => window.location.href = ROUTES.COLLECTIONS}
                 className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"
               >
                 {t("shop.clearFilters")}

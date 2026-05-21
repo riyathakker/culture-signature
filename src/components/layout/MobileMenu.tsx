@@ -120,7 +120,7 @@ export function MobileMenu() {
                   <span className="text-sm uppercase tracking-widest">{t("nav.account.adminPanel")}</span>
                 </Link>
               )}
-              {isLoggedIn ? (
+              {isLoggedIn && !isAdmin ? (
                 <Link
                   href="/account"
                   onClick={() => setOpen(false)}
@@ -129,7 +129,7 @@ export function MobileMenu() {
                   <User className="w-5 h-5" />
                   <span className="text-sm uppercase tracking-widest">{t("nav.account.myAccount")}</span>
                 </Link>
-              ) : (
+              ) : !isLoggedIn && (
                 <button
                   onClick={() => {
                     setOpen(false);
@@ -144,7 +144,7 @@ export function MobileMenu() {
               {isLoggedIn && (
                 <button
                   onClick={() => setIsSignOutDialogOpen(true)}
-                  className="flex items-center space-x-3 text-destructive hover:text-destructive/80 transition-colors w-full text-left pt-4 border-t border-border/50"
+                  className="flex items-center space-x-3 text-destructive hover:text-destructive/80 transition-colors w-full text-left py-4 border-t border-border/50"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="text-[10px] uppercase tracking-[0.2em] font-bold">{t("nav.account.signOut")}</span>

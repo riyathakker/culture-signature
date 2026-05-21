@@ -6,6 +6,7 @@ import { Heart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
+import { ROUTES } from "@/constants/routes";
 
 export default function WishlistPage() {
   const { items } = useWishlistStore();
@@ -24,7 +25,7 @@ export default function WishlistPage() {
               Discover our range of handcrafted masterpieces and save your favorites here.
             </p>
           </div>
-          <Link href="/shop">
+          <Link href={ROUTES.COLLECTIONS}>
             <Button className="py-7 px-10 uppercase tracking-[0.2em] text-xs h-auto gap-2">
               Explore Collection <ArrowRight className="w-4 h-4" />
             </Button>

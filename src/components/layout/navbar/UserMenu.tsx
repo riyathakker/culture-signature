@@ -46,23 +46,9 @@ export function UserMenu({
   const isAdmin = user?.role === "ADMIN";
 
   const menuItems = useMemo(
-    () => [
-      ...(isAdmin
-        ? [
-          {
-            href: "/admin",
-            label: t("nav.account.adminPanel"),
-            icon: LayoutDashboard,
-          },
-        ]
-        : []),
-
-      {
-        href: "/account",
-        label: t("nav.account.myAccount"),
-        icon: User,
-      },
-    ],
+    () => isAdmin
+      ? [{ href: "/admin", label: t("nav.account.adminPanel"), icon: LayoutDashboard }]
+      : [{ href: "/account", label: t("nav.account.myAccount"), icon: User }],
     [isAdmin, t]
   );
 
