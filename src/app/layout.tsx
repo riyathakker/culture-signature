@@ -49,6 +49,7 @@ import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 
 import { BackToTop } from "@/components/common/BackToTop";
 import { MobileFloatingCart } from "@/components/cart/MobileFloatingCart";
+import { PWABottomNav } from "@/components/pwa/PWABottomNav";
 
 export default function RootLayout({
   children,
@@ -63,13 +64,14 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans overflow-x-hidden">
         <Providers>
-          <Header />
+          <div className="pwa-hide"><Header /></div>
           <LayoutWrapper>
             {children}
           </LayoutWrapper>
-          <Footer />
+          <div className="pwa-hide"><Footer /></div>
           <BackToTop />
-          <MobileFloatingCart />
+          <div className="pwa-hide"><MobileFloatingCart /></div>
+          <PWABottomNav />
         </Providers>
       </body>
     </html>

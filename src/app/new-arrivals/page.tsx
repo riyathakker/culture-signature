@@ -24,7 +24,7 @@ export default function NewArrivalsPage() {
     >
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid-gallery">
           {[...Array(4)].map((_, i) => (
             <ProductSkeleton key={i} />
           ))}
@@ -34,7 +34,7 @@ export default function NewArrivalsPage() {
           <p className="muted-italic text-lg">{t("home.newArrivals.empty")}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 animate-in fade-in duration-700">
+        <div className="grid-gallery animate-in fade-in duration-700">
           {newArrivals.map((product) => (
             <ProductCard product={product} />
           ))}
