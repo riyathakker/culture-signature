@@ -49,6 +49,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const handleBuyNow = () => {
     addItem(buildCartItem());
+    setQuantity(1);
     router.push("/bag");
   };
 

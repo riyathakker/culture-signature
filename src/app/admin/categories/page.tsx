@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -103,9 +103,16 @@ export default function CategoriesPage() {
       header: t("admin.categories.table.collection"),
       render: (cat) => (
         <div className="flex items-center gap-3 py-2">
-          <div className="w-10 h-10 rounded bg-secondary/50 flex items-center justify-center font-bold text-primary">
-            {cat.name.charAt(0)}
-          </div>
+          {cat.image ?
+            <img
+              src={cat.image}
+              alt={cat.name}
+              className="w-12 h-16 object-cover rounded"
+            /> :
+            <div className="w-12 h-16 rounded bg-secondary/50 flex items-center justify-center font-bold text-primary">
+              {cat.name.charAt(0)}
+            </div>
+          }
           <span className="font-bold text-sm tracking-tight">{cat.name}</span>
         </div>
       ),

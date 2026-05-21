@@ -18,6 +18,7 @@ export const ROUTES = {
     DISCOUNTS_NEW: "/admin/discounts/new",
     CATEGORIES: "/admin/categories",
     CONTENT: "/admin/content",
+    REVIEWS: "/admin/reviews",
   },
   ACCOUNT: {
     ORDERS: "/account/orders",

@@ -14,6 +14,7 @@ import {
   LayoutGrid,
   Sparkles,
   LogOut,
+  Star,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
@@ -42,6 +43,7 @@ export function AdminSidebar() {
     { label: t("admin.sidebar.discounts"), href: ROUTES.ADMIN.DISCOUNTS, icon: Tag },
     { label: t("admin.sidebar.categories"), href: ROUTES.ADMIN.CATEGORIES, icon: LayoutGrid },
     { label: t("admin.sidebar.content"), href: ROUTES.ADMIN.CONTENT, icon: Sparkles },
+    { label: "Reviews", href: ROUTES.ADMIN.REVIEWS, icon: Star },
   ];
 
   return (

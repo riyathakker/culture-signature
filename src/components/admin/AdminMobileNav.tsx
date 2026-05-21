@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Package, ShoppingBag, Tag, Users, LayoutGrid, Sparkles } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Tag, Users, LayoutGrid, Sparkles, Star } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { useTranslation } from "@/context/TranslationContext";
 
@@ -18,6 +18,7 @@ export function AdminMobileNav() {
     { label: t("admin.sidebar.discounts"), href: ROUTES.ADMIN.DISCOUNTS, icon: Tag },
     { label: t("admin.sidebar.categories"), href: ROUTES.ADMIN.CATEGORIES, icon: LayoutGrid },
     { label: t("admin.sidebar.content"), href: ROUTES.ADMIN.CONTENT, icon: Sparkles },
+    { label: "Reviews", href: ROUTES.ADMIN.REVIEWS, icon: Star },
   ];
 
   return (
