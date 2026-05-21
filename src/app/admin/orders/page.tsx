@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 import { useOrderStore } from "@/store/orderStore";
+import { ImageLightbox } from "@/components/common/ImageLightbox";
 import { AdminTable, Column } from "@/components/admin/AdminTable";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
@@ -102,18 +103,15 @@ export default function AdminOrders() {
       className: "min-w-[120px]",
       render: (order) => (
         <div className="flex -space-x-2 overflow-hidden">
-          {order.items && order.items.slice(0, 3).map((item: any, idx: number) => (
-            <div
+          {order.items && order.items.slice(0, 3).map((item: any) => (
+            <ImageLightbox
               key={item.id}
+              src={item.product.images?.[0]}
+              alt={item.product.name}
+              images={item.product.images}
               className="relative inline-block h-8 w-8 rounded-full ring-2 ring-background overflow-hidden bg-muted"
-              title={item.product.name}
-            >
-              <img
-                src={item.product.images?.[0]}
-                alt={item.product.name}
-                className="h-full w-full object-cover"
-              />
-            </div>
+              imgClassName="h-full w-full object-cover"
+            />
           ))}
           {order.items && order.items.length > 3 && (
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-[10px] font-bold ring-2 ring-background">
@@ -300,9 +298,13 @@ export default function AdminOrders() {
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-2 overflow-hidden">
                   {order.items && order.items.slice(0, 3).map((item: any) => (
-                    <div key={item.id} className="h-8 w-8 rounded-full ring-2 ring-background overflow-hidden bg-muted">
-                      <img src={item.product.images?.[0]} alt={item.product.name} className="h-full w-full object-cover" />
-                    </div>
+                    <ImageLightbox
+                      key={item.id}
+                      src={item.product.images?.[0]}
+                      alt={item.product.name}
+                      className="h-8 w-8 rounded-full ring-2 ring-background overflow-hidden bg-muted"
+                      imgClassName="h-full w-full object-cover"
+                    />
                   ))}
                   {order.items && order.items.length > 3 && (
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-[10px] font-bold ring-2 ring-background">
@@ -328,9 +330,12 @@ export default function AdminOrders() {
                     {(order.items ?? []).map((item: any) => (
                       <div key={item.id} className="flex items-center justify-between bg-background p-3 border border-border/40">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-16 bg-muted overflow-hidden flex-shrink-0">
-                            <img src={item.product.images?.[0]} alt={item.product.name} className="w-full h-full object-cover" />
-                          </div>
+                          <ImageLightbox
+                            src={item.product.images?.[0]}
+                            alt={item.product.name}
+                            className="w-12 h-16 bg-muted overflow-hidden flex-shrink-0"
+                            imgClassName="w-full h-full object-cover"
+                          />
                           <div className="space-y-0.5">
                             <p className="text-sm font-heading">{item.product.name}</p>
                             <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Qty: {item.quantity}</p>
@@ -387,14 +392,13 @@ export default function AdminOrders() {
                     {(order.items ?? []).map((item: any) => (
                       <div key={item.id} className="flex items-center justify-between bg-background p-4 border border-border/40 shadow-sm">
                         <div className="flex items-center gap-4">
-                          <div className="w-16 h-20 bg-muted relative overflow-hidden group">
-                            <img
-                              src={item.product.images?.[0]}
-                              alt={item.product.name}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-luxury-gradient opacity-10" />
-                          </div>
+                          <ImageLightbox
+                            src={item.product.images?.[0]}
+                            alt={item.product.name}
+                            images={item.product.images}
+                            className="w-16 h-20 bg-muted overflow-hidden"
+                            imgClassName="w-full h-full object-cover"
+                          />
                           <div className="space-y-1">
                             <p className="text-sm font-heading">{item.product.name}</p>
                             <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Quantity: {item.quantity}</p>

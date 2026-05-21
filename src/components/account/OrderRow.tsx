@@ -7,6 +7,7 @@ import { ReviewModal } from "./ReviewModal";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ImageLightbox } from "@/components/common/ImageLightbox";
 
 function statusClass(status: string) {
   if (status === "DELIVERED") return "border-green-500 text-green-500";
@@ -24,9 +25,12 @@ function OrderItems({ order, expanded }: { order: any; expanded: boolean }) {
         {order.items?.map((item: any) => (
           <div key={item.id} className="flex items-center justify-between bg-background p-3 rounded-sm border border-border/50">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-secondary/30 rounded-sm overflow-hidden shrink-0">
-                <img src={item.product.images?.[0]} alt={item.product.name} className="w-full h-full object-cover" />
-              </div>
+              <ImageLightbox
+                src={item.product.images?.[0]}
+                alt={item.product.name}
+                className="w-10 h-10 bg-secondary/30 rounded-sm overflow-hidden shrink-0"
+                imgClassName="w-full h-full object-cover"
+              />
               <div>
                 <p className="text-xs font-medium">{item.product.name}</p>
                 <p className="text-[10px] text-muted-foreground">Qty: {item.quantity} × ₹{item.price.toLocaleString()}</p>

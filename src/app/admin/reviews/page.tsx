@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import { ImageLightbox } from "@/components/common/ImageLightbox";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminTable, Column } from "@/components/admin/AdminTable";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
@@ -104,11 +105,17 @@ export default function AdminReviews() {
       header: "Product",
       render: (r) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-sm overflow-hidden bg-secondary/30 shrink-0">
-            {r.product?.images?.[0] && (
-              <img src={r.product.images[0]} alt={r.product.name} className="w-full h-full object-cover" />
-            )}
-          </div>
+          {r.product?.images?.[0] ? (
+            <ImageLightbox
+              src={r.product.images[0]}
+              alt={r.product.name}
+              images={r.product.images}
+              className="w-9 h-9 rounded-sm overflow-hidden bg-secondary/30 shrink-0"
+              imgClassName="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-sm bg-secondary/30 shrink-0" />
+          )}
           <span className="text-xs font-medium truncate max-w-[140px]">{r.product?.name || "—"}</span>
         </div>
       ),

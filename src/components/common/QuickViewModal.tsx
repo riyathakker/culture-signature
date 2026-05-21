@@ -1,6 +1,7 @@
 "use client";
 
 import { Star, Heart, ShoppingBag } from "lucide-react";
+import { ImageLightbox } from "@/components/common/ImageLightbox";
 import {
   Dialog,
   DialogContent,
@@ -54,10 +55,13 @@ export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalPr
           <div className="absolute inset-0 bg-luxury-gradient opacity-10" />
 
           {/* Main Image */}
-          <img
+          <ImageLightbox
             src={product.images?.[selectedImage || 0]}
             alt={product.name}
-            className="w-full h-full object-cover transition-all duration-300"
+            images={product.images}
+            initialIndex={selectedImage || 0}
+            className="w-full h-full"
+            imgClassName="w-full h-full object-cover transition-all duration-300"
           />
 
           {/* Horizontal Image Slider */}

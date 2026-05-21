@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import { ImageLightbox } from "@/components/common/ImageLightbox";
 import { useContentStore } from "@/store/contentStore";
 import { Exhibition } from "@/types";
 import { cn } from "@/lib/utils";
@@ -221,7 +222,13 @@ export default function ContentPage() {
               {/* Thumbnail */}
               <div className="w-12 h-12 flex-shrink-0 bg-secondary/30 overflow-hidden">
                 {ex.images[0]
-                  ? <img src={ex.images[0]} alt={ex.title} className="w-full h-full object-cover" />
+                  ? <ImageLightbox
+                      src={ex.images[0]}
+                      alt={ex.title}
+                      images={ex.images}
+                      className="w-full h-full"
+                      imgClassName="w-full h-full object-cover"
+                    />
                   : <div className="w-full h-full flex items-center justify-center"><Camera className="w-4 h-4 text-muted-foreground/20" /></div>
                 }
               </div>
