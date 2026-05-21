@@ -48,7 +48,6 @@ export function ShippingForm() {
   }, []);
 
   const handleSelectAddress = (addr: any) => {
-    console.log("Selecting address:", addr);
     setShippingAddress({
       firstName: addr.firstName || "",
       lastName: addr.lastName || "",
@@ -59,13 +58,6 @@ export function ShippingForm() {
       country: addr.country || "India",
       phone: addr.phone || "",
     });
-    // @ts-ignore
-    if (window.toast) {
-      // @ts-ignore
-      window.toast.success(t("cart.checkout.shipping.addressApplied"));
-    } else {
-      import("sonner").then(({ toast }) => toast.success(t("cart.checkout.shipping.addressApplied")));
-    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

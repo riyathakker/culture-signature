@@ -25,7 +25,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, variant = "default" }: ProductCardProps) {
   const pathname = usePathname();
-  const from = pathname.startsWith("/collections") ? "collections" : pathname.startsWith("/categories") ? "categories" : null;
+  const from = pathname.startsWith("/collections") ? "collections" : pathname.startsWith("/categories") ? "categories" : pathname.startsWith("/new-arrivals") ? "new-arrivals" : null;
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";

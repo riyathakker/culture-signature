@@ -412,7 +412,6 @@ export const en = {
         zipCode: "ZIP / Postal Code",
         phone: "Phone Number (For Delivery Updates)",
         billingSame: "Billing address is same as shipping",
-        addressApplied: "Address applied to form",
         placeholders: {
           firstName: "John",
           lastName: "Doe",

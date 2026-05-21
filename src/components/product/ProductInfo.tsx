@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Heart, Share2, Ruler, Truck, ShieldCheck, Plus, Minus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Heart, Share2, Truck, ShieldCheck, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { useCartStore, CartItem } from "@/store/cartStore";
-import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
+import { ShareDialog } from "./ShareDialog";
+import { QuantitySelector } from "../common/QuantitySelector";
 
 interface ProductInfoProps {
   product: {
@@ -24,23 +24,32 @@ interface ProductInfoProps {
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
+  const [shareOpen, setShareOpen] = useState(false);
   const { t } = useTranslation();
+  const router = useRouter();
 
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem } = useCartStore();
 
+  const buildCartItem = (): CartItem => ({
+    id: product.id,
+    name: product.name,
+    price: product.price - (product.discount || 0),
+    quantity,
+    image: product.images[0],
+    stock: product.stock,
+  });
+
   const handleAddToCart = () => {
-    const item: CartItem = {
-      id: product.id,
-      name: product.name,
-      price: product.price - (product.discount || 0),
-      quantity: quantity,
-      image: product.images[0],
-      stock: product.stock,
-    };
-    addItem(item);
+    addItem(buildCartItem());
+    setQuantity(1);
+  };
+
+  const handleBuyNow = () => {
+    addItem(buildCartItem());
+    router.push("/bag");
   };
 
   return (
@@ -55,7 +64,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
                 <Heart className="w-5 h-5" />
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full"
+              onClick={() => setShareOpen(true)}
+              aria-label="Share product"
+            >
               <Share2 className="w-5 h-5" />
             </Button>
           </div>
@@ -77,16 +92,17 @@ export function ProductInfo({ product }: ProductInfoProps) {
       {!isAdmin && (
         <div className="space-y-4 pt-6">
           <div className="flex items-center gap-4">
-            <div className="flex items-center border rounded-sm h-14">
-              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-4 h-full hover:bg-secondary transition-colors"><Minus className="w-4 h-4" /></button>
-              <span className="px-6 font-medium">{quantity}</span>
-              <button onClick={() => setQuantity(quantity + 1)} className="px-4 h-full hover:bg-secondary transition-colors"><Plus className="w-4 h-4" /></button>
-            </div>
-            <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
-              {t("shop.product.details.addToCollection")}
-            </Button>
+              <QuantitySelector
+                onUpdate={setQuantity}
+                quantity={quantity}
+                className="flex items-center border rounded-sm h-14 w-[40%]"
+              />
+              <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
+                {t("shop.product.details.addToCollection")}
+              </Button>
+          
           </div>
-          <Button variant="outline" className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+          <Button onClick={handleBuyNow} variant="outline" className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
             {t("shop.product.details.buyNow")}
           </Button>
         </div>
@@ -103,6 +119,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <span>{t("shop.product.details.lifetimeWarranty")}</span>
         </div>
       </div>
+
+      <ShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        productName={product.name}
+        productImage={product.images?.[0]}
+      />
     </div>
   );
 }

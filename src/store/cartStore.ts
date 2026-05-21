@@ -72,13 +72,11 @@ export const useCartStore = create<CartStore>((set, get) => ({
     });
 
     if (!get().isAuthenticated) {
-      toast.success(`${item.name} added to cart`);
       return;
     }
 
     try {
       await CartService.addItem(item.id, item.quantity);
-      toast.success(`${item.name} added to cart`);
     } catch (error: any) {
       console.error("Failed to add to cart:", error);
       toast.error(error.message || "Failed to add to cart");

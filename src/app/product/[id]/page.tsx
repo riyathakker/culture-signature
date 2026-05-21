@@ -77,23 +77,19 @@ export default function ProductPage() {
     </div>
   );
 
-  console.log("Efrwefwef", product)
   return (
     <div className="bg-background min-h-screen pb-20">
       <Container className="py-8">
         <Breadcrumbs
           items={[
             from === "categories"
-              ? { label: "Categories", href: "/categories" }
-              : { label: "Collections", href: "/collections" },
+              ? { label: t("nav.links.categories") || "Categories", href: "/categories" }
+              : from === "new-arrivals"
+              ? { label: t("nav.links.newArrivals") || "New Arrivals", href: "/new-arrivals" }
+              : { label: t("nav.links.collections") || "Collections", href: "/collections" },
 
             ...(from === "categories"
-              ? [
-                {
-                  label: product.category,
-                  href: `/categories/${product.categoryId}`,
-                },
-              ]
+              ? [{ label: product.category, href: `/categories/${product.categoryId}` }]
               : []),
 
             { label: product.name },
