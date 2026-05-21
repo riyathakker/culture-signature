@@ -227,9 +227,17 @@ export default function CategoriesPage() {
           const isArchived = cat.status === "ARCHIVED";
           return (
             <div className="bg-background border border-border/50 rounded-sm p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded bg-secondary/50 flex items-center justify-center font-bold text-primary flex-shrink-0">
-                {cat.name.charAt(0)}
-              </div>
+              {cat.image ? (
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-12 h-14 object-cover rounded-sm flex-shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-14 rounded-sm bg-secondary/50 flex items-center justify-center font-bold text-primary flex-shrink-0">
+                  {cat.name.charAt(0)}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-bold text-sm tracking-tight truncate">{cat.name}</span>

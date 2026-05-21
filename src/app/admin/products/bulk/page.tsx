@@ -15,6 +15,7 @@ import { BulkGlobalDefaults } from "@/components/admin/bulk/BulkGlobalDefaults";
 import { BulkImagePool } from "@/components/admin/bulk/BulkImagePool";
 import { BulkProductRow } from "@/components/admin/bulk/BulkProductRow";
 import { BulkRow, GlobalDefaults, PoolImage } from "@/types/bulk";
+import { ROUTES } from "@/constants/routes";
 
 let uidCounter = 0;
 const makeRow = (): BulkRow => ({
@@ -169,6 +170,10 @@ export default function BulkProductUpload() {
           ? t("admin.products.bulk.toast.uploadFailSingle")
           : t("admin.products.bulk.toast.uploadFailPlural").replace("{count}", String(failCount))
       );
+    }
+
+    if (failCount === 0) {
+      router.push(ROUTES.ADMIN.PRODUCTS);
     }
   };
 

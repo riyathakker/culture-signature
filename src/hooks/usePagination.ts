@@ -18,6 +18,13 @@ export function usePagination<T>({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(initialPageSize);
 
+  // On mobile screens default to 5 items per page
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setPageSize(5);
+    }
+  }, []);
+
   // Reset page to 1 whenever search query or filters change
   useEffect(() => {
     setCurrentPage(1);
