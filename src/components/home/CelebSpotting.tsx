@@ -13,6 +13,7 @@ const DEFAULT_IMAGES = [
   "/celebs/celeb-5.jpg",
   "/celebs/celeb-6.jpg",
   "/celebs/celeb-7.jpg",
+  "/celebs/celeb-8.jpg",
 ];
 
 export function CelebSpotting() {
