@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home, Sparkles, ShoppingBag, User,
   Package, Heart, MapPin, Settings, ChevronLeft,
@@ -9,14 +9,15 @@ import {
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
-
 import { ROUTES } from "@/constants/routes";
 
 const mainTabs = [
   { label: "Home", href: ROUTES.HOME, icon: Home },
   { label: "New In", href: ROUTES.NEW_ARRIVALS, icon: Sparkles },
-  { label: "Bag", href: "/bag", icon: ShoppingBag, showBadge: true },
-  { label: "Account", href: "/account", icon: User, authRequired: true },
+  { label: "Collections", href: ROUTES.COLLECTIONS, icon: Sparkles },
+  { label: "Bag", href: ROUTES.SHOPPING_BAG, icon: ShoppingBag, showBadge: true },
+  { label: "Account", href: ROUTES.ACCOUNT.DASHBOARD, icon: User, authRequired: true },
+
 ];
 
 const accountTabs = [
@@ -76,11 +77,13 @@ function NavTab({
 
 export function PWABottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const { items } = useCartStore();
   const { data: session } = useSession();
 
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
   const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const isLoggedIn = !!session?.user;
   const isOnAccount = pathname.startsWith("/account");
 
   const tabs = isOnAccount ? accountTabs : mainTabs;
@@ -108,6 +111,10 @@ export function PWABottomNav() {
             ? ROUTES.ADMIN.DASHBOARD
             : href;
 
+          const handleClick = authRequired && !isLoggedIn && !isAdmin
+            ? (e: React.MouseEvent) => { e.preventDefault(); router.push("/login"); }
+            : undefined;
+
           return (
             <NavTab
               key={label}
@@ -116,6 +123,7 @@ export function PWABottomNav() {
               icon={icon}
               isActive={isActive}
               badge={showBadge ? cartCount : undefined}
+              onClick={handleClick}
             />
           );
         })}

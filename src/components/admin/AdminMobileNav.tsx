@@ -29,9 +29,9 @@ export function AdminMobileNav() {
       >
         {allItems.map((item) => {
           const isActive =
-            item.href === "/admin"
+            item.href === ROUTES.ADMIN.DASHBOARD
               ? pathname === "/admin"
-              : item.href === "/"
+              : item.href === ROUTES.HOME
                 ? pathname === "/"
                 : pathname.startsWith(item.href);
 

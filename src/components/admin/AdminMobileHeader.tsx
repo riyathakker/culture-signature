@@ -56,7 +56,7 @@ export function AdminMobileHeader() {
         open={signOutOpen}
         onOpenChange={setSignOutOpen}
         onConfirm={() => {
-          signOut({ callbackUrl: "/" });
+          signOut({ callbackUrl: ROUTES.HOME });
           toast.success(t("nav.account.signOutSuccess"));
         }}
         title={t("nav.account.signOut")}

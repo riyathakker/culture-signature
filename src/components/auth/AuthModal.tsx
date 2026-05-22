@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,20 +16,32 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 interface AuthModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 type AuthView = "login" | "signup" | "forgot-password";
 
 import { useTranslation } from "@/context/TranslationContext";
 
-export function AuthModal({ open, onOpenChange }: AuthModalProps) {
+export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: AuthModalProps) {
   const { t } = useTranslation();
+  const { isModalOpen, callbackUrl, closeModal } = useAuthStore();
+  const open = openProp ?? isModalOpen;
+  const onOpenChange = onOpenChangeProp ?? ((val: boolean) => { if (!val) closeModal(); });
   const [view, setView] = useState<AuthView>("login");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  // On mobile, redirect to the login page instead of showing the modal
+  useEffect(() => {
+    if (open && window.innerWidth < 768) {
+      onOpenChange(false);
+      const query = callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : "";
+      router.push(`/login${query}`);
+    }
+  }, [open]);
 
   // Form states
   const [name, setName] = useState("");
@@ -53,7 +65,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         } else {
           toast.success(t("auth.login.success"));
           onOpenChange(false);
-          router.refresh();
+          if (callbackUrl) {
+            router.push(callbackUrl);
+          } else {
+            router.refresh();
+          }
         }
       } else if (view === "signup") {
         const response = await fetch("/api/auth/signup", {
@@ -82,7 +98,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           setView("login");
         } else {
           onOpenChange(false);
-          router.refresh();
+          if (callbackUrl) {
+            router.push(callbackUrl);
+          } else {
+            router.refresh();
+          }
         }
       }
     } catch (error: any) {

@@ -2,12 +2,13 @@ import { ProductCard } from "@/components/common/ProductCard";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { ROUTES } from "@/constants/routes";
 
 export default async function WishlistPage() {
   const session = await auth();
 
   if (!session || !session.user) {
-    redirect("/");
+    redirect(ROUTES.HOME);
   }
 
   const wishlist = await prisma.wishlistItem.findMany({

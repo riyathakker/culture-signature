@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { cn } from "@/lib/utils";
+import { ROUTES } from "@/constants/routes";
 
 export interface BreadcrumbItem {
   label: string;
@@ -18,7 +19,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     <nav className={cn("py-2 md:py-4", className)} aria-label="Breadcrumb">
       <Container className="pl-0! flex items-center space-x-2 text-xs uppercase tracking-widest text-muted-foreground">
         <Link
-          href="/"
+          href={ROUTES.HOME}
           className="flex items-center hover:text-primary transition-colors"
         >
           <Home className="w-3 h-3 mr-1" />

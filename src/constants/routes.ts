@@ -6,6 +6,12 @@ export const ROUTES = {
   ABOUT_US: "/about-us",
   CONTACT_US: "/contact-us",
   WISHLIST: "/wishlist",
+  SHOPPING_BAG: "/bag",
+  FAQ:"/faq",
+  PRIVACY: "/privacy",
+  REFUND: "/refund",
+  TERMS: "/terms",
+  SHIPPING: "/shipping",
   ADMIN: {
     DASHBOARD: "/admin",
     PRODUCTS: "/admin/products",
@@ -21,6 +27,7 @@ export const ROUTES = {
     REVIEWS: "/admin/reviews",
   },
   ACCOUNT: {
+    DASHBOARD: "/account",
     ORDERS: "/account/orders",
     WISHLIST: "/account/wishlist",
     ADDRESSES: "/account/addresses",

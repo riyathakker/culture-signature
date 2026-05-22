@@ -12,7 +12,7 @@ export default async function AccountPage() {
   const session = await auth();
 
   if (!session || !session.user) {
-    redirect("/");
+    redirect(ROUTES.HOME);
   }
 
   const dbUser = await prisma.user.findUnique({
@@ -24,7 +24,7 @@ export default async function AccountPage() {
   });
 
   if (!dbUser) {
-    redirect("/");
+    redirect(ROUTES.HOME);
   }
 
   const memberSince = new Intl.DateTimeFormat("en-US", {

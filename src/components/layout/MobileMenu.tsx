@@ -12,7 +12,7 @@ import { IconButton } from "@/components/common/IconButton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { useState } from "react";
-import { AuthModal } from "@/components/auth/AuthModal";
+import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
@@ -21,11 +21,12 @@ import { navigationLinks } from "@/constants/constants";
 import { useCartStore } from "@/store/cartStore";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { ROUTES } from "@/constants/routes";
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
+  const router = useRouter();
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
   const isAdmin = (session?.user as any)?.role === "ADMIN";
@@ -82,7 +83,7 @@ export function MobileMenu() {
               <div className="pt-6 border-t space-y-4">
 
                 <Link
-                  href="/bag"
+                  href={ROUTES.SHOPPING_BAG}
                   onClick={() => setOpen(false)}
                   className="flex items-center justify-between group"
                 >
@@ -133,7 +134,7 @@ export function MobileMenu() {
                 <button
                   onClick={() => {
                     setOpen(false);
-                    setIsAuthModalOpen(true);
+                    router.push("/login");
                   }}
                   className="flex items-center space-x-3 text-muted-foreground hover:text-foreground transition-colors w-full text-left"
                 >
@@ -154,8 +155,6 @@ export function MobileMenu() {
           </div>
         </SheetContent>
       </Sheet>
-
-      <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} />
 
       <ConfirmationDialog
         open={isSignOutDialogOpen}

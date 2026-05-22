@@ -33,8 +33,8 @@ export function FeaturedProducts() {
   }
 
   return (
-    <section className="py-20 bg-secondary/50 border-t border-border/50">
-      <Container >
+    <section className="py-20 pwa-section bg-secondary/50 border-t border-border/50">
+      <Container>
         <SectionTitle
           title={t("home.featured.title")}
           subtitle={t("home.featured.subtitle")}
@@ -48,11 +48,11 @@ export function FeaturedProducts() {
           </div>
         ) : (
           <>
-            <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
+            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar" style={{ WebkitOverflowScrolling: "touch" }}>
               {featuredProducts.map((product: Product) => (
                 <div
                   key={product.id}
-                  className="min-w-[240px] max-w-[240px] flex-shrink-0"
+                  className="pwa-card min-w-[240px] max-w-[240px] flex-shrink-0"
                 >
                   <ProductCard product={product} />
                 </div>

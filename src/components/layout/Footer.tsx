@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { socialLinks } from "@/constants/constants";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { ROUTES } from "@/constants/routes";
 
 export function Footer() {
   const pathname = usePathname();
@@ -18,19 +19,19 @@ export function Footer() {
     {
       title: t("shop.footer.sections.explore.title"),
       links: [
-        { name: t("shop.footer.sections.explore.home"), href: "/" },
-        { name: t("shop.footer.sections.explore.about"), href: "/about-us" },
-        { name: t("shop.footer.sections.explore.contact"), href: "/contact-us" },
-        { name: t("shop.footer.sections.explore.faq"), href: "/faq" },
+        { name: t("shop.footer.sections.explore.home"), href: ROUTES.HOME },
+        { name: t("shop.footer.sections.explore.about"), href: ROUTES.ABOUT_US },
+        { name: t("shop.footer.sections.explore.contact"), href: ROUTES.CONTACT_US },
+        { name: t("shop.footer.sections.explore.faq"), href: ROUTES.FAQ },
       ],
     },
     {
       title: t("shop.footer.sections.legal.title"),
       links: [
-        { name: t("shop.footer.sections.legal.privacy"), href: "/privacy" },
-        { name: t("shop.footer.sections.legal.refund"), href: "/refund" },
-        { name: t("shop.footer.sections.legal.shipping"), href: "/shipping" },
-        { name: t("shop.footer.sections.legal.terms"), href: "/terms" },
+        { name: t("shop.footer.sections.legal.privacy"), href: ROUTES.PRIVACY },
+        { name: t("shop.footer.sections.legal.refund"), href: ROUTES.REFUND },
+        { name: t("shop.footer.sections.legal.shipping"), href: ROUTES.SHIPPING },
+        { name: t("shop.footer.sections.legal.terms"), href: ROUTES.TERMS },
       ],
     },
   ];
@@ -49,7 +50,7 @@ export function Footer() {
             />
 
             <Link
-              href="/"
+              href={ROUTES.HOME}
               className="text-3xl font-heading tracking-tighter"
             >
               Culture Signature

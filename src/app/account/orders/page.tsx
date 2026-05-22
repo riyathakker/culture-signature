@@ -17,7 +17,7 @@ export default async function OrdersPage() {
   const session = await auth();
 
   if (!session || !session.user) {
-    redirect("/");
+    redirect(ROUTES.HOME);
   }
 
   const orders = await prisma.order.findMany({

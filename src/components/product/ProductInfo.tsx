@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
 import { ShareDialog } from "./ShareDialog";
 import { QuantitySelector } from "../common/QuantitySelector";
+import { ROUTES } from "@/constants/routes";
 
 interface ProductInfoProps {
   product: {
@@ -50,7 +51,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const handleBuyNow = () => {
     addItem(buildCartItem());
     setQuantity(1);
-    router.push("/bag");
+    router.push(ROUTES.SHOPPING_BAG);
   };
 
   return (

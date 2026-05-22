@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdminPanel = pathname.startsWith("/admin");
+  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/signup");
   const { fetchWishlist } = useWishlistStore();
   const { fetchCart, setIsAuthenticated } = useCartStore();
   const { status } = useSession();
@@ -25,7 +26,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   return (
     <main className={cn(
       "flex-grow transition-all duration-500 pwa-main-content",
-      !isAdminPanel && "pt-[100px] md:pt-[160px]",
+      !isAdminPanel && !isAuthPage && "pt-[100px] md:pt-[160px]",
     )}>
       {children}
     </main>

@@ -17,9 +17,11 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import { Providers } from "@/components/Providers";
+import { ConditionalShell } from "@/components/layout/ConditionalShell";
+import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
+import { BackToTop } from "@/components/common/BackToTop";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -52,13 +54,6 @@ export const metadata: Metadata = {
   },
 };
 
-import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
-
-import { BackToTop } from "@/components/common/BackToTop";
-import { MobileFloatingCart } from "@/components/cart/MobileFloatingCart";
-import { PWABottomNav } from "@/components/pwa/PWABottomNav";
-import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -72,14 +67,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans overflow-x-hidden">
         <Providers>
-          <div className="pwa-hide"><Header /></div>
-          <LayoutWrapper>
-            {children}
-          </LayoutWrapper>
-          <div className="pwa-hide"><Footer /></div>
+          <ConditionalShell>
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
+          </ConditionalShell>
           <BackToTop />
-          <div className="pwa-hide"><MobileFloatingCart /></div>
-          <PWABottomNav />
           <PWAInstallPrompt />
         </Providers>
       </body>

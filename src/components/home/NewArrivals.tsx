@@ -30,7 +30,7 @@ export function NewArrivals() {
   }
 
   return (
-    <section className="py-20 border-t border-border/50">
+    <section className="py-20 pwa-section border-t border-border/50">
       <Container>
         <SectionTitle
           title={t("home.newArrivals.title")}
@@ -39,16 +39,16 @@ export function NewArrivals() {
         />
 
         {isLoading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pwa-grid-to-scroll">
             {[...Array(4)].map((_, i) => (
               <ProductSkeleton key={i} />
             ))}
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pwa-grid-to-scroll">
               {newArrivals
-                .slice(0, 4)
+                .slice(0, 8)
                 .map((product) => (
                   <ProductCard
                     key={product.id}

@@ -3,12 +3,13 @@ import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { AddressDialog } from "@/components/account/AddressDialog";
 import { AddressActions } from "@/components/account/AddressActions";
+import { ROUTES } from "@/constants/routes";
 
 export default async function AddressesPage() {
   const session = await auth();
 
   if (!session || !session.user) {
-    redirect("/");
+    redirect(ROUTES.HOME);
   }
 
   const addresses = await prisma.address.findMany({

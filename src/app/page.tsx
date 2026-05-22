@@ -8,20 +8,23 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { NewArrivals } from "@/components/home/NewArrivals";
 import { ContentSection } from "@/components/home/ContentSection";
-import { Collections } from "@/components/home/Collections";
+import { PWAHomeHeader } from "@/components/pwa/PWAHomeHeader";
 
 export default function HomePage() {
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-background min-h-screen pwa-page-home">
+      <PWAHomeHeader />
       <HeroSection />
       <ContentSection />
       <Categories />
       <FeaturedProducts />
-      <Collections />
       <NewArrivals />
       <CelebSpotting />
-      <Testimonials />
-      <FAQ />
+      {/* hidden in PWA */}
+      <div className="pwa-hide">
+        <Testimonials />
+        <FAQ />
+      </div>
     </div>
   );
 }

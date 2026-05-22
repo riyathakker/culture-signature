@@ -2,20 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Heart, ShoppingBag, Search } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import { IconButton } from "@/components/common/IconButton";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
+import { useAuthStore } from "@/store/authStore";
 import { UserMenu } from "./UserMenu";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { ROUTES } from "@/constants/routes";
 
 export function NavbarActions() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const { openModal } = useAuthStore();
   const { items } = useCartStore();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
@@ -26,17 +27,17 @@ export function NavbarActions() {
   }, []);
 
   return (
-    <div className="flex items-center justify-end space-x-1 lg:space-x-4">remo
+    <div className="flex items-center justify-end space-x-1 lg:space-x-4">
 
       <div className="hidden lg:flex">
         <UserMenu
           isLoggedIn={isLoggedIn}
           session={session}
-          onAuthModalOpen={() => setIsAuthModalOpen(true)}
+          onAuthModalOpen={() => openModal()}
         />
       </div>
 
-      <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} />
+      <AuthModal />
 
       {!isAdmin && (
         <>
@@ -48,7 +49,7 @@ export function NavbarActions() {
             />
           </Link>
 
-          <Link href="/bag" className="hidden md:block">
+          <Link href={ROUTES.SHOPPING_BAG} className="hidden md:block">
             <div className="relative group">
               <IconButton icon={ShoppingBag} aria-label={t("nav.bag")} />
               {mounted && itemCount > 0 && (

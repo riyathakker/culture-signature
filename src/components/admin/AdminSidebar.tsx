@@ -49,7 +49,7 @@ export function AdminSidebar() {
   return (
     <aside className="w-64 h-screen bg-primary border-r border-border/50 fixed left-0 top-0 hidden lg:flex flex-col">
       <div className="p-8">
-        <Link href="/" className="text-2xl text-primary-foreground font-heading tracking-tighter">
+        <Link href={ROUTES.HOME} className="text-2xl text-primary-foreground font-heading tracking-tighter">
           Culture Signature
         </Link>
         <p className="text-primary-foreground font-serif italic text-sm">Admin</p>
@@ -102,7 +102,7 @@ export function AdminSidebar() {
       <ConfirmationDialog
         open={signOutOpen}
         onOpenChange={setSignOutOpen}
-        onConfirm={() => { signOut({ callbackUrl: "/" }); toast.success(t("nav.account.signOutSuccess")); }}
+        onConfirm={() => { signOut({ callbackUrl: ROUTES.HOME }); toast.success(t("nav.account.signOutSuccess")); }}
         title={t("nav.account.signOut")}
         description={t("nav.account.signOutConfirm")}
         confirmText={t("nav.account.signOut")}
