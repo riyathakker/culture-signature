@@ -393,7 +393,6 @@ export const en = {
         codeApplied: "Promotional code {code} applied!",
         invalidOrExpiredCode: "Invalid or expired promotional code.",
         completeShipping: "Please complete your shipping information.",
-        orderSuccess: "Order finalized successfully!",
         orderError: "Something went wrong while finalizing your order."
       }
     },

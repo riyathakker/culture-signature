@@ -148,7 +148,6 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       }
 
       const order = await finalizeResponse.json();
-      toast.success(t("cart.summary.messages.orderSuccess"));
 
       await clearCart();
       resetCheckout();
