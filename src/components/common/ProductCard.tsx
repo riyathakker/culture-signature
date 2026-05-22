@@ -86,7 +86,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
             <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
               {discountPercentage && !isOutOfStock && (
                 <span className="text-spaced-bold bg-destructive/60 text-white px-2 py-1">
-                  -{discountPercentage}% {t("shop.product.off")}
+                  {discountPercentage}% {t("shop.product.off")}
                 </span>
               )}
               {product.isNew && !isOutOfStock && (
@@ -216,12 +216,6 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
                   {product.stock === 1
                     ? "Only 1 left"
                     : `${product.stock} units left`}
-                </span>
-              )}
-
-              {isOutOfStock && (
-                <span className="text-[8px] uppercase tracking-widest font-bold text-destructive bg-destructive/5 px-2 py-1 border border-destructive/20">
-                  {t("shop.product.soldOut")}
                 </span>
               )}
             </div>

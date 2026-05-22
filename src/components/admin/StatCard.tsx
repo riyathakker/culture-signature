@@ -18,7 +18,7 @@ export function StatCard({ label, value, trend, icon: Icon }: StatCardProps) {
         <div className="w-10 h-10 rounded-sm bg-primary/10 flex items-center justify-center text-primary">
           <Icon className="w-5 h-5" />
         </div>
-        {trendLabel && (
+        {/* {trendLabel && (
           <span className={cn(
             "text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full",
             trendType === "up" ? "bg-green-500/10 text-green-500" :
@@ -27,7 +27,8 @@ export function StatCard({ label, value, trend, icon: Icon }: StatCardProps) {
           )}>
             {trendLabel}
           </span>
-        )}
+        )} */}
+        {/* hiding the trends for now */}
       </div>
       <div className="space-y-1">
         <p className="text-spaced-bold text-muted-foreground">{label}</p>
