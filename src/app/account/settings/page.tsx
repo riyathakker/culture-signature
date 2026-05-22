@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
@@ -22,19 +21,6 @@ export default function SettingsPage() {
     mobileNo: "",
   });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [notifCollections, setNotifCollections] = useState(true);
-  const [notifEvents, setNotifEvents] = useState(true);
-
-  useEffect(() => {
-    setNotifCollections(localStorage.getItem("notif_collections") !== "false");
-    setNotifEvents(localStorage.getItem("notif_events") !== "false");
-  }, []);
-
-  const handleNotifToggle = (key: string, value: boolean, setter: (v: boolean) => void) => {
-    setter(value);
-    localStorage.setItem(key, String(value));
-    toast.success(value ? "Notifications enabled" : "Notifications disabled");
-  };
 
   useEffect(() => {
     if (session?.user) {
@@ -143,29 +129,6 @@ export default function SettingsPage() {
             Save Changes
           </Button>
         </form>
-      </section>
-
-      <Separator />
-
-      {/* Notifications Section */}
-      <section className="space-y-6">
-        <SectionHeader>Notifications</SectionHeader>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm">
-            <div className="space-y-0.5">
-              <p className="text-sm font-bold uppercase tracking-widest">New Collection Updates</p>
-              <p className="text-xs muted-italic">Receive notifications when we release new artisanal pieces.</p>
-            </div>
-            <Switch checked={notifCollections} onCheckedChange={(v) => handleNotifToggle("notif_collections", v, setNotifCollections)} />
-          </div>
-          <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm">
-            <div className="space-y-0.5">
-              <p className="text-sm font-bold uppercase tracking-widest">Boutique Event Invitations</p>
-              <p className="text-xs muted-italic">Priority access to private viewings and exhibitions.</p>
-            </div>
-            <Switch checked={notifEvents} onCheckedChange={(v) => handleNotifToggle("notif_events", v, setNotifEvents)} />
-          </div>
-        </div>
       </section>
 
       <Separator />

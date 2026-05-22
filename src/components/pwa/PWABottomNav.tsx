@@ -27,6 +27,7 @@ const mainTabs = [
 
 const accountTabs = [
   { label: "Back", href: ROUTES.HOME, icon: ChevronLeft, isBack: true },
+  { label: "Overview", href: ROUTES.ACCOUNT.DASHBOARD, icon: LayoutDashboard },
   { label: "Orders", href: ROUTES.ACCOUNT.ORDERS, icon: Package },
   { label: "Wishlist", href: ROUTES.ACCOUNT.WISHLIST, icon: Heart },
   { label: "Addresses", href: ROUTES.ACCOUNT.ADDRESSES, icon: MapPin },
@@ -110,12 +111,6 @@ export function PWABottomNav() {
       className="pwa-bottom-nav fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/40 hidden shadow-lg"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      {isOnAccount && (
-        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary/10 backdrop-blur-sm px-4 py-1 rounded-full border border-primary/20">
-          <span className="text-[8px] uppercase tracking-[0.2em] font-bold text-primary">My Account</span>
-        </div>
-      )}
-
       <div className="flex items-stretch h-16 w-full px-2 overflow-x-auto no-scrollbar">
         {tabs.map((tab) => {
           const { label, href, icon, isBack, showBadge, authRequired } = tab as any;

@@ -66,7 +66,7 @@ export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalPr
 
           {/* Horizontal Image Slider */}
           {product.images.length > 1 && (
-            <div className="absolute bottom-3 left-0 right-0 flex gap-2 px-3 overflow-x-auto scrollbar-hide">
+            <div className="absolute bottom-3 left-0 right-0 flex gap-2 px-3 overflow-x-auto no-scrollbar">
               {product.images.map((img: string, index: number) => (
                 <button
                   key={index}

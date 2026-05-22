@@ -10,12 +10,13 @@ import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useProductStore } from "@/store/productStore";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { useTranslation } from "@/context/TranslationContext";
-import { ROUTES } from "@/constants/routes";
 
 export default function NewArrivalsPage() {
   const { newArrivals, isLoading, fetchNewArrivals } = useProductStore();
   const { t } = useTranslation();
   const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [hasDiscountOnly, setHasDiscountOnly] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
   const searchParams = useSearchParams();
 
@@ -28,7 +29,9 @@ export default function NewArrivalsPage() {
 
   const filtered = newArrivals
     .filter((p) => activeCategoryIds.length === 0 || activeCategoryIds.includes(String(p.category?.id ?? p.categoryId)))
-    .filter((p) => Number(p.price) >= minPrice && Number(p.price) <= maxPrice);
+    .filter((p) => Number(p.price) >= minPrice && Number(p.price) <= maxPrice)
+    .filter((p) => !inStockOnly || p.stock > 0)
+    .filter((p) => !hasDiscountOnly || (p.discount && p.discount > 0));
 
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "price-low") return a.price - b.price;
@@ -51,19 +54,27 @@ export default function NewArrivalsPage() {
             showCategories
             activeCategoryIds={activeCategoryIds}
             onCategoryChange={setActiveCategoryIds}
+            inStockOnly={inStockOnly}
+            onInStockChange={setInStockOnly}
+            hasDiscountOnly={hasDiscountOnly}
+            onHasDiscountChange={setHasDiscountOnly}
           />
         </aside>
 
         {/* Main Content */}
         <div className="flex-1 space-y-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between gap-3 border-b pb-6">
+            <div className="flex items-center gap-3">
               <FilterDrawer
                 showCategories
                 activeCategoryIds={activeCategoryIds}
                 onCategoryChange={setActiveCategoryIds}
+                inStockOnly={inStockOnly}
+                onInStockChange={setInStockOnly}
+                hasDiscountOnly={hasDiscountOnly}
+                onHasDiscountChange={setHasDiscountOnly}
               />
-              <p className="hidden sm:inline-block text-spaced-bold text-muted-foreground">
+              <p className="hidden sm:inline-block text-spaced-bold text-muted-foreground whitespace-nowrap">
                 {t("shop.showing").replace("{count}", sorted.length.toString())}
               </p>
             </div>
@@ -79,9 +90,9 @@ export default function NewArrivalsPage() {
           ) : sorted.length === 0 ? (
             <div className="py-32 text-center space-y-4">
               <p className="muted-italic text-lg">{t("home.newArrivals.empty")}</p>
-              {activeCategoryIds.length > 0 && (
+              {(activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly) && (
                 <button
-                  onClick={() => setActiveCategoryIds([])}
+                  onClick={() => { setActiveCategoryIds([]); setInStockOnly(false); setHasDiscountOnly(false); }}
                   className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"
                 >
                   {t("shop.clearFilters")}

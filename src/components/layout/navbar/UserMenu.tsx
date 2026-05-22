@@ -53,8 +53,7 @@ export function UserMenu({
   );
 
   const handleSignOut = async () => {
-    await signOut();
-
+    await signOut({ callbackUrl: "/" });
     toast.success(t("nav.account.signOutSuccess"));
   };
 

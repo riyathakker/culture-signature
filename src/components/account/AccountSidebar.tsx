@@ -16,6 +16,7 @@ import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import { ROUTES } from "@/constants/routes";
 
 const navItems = [
   { label: "Profile Overview", href: "/account", icon: User },
@@ -78,7 +79,7 @@ export function AccountSidebar() {
         open={isSignOutDialogOpen}
         onOpenChange={setIsSignOutDialogOpen}
         onConfirm={() => {
-          signOut();
+          signOut({ callbackUrl: ROUTES.HOME });
           toast.success("Successfully signed out");
         }}
         title="Sign Out"

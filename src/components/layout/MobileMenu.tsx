@@ -161,7 +161,7 @@ export function MobileMenu() {
         onOpenChange={setIsSignOutDialogOpen}
         onConfirm={() => {
           setOpen(false);
-          signOut();
+          signOut({ callbackUrl: "/" });
           toast.success(t("nav.account.signOutSuccess"));
         }}
         title={t("nav.account.signOut")}
