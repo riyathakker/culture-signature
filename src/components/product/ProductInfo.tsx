@@ -119,7 +119,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       </p>
 
       {!isAdmin && (
-        <div className="space-y-4 pt-6">
+        <div className="space-y-4 pt-6 mb-2">
           {product.stock === 0 ? (
             <Button
               onClick={() => {
@@ -158,7 +158,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       )}
 
       {/* Info Grid */}
-      <div className="grid grid-cols-2 gap-4 pt-8 border-t">
+      <div className="grid grid-cols-2 gap-4 pt-2">
         <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
           <Truck className="w-5 h-5 text-primary opacity-60" />
           <span>{t("shop.product.details.premiumShipping")}</span>

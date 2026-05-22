@@ -113,7 +113,7 @@ export default function ProductPage() {
               subtitle={t("shop.product.details.relatedSubtitle")}
               align="center"
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mt-12">
               {relatedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
