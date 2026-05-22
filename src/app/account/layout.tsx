@@ -7,8 +7,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     <>
       <AccountMobileHeader />
       <div className="pwa-page-account">
-        <HomePageContainer label={[{ label: "My Account" }]} heading="My Account" description="Manage your personal collection and artisanal preferences.">
-          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
+        <HomePageContainer label={[{ label: "My Account" }]} heading="My Account" description="Manage your personal collection and artisanal preferences." breadcrumbClassName="hidden [@media(display-mode:standalone)]:flex">
+          <div className="flex flex-col lg:flex-row gap-10 lg:gap-18">
             <AccountSidebar />
             <div className="flex-1 min-w-0">
               {children}
