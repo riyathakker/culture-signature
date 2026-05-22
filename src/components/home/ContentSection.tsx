@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { MapPin, Clock, Camera } from "lucide-react";
@@ -8,11 +8,6 @@ import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/common/ProductCard";
 import { Product, Exhibition } from "@/types";
 import { cn } from "@/lib/utils";
-
-interface ContentData {
-  limitedDrops: Product[];
-  exhibitions: Exhibition[];
-}
 
 function mapsUrl(location: string) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
@@ -68,7 +63,7 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
   if (!exhibitions.length) return null;
 
   return (
-    <section className="relative py-16 bg-primary text-primary-foreground overflow-hidden">
+    <section className="relative py-10 md:py-16 bg-primary text-primary-foreground overflow-hidden">
       {/* Subtle grid texture */}
       <div
         className="absolute inset-0 opacity-[0.04] pointer-events-none"
@@ -215,26 +210,20 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
   );
 }
 
-// ─── Root export ──────────────────────────────────────────────────────────────
+
+import { useContentStore } from "@/store/contentStore";
 
 export function ContentSection() {
-  const [data, setData] = useState<ContentData | null>(null);
+  const { limitedDrops, exhibitions, fetchContent } = useContentStore();
 
-  useEffect(() => {
-    fetch("/api/content")
-      .then(r => r.json())
-      .then(d => {
-        if (d && Array.isArray(d.limitedDrops)) setData(d);
-      })
-      .catch(() => {});
-  }, []);
-  if (!data) return null;
+  useEffect(() => { fetchContent(); }, []);
 
+  if (!limitedDrops.length && !exhibitions.length) return null;
 
   return (
     <>
-      <LimitedDropsStrip drops={data.limitedDrops ?? []} />
-      <ExhibitionsStrip exhibitions={data.exhibitions ?? []} />
+      <LimitedDropsStrip drops={limitedDrops} />
+      <ExhibitionsStrip exhibitions={exhibitions} />
     </>
   );
 }

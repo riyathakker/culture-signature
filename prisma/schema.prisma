@@ -124,7 +124,7 @@ model OrderItem {
 
 model Review {
   id        String   @id @default(cuid())
-  rating    Int
+  rating    Float
   comment   String?
   userId    String
   productId String

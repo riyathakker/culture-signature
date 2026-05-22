@@ -1,44 +1,45 @@
+"use client";
+
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ShoppingBag, Heart } from "lucide-react";
+import { ShoppingBag, Heart, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import { AccountStatCard } from "@/components/account/AccountStatCard";
 import { ROUTES } from "@/constants/routes";
+import { useAccountStore } from "@/store/accountStore";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-export default async function AccountPage() {
-  const session = await auth();
+export default function AccountPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { user, isLoading, fetchAccount } = useAccountStore();
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
 
-  if (!session || !session.user) {
-    redirect(ROUTES.HOME);
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") router.push(ROUTES.HOME);
+    if (status === "authenticated") fetchAccount();
+  }, [status]);
 
-  const dbUser = await prisma.user.findUnique({
-    where: { email: session.user.email as string },
-    include: {
-      orders: true,
-      wishlist: true,
-    }
-  });
-
-  if (!dbUser) {
-    redirect(ROUTES.HOME);
+  if (isLoading || !user) {
+    return (
+      <div className="flex justify-center py-32">
+        <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
+      </div>
+    );
   }
 
   const memberSince = new Intl.DateTimeFormat("en-US", {
     month: "long",
     year: "numeric",
-  }).format(dbUser.createdAt);
+  }).format(new Date(user.createdAt));
 
-  const initials = dbUser.name
+  const initials = user.name
     ?.split(" ")
     .map((n) => n[0])
     .join("")
     .toUpperCase() || "U";
-
-  const isAdmin = (session.user as any).role === "ADMIN";
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -48,9 +49,7 @@ export default async function AccountPage() {
           <AvatarFallback className="text-2xl font-heading bg-background">{initials}</AvatarFallback>
         </Avatar>
         <div className="flex-1 text-center md:text-left space-y-2">
-          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-            <h2 className="text-3xl font-heading">{dbUser.name}</h2>
-          </div>
+          <h2 className="text-3xl font-heading">{user.name}</h2>
           <p className="muted-italic">Member since {memberSince}</p>
           <div className="flex items-center justify-center md:justify-start gap-4 pt-2">
             <Link href={ROUTES.ACCOUNT.SETTINGS}>
@@ -60,46 +59,33 @@ export default async function AccountPage() {
         </div>
       </div>
 
-      {/* Quick Stats */}
       {!isAdmin && (
         <div className="grid grid-cols-2 gap-6">
-          <AccountStatCard 
-            label="Total Orders"
-            value={dbUser.orders.length}
-            icon={ShoppingBag}
-            href={ROUTES.ACCOUNT.ORDERS}
-          />
-
-          <AccountStatCard 
-            label="Wishlist Pieces"
-            value={dbUser.wishlist.length}
-            icon={Heart}
-            href={ROUTES.ACCOUNT.WISHLIST}
-          />
+          <AccountStatCard label="Total Orders" value={user.orderCount} icon={ShoppingBag} href={ROUTES.ACCOUNT.ORDERS} />
+          <AccountStatCard label="Wishlist Pieces" value={user.wishlistCount} icon={Heart} href={ROUTES.ACCOUNT.WISHLIST} />
         </div>
       )}
 
-      {/* Recent Orders Preview */}
       {!isAdmin && (
         <div className="space-y-6">
           <div className="flex justify-between items-end">
             <h3 className="text-2xl font-heading">Recent Selection</h3>
-            <Link href="/account/orders" className="text-spaced-bold text-muted-foreground border-b border-muted-foreground pb-0.5 hover:text-primary hover:border-primary transition-all">
+            <Link href={ROUTES.ACCOUNT.ORDERS} className="text-spaced-bold text-muted-foreground border-b border-muted-foreground pb-0.5 hover:text-primary hover:border-primary transition-all">
               See All Orders
             </Link>
           </div>
-          
-          {dbUser.orders.length > 0 ? (
+
+          {user.latestOrder ? (
             <div className="border rounded-sm overflow-hidden">
               <div className="bg-secondary/20 p-4 border-b flex justify-between items-center text-spaced-bold">
                 <div className="flex gap-8">
-                  <span>Order #{dbUser.orders[0].id.slice(-8).toUpperCase()}</span>
-                  <span className="hidden md:inline">Placed {new Date(dbUser.orders[0].createdAt).toLocaleDateString()}</span>
+                  <span>Order #{user.latestOrder.id.slice(-8).toUpperCase()}</span>
+                  <span className="hidden md:inline">Placed {new Date(user.latestOrder.createdAt).toLocaleDateString()}</span>
                 </div>
-                <span className="text-primary">{dbUser.orders[0].status}</span>
+                <span className="text-primary">{user.latestOrder.status}</span>
               </div>
               <div className="p-6 flex gap-6 italic text-muted-foreground font-serif">
-                You have {dbUser.orders.length} orders in your collection.
+                You have {user.orderCount} {user.orderCount === 1 ? "order" : "orders"} in your collection.
               </div>
             </div>
           ) : (

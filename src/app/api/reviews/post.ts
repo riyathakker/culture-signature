@@ -21,7 +21,7 @@ export default async function handler(req: NextRequest & { userEmail?: string })
         userId: user.id,
         productId,
         orderId: orderId || null,
-        rating: parseInt(rating),
+        rating: parseFloat(rating),
         comment,
       }
     });

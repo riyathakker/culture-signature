@@ -3,17 +3,12 @@
 import { useState } from "react";
 import { Star, MessageSquare } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
 import { useReviewStore } from "@/store/reviewStore";
 
 interface ReviewModalProps {
@@ -23,10 +18,57 @@ interface ReviewModalProps {
   onSuccess?: () => void;
 }
 
+// Half-star picker: increments of 0.5 from 0.5 to 5.0
+function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [hovered, setHovered] = useState(0);
+  const display = hovered || value;
+
+  return (
+    <div
+      className="flex items-center gap-0.5"
+      onMouseLeave={() => setHovered(0)}
+    >
+      {[1, 2, 3, 4, 5].map((star) => {
+        const fullFilled = display >= star;
+        const halfFilled = !fullFilled && display >= star - 0.5;
+        return (
+          <span key={star} className="relative w-9 h-9 cursor-pointer">
+            {/* left half — sets n-0.5 */}
+            <span
+              className="absolute inset-0 w-1/2 z-10"
+              onMouseEnter={() => setHovered(star - 0.5)}
+              onClick={() => onChange(star - 0.5)}
+            />
+            {/* right half — sets n */}
+            <span
+              className="absolute inset-0 left-1/2 w-1/2 z-10"
+              onMouseEnter={() => setHovered(star)}
+              onClick={() => onChange(star)}
+            />
+            {/* empty star base */}
+            <Star className="w-8 h-8 text-muted/60 absolute inset-0.5" />
+            {/* filled overlay */}
+            {(fullFilled || halfFilled) && (
+              <span
+                className="absolute inset-0.5 overflow-hidden"
+                style={{ width: fullFilled ? "100%" : "50%" }}
+              >
+                <Star className="w-8 h-8 fill-primary text-primary" />
+              </span>
+            )}
+          </span>
+        );
+      })}
+      <span className="ml-2 text-sm font-bold text-primary tabular-nums">
+        {display.toFixed(1)}
+      </span>
+    </div>
+  );
+}
+
 export function ReviewModal({ productId, productName, orderId, onSuccess }: ReviewModalProps) {
   const { submitReview } = useReviewStore();
   const [rating, setRating] = useState(5);
-  const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
@@ -35,7 +77,6 @@ export function ReviewModal({ productId, productName, orderId, onSuccess }: Revi
     setIsSubmitting(true);
     try {
       await submitReview({ productId, orderId, rating, comment });
-
       toast.success("Review submitted successfully");
       setOpen(false);
       onSuccess?.();
@@ -56,34 +97,13 @@ export function ReviewModal({ productId, productName, orderId, onSuccess }: Revi
       <DialogContent className="sm:max-w-md bg-background border-none">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl tracking-tight">Write a Review</DialogTitle>
-          <p className="muted-italic text-sm">
-            Sharing your experience with the {productName}.
-          </p>
+          <p className="muted-italic text-sm">Sharing your experience with the {productName}.</p>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          <div className="space-y-2">
+          <div className="space-y-3">
             <label className="text-xs uppercase tracking-widest font-bold opacity-60">Your Rating</label>
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  onMouseEnter={() => setHover(star)}
-                  onMouseLeave={() => setHover(0)}
-                  onClick={() => setRating(star)}
-                  className="p-1 transition-all duration-300 transform hover:scale-110"
-                >
-                  <Star
-                    className={cn(
-                      "w-8 h-8 transition-colors",
-                      (hover || rating) >= star
-                        ? "text-primary fill-primary"
-                        : "text-muted border-none"
-                    )}
-                  />
-                </button>
-              ))}
-            </div>
+            <StarPicker value={rating} onChange={setRating} />
           </div>
 
           <div className="space-y-2">

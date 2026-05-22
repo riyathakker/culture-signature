@@ -1,36 +1,57 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import { OrderRow } from "@/components/account/OrderRow";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
+import { useOrderStore } from "@/store/orderStore";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
-export default async function OrdersPage() {
-  const session = await auth();
+export default function OrdersPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { myOrders, myOrdersLoading, fetchMyOrders, applyOrderUpdate } = useOrderStore();
+  const sseRef = useRef<EventSource | null>(null);
 
-  if (!session || !session.user) {
-    redirect(ROUTES.HOME);
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") { router.push(ROUTES.HOME); return; }
+    if (status !== "authenticated") return;
 
-  const orders = await prisma.order.findMany({
-    where: { userId: (session.user as any).id },
-    include: {
-      items: {
-        include: {
-          product: true
+    fetchMyOrders();
+
+    // SSE: subscribe to live order status updates
+    const es = new EventSource("/api/orders/stream");
+    sseRef.current = es;
+
+    es.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === "init") {
+          useOrderStore.setState({ myOrders: msg.orders, myOrdersLoading: false });
+        } else if (msg.type === "update") {
+          applyOrderUpdate(msg.orders);
         }
-      }
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      } catch {}
+    };
+
+    es.onerror = () => { es.close(); };
+
+    return () => { es.close(); sseRef.current = null; };
+  }, [status]);
+
+  if (myOrdersLoading) {
+    return (
+      <div className="flex justify-center py-32">
+        <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -39,7 +60,7 @@ export default async function OrdersPage() {
         <p className="muted-italic">Your journey with Culture Signature.</p>
       </div>
 
-      {orders.length === 0 ? (
+      {myOrders.length === 0 ? (
         <div className="py-20 text-center border-2 border-dashed rounded-sm space-y-4">
           <p className="muted-italic">Your collection is waiting for its first masterpiece.</p>
           <Link href={ROUTES.COLLECTIONS}>
@@ -61,7 +82,7 @@ export default async function OrdersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orders.map((order) => (
+                {myOrders.map((order) => (
                   <OrderRow key={order.id} order={order} variant="table" />
                 ))}
               </TableBody>
@@ -70,7 +91,7 @@ export default async function OrdersPage() {
 
           {/* Mobile cards */}
           <div className="sm:hidden space-y-3">
-            {orders.map((order) => (
+            {myOrders.map((order) => (
               <OrderRow key={order.id} order={order} variant="card" />
             ))}
           </div>

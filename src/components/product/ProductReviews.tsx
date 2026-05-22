@@ -1,45 +1,58 @@
 "use client";
 
+import { useEffect } from "react";
 import { Star, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useReviewStore } from "@/store/reviewStore";
+
+function StarDisplay({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) {
+  const cls = size === "sm" ? "w-3 h-3" : "w-5 h-5";
+  return (
+    <div className="flex text-primary">
+      {[1, 2, 3, 4, 5].map((i) => {
+        const filled = rating >= i;
+        const half = !filled && rating >= i - 0.5;
+        return (
+          <span key={i} className="relative">
+            <Star className={cn(cls, "opacity-20")} />
+            {(filled || half) && (
+              <span
+                className="absolute inset-0 overflow-hidden"
+                style={{ width: filled ? "100%" : "50%" }}
+              >
+                <Star className={cn(cls, "fill-primary text-primary")} />
+              </span>
+            )}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 export function ProductReviews() {
   const { id: productId } = useParams();
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { reviews, isLoading, fetchReviews } = useReviewStore();
 
   useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch(`/api/reviews?productId=${productId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch reviews:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (productId) fetchReviews();
+    if (productId) fetchReviews(productId as string);
   }, [productId]);
 
   const avgRating = reviews.length > 0
-    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
-    : "5.0";
+    ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length)
+    : 5;
 
-  const ratingCounts = [5, 4, 3, 2, 1].map(r => ({
+  const ratingCounts = [5, 4, 3, 2, 1].map((r) => ({
     rating: r,
-    count: reviews.filter(rev => rev.rating === r).length,
-    percentage: reviews.length > 0 ? (reviews.filter(rev => rev.rating === r).length / reviews.length) * 100 : 0
+    count: reviews.filter((rev) => Math.round(rev.rating) === r).length,
+    percentage: reviews.length > 0
+      ? (reviews.filter((rev) => Math.round(rev.rating) === r).length / reviews.length) * 100
+      : 0,
   }));
 
-  if (loading) return (
+  if (isLoading) return (
     <div className="py-20 border-t flex justify-center">
       <Loader2 className="w-8 h-8 animate-spin text-primary/30" />
     </div>
@@ -52,14 +65,12 @@ export function ProductReviews() {
         <div className="space-y-8">
           <h3 className="font-heading text-3xl">Client Experiences</h3>
           <div className="flex items-center gap-6">
-            <span className="text-6xl font-heading">{avgRating}</span>
+            <span className="text-6xl font-heading">{avgRating.toFixed(1)}</span>
             <div className="space-y-1">
-              <div className="flex text-primary">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={cn("w-5 h-5", i < Math.floor(Number(avgRating)) ? "fill-current" : "opacity-30")} />
-                ))}
-              </div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Based on {reviews.length} Reviews</p>
+              <StarDisplay rating={avgRating} size="md" />
+              <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
+                Based on {reviews.length} {reviews.length === 1 ? "Review" : "Reviews"}
+              </p>
             </div>
           </div>
 
@@ -85,11 +96,7 @@ export function ProductReviews() {
               <div key={review.id} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
-                    <div className="flex text-primary">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={cn("w-3 h-3", i < review.rating ? "fill-current" : "opacity-30")} />
-                      ))}
-                    </div>
+                    <StarDisplay rating={review.rating} />
                     <h4 className="font-heading text-xl">Artesian Choice</h4>
                   </div>
                   <span className="text-spaced-bold text-muted-foreground">

@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCheckoutStore } from "@/store/checkoutStore";
-import { useEffect, useState } from "react";
+import { useAddressStore } from "@/store/addressStore";
+import { useEffect } from "react";
 import { MapPin, Loader2, ChevronDown, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -19,32 +20,13 @@ import { useTranslation } from "@/context/TranslationContext";
 export function ShippingForm() {
   const { t } = useTranslation();
   const { shippingAddress, setShippingAddress } = useCheckoutStore();
-  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { addresses: savedAddresses, isLoading, fetchAddresses } = useAddressStore();
 
   useEffect(() => {
-    const fetchAddresses = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch("/api/user/address");
-        if (response.ok) {
-          const data = await response.json();
-          setSavedAddresses(data);
-
-          // If there's a default address, auto-fill it
-          const defaultAddress = data.find((addr: any) => addr.isDefault);
-          if (defaultAddress && !shippingAddress.street) {
-            handleSelectAddress(defaultAddress);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch addresses:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAddresses();
+    fetchAddresses().then(() => {
+      const defaultAddress = useAddressStore.getState().addresses.find((a) => a.isDefault);
+      if (defaultAddress && !shippingAddress.street) handleSelectAddress(defaultAddress);
+    });
   }, []);
 
   const handleSelectAddress = (addr: any) => {
