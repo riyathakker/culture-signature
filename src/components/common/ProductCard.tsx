@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useCartStore, CartItem } from "@/store/cartStore";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QuickViewModal } from "./QuickViewModal";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { QuantitySelector } from "./QuantitySelector";
@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 
 import { useTranslation } from "@/context/TranslationContext";
 import { Product } from "@/types";
+import { ImageLightbox } from "./ImageLightbox";
 
 interface ProductCardProps {
   product: Product;
@@ -27,6 +28,13 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
   const pathname = usePathname();
   const from = pathname.startsWith("/collections") ? "collections" : pathname.startsWith("/categories") ? "categories" : pathname.startsWith("/new-arrivals") ? "new-arrivals" : null;
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { items, addItem, updateQuantity, removeItem } = useCartStore();
@@ -160,20 +168,26 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
               "w-full h-full relative overflow-hidden transition-opacity duration-500",
               isOutOfStock ? "opacity-40" : "opacity-100"
             )}>
-              <div className={cn(
-                "absolute inset-0 transition-all duration-700 ease-in-out group-hover:scale-110",
-              )}>
-                {product.images?.[0] ? (
-                  <Image
-                    src={product.images[0]}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-muted animate-pulse" />
-                )}
-              </div>
+              {isMobile && product.images?.[0] ? (
+                <ImageLightbox
+                  src={product.images[0]}
+                  alt={product.name}
+                  images={product.images}
+                  className="absolute inset-0"
+                >
+                  <div className="absolute inset-0 transition-all duration-700 ease-in-out">
+                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                  </div>
+                </ImageLightbox>
+              ) : (
+                <div className="absolute inset-0 transition-all duration-700 ease-in-out group-hover:scale-110">
+                  {product.images?.[0] ? (
+                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-muted animate-pulse" />
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

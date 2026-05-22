@@ -107,9 +107,7 @@ export function PWABottomNav() {
             ? false
             : pathname === href || pathname.startsWith(href + "/");
 
-          const resolvedHref = authRequired && isAdmin
-            ? ROUTES.ADMIN.DASHBOARD
-            : href;
+          const resolvedHref = href;
 
           const handleClick = authRequired && !isLoggedIn && !isAdmin
             ? (e: React.MouseEvent) => { e.preventDefault(); router.push("/login"); }
