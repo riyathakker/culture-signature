@@ -28,7 +28,6 @@ export default async function handler(req: NextRequest & { userId?: string }) {
           status: paymentId ? "PAID" : "PENDING",
           paymentId: paymentId || null,
           cfOrderId: cf_order_id || null,
-          paymentStatus: paymentId ? "COMPLETED" : "AWAITING_PAYMENT",
         },
       });
 
