@@ -18,12 +18,12 @@ export function AccountMobileHeader() {
   const initials = user?.name
     ? user.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()
     : user?.email
-    ? user.email[0].toUpperCase()
-    : "A";
+      ? user.email[0].toUpperCase()
+      : "A";
 
   return (
     <>
-      <header className="lg:hidden sticky top-0 z-30 bg-primary px-5 py-4 flex items-center justify-between">
+      <header className=" sticky top-0 z-30 bg-primary px-5 py-4 flex items-center justify-between hidden [@media(display-mode:standalone)]:flex">
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
           Culture Signature
           <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">Admin</span>
