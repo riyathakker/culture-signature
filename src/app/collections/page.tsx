@@ -80,7 +80,7 @@ export default function ShopPage() {
             <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
           </div>
 
-          {true ? (
+          {loading ? (
             <div className="grid-gallery">
               {[...Array(6)].map((_, i) => (
                 <ProductSkeleton key={i} />
@@ -101,14 +101,6 @@ export default function ShopPage() {
               {sortedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
-            </div>
-          )}
-
-          {!loading && products.length > 0 && (
-            <div className="pt-20 flex justify-center">
-              <div className="flex gap-2">
-                <button className="w-10 h-10 flex items-center justify-center border border-primary bg-primary text-primary-foreground font-bold text-xs">1</button>
-              </div>
             </div>
           )}
         </div>
