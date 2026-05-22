@@ -46,10 +46,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const toggleWishlist = () => {
     if (isWishlisted) {
       removeFromWishlist(product.id);
-      toast.info(`Removed from wishlist`);
     } else {
       addToWishlist(product as any);
-      toast.success(`Added to wishlist`);
     }
   };
 

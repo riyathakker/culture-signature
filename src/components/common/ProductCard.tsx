@@ -69,15 +69,14 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
     addItem(item);
   };
 
-  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
-  const isWishlisted = isInWishlist(product.id);
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, items: wishlistItems } = useWishlistStore();
+  const isWishlisted = wishlistItems.some((i) => i.id === product.id);
 
   const toggleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (isWishlisted) {
       removeFromWishlist(product.id);
-      toast.info(`${product.name} ${t("shop.product.removedFromWishlist")}`);
     } else {
       addToWishlist(product);
     }

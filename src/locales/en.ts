@@ -1,4 +1,11 @@
 export const en = {
+  footer: {
+    sections: {
+      legal: {
+        title: "Legal",
+      }
+    }
+  },
   admin: {
     sidebar: {
       overview: "Overview",
@@ -9,18 +16,6 @@ export const en = {
       categories: "Categories",
       content: "Content",
       home: "Home",
-    },
-    orders: {
-      title: "Orders",
-      description: "Track and fulfill artisanal orders.",
-      searchPlaceholder: "Search order ID or customer...",
-      table: {
-        id: "Order ID",
-        customer: "Customer",
-        status: "Status",
-        date: "Date",
-        amount: "Amount",
-      }
     },
     discounts: {
       title: "Discount & Offers",
@@ -57,11 +52,14 @@ export const en = {
           value: "Value",
           usageLimit: "Usage Limit",
           expiryDate: "Expiry Date",
-          status: "Status"
         },
         buttons: {
           create: "Curate Offer",
           edit: "Update Offer"
+        },
+        messages: {
+          createSuccess: "Discount created successfully.",
+          updateSuccess: "Discount updated successfully.",
         }
       }
     },
@@ -72,7 +70,6 @@ export const en = {
       searchPlaceholder: "Search categories...",
       table: {
         collection: "Collection",
-        description: "Description",
         products: "Products",
         status: "Status"
       },
@@ -103,7 +100,6 @@ export const en = {
         descEdit: "Update the thematic details of this curated collection.",
         labels: {
           name: "Collection Name",
-          description: "Thematic Description",
           image: "Collection Image",
           status: "Status",
         },
@@ -128,12 +124,8 @@ export const en = {
       }
     },
     common: {
-      loading: "Loading...",
-      save: "Save",
       cancel: "Cancel",
       delete: "Delete",
-      actions: "Actions",
-      noResults: "No results found.",
       error: "Something went wrong",
     },
     content: {
@@ -204,7 +196,6 @@ export const en = {
         featured: "Featured",
         status: "Status",
         created: "Created",
-        actions: "Actions",
       },
       status: {
         inStock: "In Stock",
@@ -225,7 +216,6 @@ export const en = {
         description: "Are you sure you want to remove this product from the catalog? This action cannot be undone.",
         confirm: "Remove",
         success: "Masterpiece removed from the catalog.",
-        error: "Failed to delete product",
       },
       messages: {
         updateSuccess: "{field} updated",
@@ -277,8 +267,8 @@ export const en = {
           failed: "failed",
         },
         toast: {
-          appliedAll: "Applied to all pending rows.",
-          validationError: "Fill in Name, Price, and Category for at least one product.",
+          applySuccess: "Applied to all pending rows.",
+          missingFields: "Fill in Name, Price, and Category for at least one product.",
           uploadSuccessSingle: "1 product published successfully.",
           uploadSuccessPlural: "{count} products published successfully.",
           uploadFailSingle: "1 product failed. Review errors below.",
@@ -370,7 +360,6 @@ export const en = {
       estimatedTax: "Estimated GST (18%)",
       total: "Total Amount",
       finalTotal: "Final Total",
-      discount: "Discount",
       promotionalCode: "Promotional Discount",
       codePlaceholder: "ENTER CODE",
       apply: "Apply",
@@ -509,15 +498,11 @@ export const en = {
     title: "The Collection",
     subtitle: "Collections",
     description: "Explore our curated selection of handcrafted jewels, bags, and home decor that celebrate Indian heritage.",
-    categories: "Categories",
     showing: "Showing {count} pieces",
     noMatches: "No matches found in the current collection.",
     clearFilters: "Clear all filters",
-    loadError: "Could not load the collection.",
     product: {
       outOfStock: "Out of Stock",
-      soldOut: "Sold Out",
-      new: "New",
       off: "OFF",
       addToCart: "Add to Cart",
       unavailable: "Unavailable",

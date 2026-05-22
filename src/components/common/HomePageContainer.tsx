@@ -10,11 +10,12 @@ interface Props {
     description?: string;
     children: React.ReactNode;
     breadcrumbClassName?: string;
+    headerClassName?: string;
 }
-export function HomePageContainer({ label, heading, description, children, breadcrumbClassName }: Props) {
+export function HomePageContainer({ label, heading, description, children, breadcrumbClassName, headerClassName }: Props) {
     return (
         <div className="bg-background pb-10 md:pb-15">
-            <div className={cn("py-6 md:py-12", heading && description && "mb-0 md:mb-6")}>
+            <div className={cn("py-6 md:py-12", heading && description && "mb-0 md:mb-6", headerClassName)}>
                 <Container>
                     <Breadcrumbs items={label} className={breadcrumbClassName} />
                     <div className="hidden sm:inline-block">
