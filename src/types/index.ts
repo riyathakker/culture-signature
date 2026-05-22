@@ -40,7 +40,6 @@ export interface Category {
   id: string;
   name: string;
   image?: string | null;
-  slug: string;
   description?: string | null;
   status?: CategoryStatus;
   isArchived?: boolean;

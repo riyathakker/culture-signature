@@ -55,7 +55,7 @@ export default function AddressesPage() {
               <div className="flex justify-between items-start pr-16 md:pr-0">
                 <div className="space-y-4 flex-1">
                   <div className="space-y-1">
-                    <h3 className="font-heading text-xl">{session?.user?.name}</h3>
+                    <h3 className="font-heading text-xl">{[addr.firstName, addr.lastName].filter(Boolean).join(" ") || session?.user?.name}</h3>
                     <div className="space-y-0.5 text-sm muted-italic leading-relaxed">
                       <p>{addr.street}</p>
                       <p>{addr.city}, {addr.state} {addr.zipCode}</p>

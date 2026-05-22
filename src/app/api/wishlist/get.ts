@@ -26,10 +26,16 @@ export default async function handler(req: NextRequest & { userEmail?: string })
     id: item.product.id,
     name: item.product.name,
     price: item.product.price,
+    discount: item.product.discount,
+    stock: item.product.stock,
     images: item.product.images,
-    category: item.product.category.name,
-    rating: 5, // Default rating if not available
-    description: item.product.description || ""
+    categoryId: item.product.categoryId,
+    category: item.product.category,
+    isFeatured: item.product.isFeatured,
+    isDeleted: item.product.isDeleted,
+    createdAt: item.product.createdAt,
+    updatedAt: item.product.updatedAt,
+    description: item.product.description || "",
   })) || [];
 
   return NextResponse.json(items);

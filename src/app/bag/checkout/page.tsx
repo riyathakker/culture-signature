@@ -1,5 +1,4 @@
 import { ShippingForm } from "@/components/checkout/ShippingForm";
-import { PaymentSelector } from "@/components/checkout/PaymentSelector";
 import { CheckoutSummary } from "@/components/checkout/CheckoutSummary";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";

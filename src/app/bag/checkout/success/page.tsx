@@ -25,7 +25,7 @@ function SuccessContent() {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-4xl font-heading tracking-tight">{t("cart.checkout.success.title")}</h2>
+        <h2 className="text-2xl md:text-4xl font-heading tracking-tight">{t("cart.checkout.success.title")}</h2>
         <p className="muted-italic text-lg">
           {t("cart.checkout.success.description")}
         </p>
@@ -34,7 +34,7 @@ function SuccessContent() {
       {orderId && (
         <div className="bg-secondary/30 border border-border/50 p-6 rounded-sm inline-block">
           <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground mb-2">{t("cart.checkout.success.orderReference")}</p>
-          <p className="font-mono text-xl tracking-widest text-primary">{orderId}</p>
+          <p className="font-mono text-sm md:text-xl tracking-normal md:tracking-widest text-primary break-all">{orderId}</p>
         </div>
       )}
 

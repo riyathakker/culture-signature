@@ -1,6 +1,7 @@
 "use client";
 
 import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
 import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
 import { ShoppingBag, ArrowLeft, Heart } from "lucide-react";
@@ -8,14 +9,40 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { EmptyState } from "@/components/common/EmptyState";
-
+import { toast } from "sonner";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
 
 export default function BagPage() {
-  const { items } = useCartStore();
+  const { items, clearCart } = useCartStore();
+  const { addItem: addToWishlist, isInWishlist } = useWishlistStore();
   const { t } = useTranslation();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  const handleMoveAllToWishlist = async () => {
+    for (const item of items) {
+      if (!isInWishlist(item.id)) {
+        await addToWishlist({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          discount: 0,
+          stock: item.stock,
+          images: [item.image],
+          categoryId: "",
+          category: { id: "", name: "", description: null, createdAt: new Date() },
+          isFeatured: false,
+          isDeleted: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          description: null,
+          reviews: [],
+        });
+      }
+    }
+    await clearCart();
+    toast.success("All items moved to wishlist");
+  };
 
   return (
     <HomePageContainer
@@ -45,17 +72,13 @@ export default function BagPage() {
               ))}
             </div>
 
-            <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <Link href={ROUTES.COLLECTIONS} className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors">
+            <div className="pt-8 flex flex-row items-center justify-between gap-4">
+              <Link href={ROUTES.COLLECTIONS} className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors shrink-0">
                 <ArrowLeft className="w-4 h-4" /> {t("cart.page.continueShopping")}
               </Link>
-              <div className="flex items-center gap-4">
-                <Link href={ROUTES.WISHLIST}>
-                  <Button variant="ghost" className="gap-2 text-spaced-bold font-bold text-muted-foreground">
-                    <Heart className="w-4 h-4" /> {t("cart.page.moveToWishlist")}
-                  </Button>
-                </Link>
-              </div>
+              <Button variant="ghost" onClick={handleMoveAllToWishlist} className="gap-2 text-spaced-bold font-bold text-muted-foreground text-[10px] shrink-0">
+                <Heart className="w-4 h-4" /> {t("cart.page.moveToWishlist")}
+              </Button>
             </div>
           </div>
 

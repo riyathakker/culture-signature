@@ -217,9 +217,9 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
             <div className="flex justify-between flex-col gap-2 md:flex-row md:items-center md:gap-0">
               <div className="flex items-center gap-3">
                 <span className="text-sm md:text-base font-bold">
-                  ₹{(product.price - product.discount).toLocaleString()}
+                  ₹{(product.price - (product.discount || 0)).toLocaleString()}
                 </span>
-                {product.discount > 0 && (
+                {(product.discount || 0) > 0 && (
                   <span className="text-xs text-muted-foreground line-through opacity-50">
                     ₹{product.price.toLocaleString()}
                   </span>

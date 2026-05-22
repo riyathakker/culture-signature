@@ -13,9 +13,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
+import { ROUTES } from "@/constants/routes";
 interface OrderSummaryProps {
   variant?: "cart" | "checkout";
 }
@@ -37,6 +38,9 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
+  if (subtotal <= 0) {
+    redirect(ROUTES.SHOPPING_BAG);
+  }
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) {
       toast.error(t("cart.summary.messages.invalidCode"));
@@ -243,26 +247,37 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         </div>
       </div>
 
-      {/* Coupon Section - Cart and Checkout (unless already applied) */}
+      {/* Coupon Section - Cart and Checkout */}
       {(variant === "cart" || (variant === "checkout" && !appliedPromo)) && (
         <div className="space-y-3 pt-4 border-t border-border/20">
           <p className="text-spaced-bold text-muted-foreground">{t("cart.summary.promotionalCode")}</p>
           <div className="flex gap-2">
             <Input
               placeholder={t("cart.summary.codePlaceholder")}
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              className="h-11 text-xs tracking-widest bg-background border-none shadow-inner uppercase"
-              onKeyDown={(e) => e.key === "Enter" && handleApplyPromo()}
+              value={appliedPromo ? appliedPromo.code : promoCode}
+              onChange={(e) => !appliedPromo && setPromoCode(e.target.value.toUpperCase())}
+              disabled={!!appliedPromo}
+              className="h-11 text-xs tracking-widest bg-background border-none shadow-inner uppercase disabled:opacity-70 disabled:cursor-not-allowed"
+              onKeyDown={(e) => !appliedPromo && e.key === "Enter" && handleApplyPromo()}
             />
-            <Button
-              onClick={handleApplyPromo}
-              disabled={isApplying}
-              variant="outline"
-              className="h-11 px-6 uppercase tracking-widest text-[10px] border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500"
-            >
-              {isApplying ? <Loader2 className="w-3 h-3 animate-spin" /> : t("cart.summary.apply")}
-            </Button>
+            {appliedPromo ? (
+              <Button
+                onClick={removePromo}
+                variant="outline"
+                className="h-11 px-6 uppercase tracking-widest text-[10px] border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all duration-500"
+              >
+                Remove
+              </Button>
+            ) : (
+              <Button
+                onClick={handleApplyPromo}
+                disabled={isApplying}
+                variant="outline"
+                className="h-11 px-6 uppercase tracking-widest text-[10px] border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-500"
+              >
+                {isApplying ? <Loader2 className="w-3 h-3 animate-spin" /> : t("cart.summary.apply")}
+              </Button>
+            )}
           </div>
         </div>
       )}

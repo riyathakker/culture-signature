@@ -72,7 +72,6 @@ export const en = {
       searchPlaceholder: "Search categories...",
       table: {
         collection: "Collection",
-        slug: "Slug",
         description: "Description",
         products: "Products",
         status: "Status"
@@ -104,7 +103,6 @@ export const en = {
         descEdit: "Update the thematic details of this curated collection.",
         labels: {
           name: "Collection Name",
-          slug: "Slug",
           description: "Thematic Description",
           image: "Collection Image",
           status: "Status",
