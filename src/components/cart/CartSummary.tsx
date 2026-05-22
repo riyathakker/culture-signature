@@ -7,9 +7,11 @@ import { useCartStore } from "@/store/cartStore";
 import { useCheckoutStore } from "@/store/checkoutStore";
 import { useProductStore } from "@/store/productStore";
 import { useOrderStore } from "@/store/orderStore";
+import { useAuthStore } from "@/store/authStore";
 import { Truck, ShieldCheck, ArrowRight, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -24,9 +26,11 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   const { shippingAddress, resetCheckout } = useCheckoutStore();
   const { fetchFeaturedProducts, fetchNewArrivals } = useProductStore();
   const { fetchOrders } = useOrderStore();
+  const { openModal } = useAuthStore();
   const [promoCode, setPromoCode] = useState("");
   const [isApplying, setIsApplying] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [processingStage, setProcessingStage] = useState<"verifying" | "recording" | null>(null);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const router = useRouter();
@@ -70,7 +74,59 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
     setIsFinalizing(true);
     try {
-      const response = await fetch("/api/orders", {
+      const orderResponse = await fetch("/api/cashfree/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: total,
+          customerName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+          customerEmail: session?.user?.email || "guest@culturesignature.com",
+          customerPhone: shippingAddress.phone,
+        }),
+      });
+
+      if (!orderResponse.ok) {
+        const err = await orderResponse.json();
+        throw new Error(err.error || "Failed to create payment order");
+      }
+
+      const { payment_session_id, cf_order_id } = await orderResponse.json();
+
+      const { load } = await import("@cashfreepayments/cashfree-js");
+      const cashfree = await load({
+        mode: (process.env.NEXT_PUBLIC_CASHFREE_ENVIRONMENT as "sandbox" | "production") || "sandbox",
+      });
+
+      const result = await cashfree.checkout({
+        paymentSessionId: payment_session_id,
+        redirectTarget: "_modal",
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message || "Payment failed or was cancelled.");
+      }
+
+      setProcessingStage("verifying");
+
+      let verifyData: any = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (attempt > 0) await new Promise((r) => setTimeout(r, 1500));
+        const verifyResponse = await fetch("/api/cashfree/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cf_order_id }),
+        });
+        verifyData = await verifyResponse.json();
+        if (verifyData.success) break;
+      }
+
+      if (!verifyData?.success) {
+        throw new Error("Payment verification failed. Please contact support.");
+      }
+
+      setProcessingStage("recording");
+
+      const finalizeResponse = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -79,32 +135,33 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
           discountAmount: discountValue,
           promoCode: appliedPromo?.code,
           shippingAddress,
+          paymentId: verifyData.paymentId,
+          cf_order_id,
+          userId: session?.user?.id,
+          userEmail: session?.user?.email,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to finalize order");
+      if (!finalizeResponse.ok) {
+        const errData = await finalizeResponse.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to record your order. Please contact support.");
       }
 
-      const order = await response.json();
+      const order = await finalizeResponse.json();
       toast.success(t("cart.summary.messages.orderSuccess"));
-      
-      // Clear cart and reset checkout
+
       await clearCart();
       resetCheckout();
-
-      // Refresh products to update stock levels (force bypass cache)
       fetchFeaturedProducts(true);
       fetchNewArrivals(true);
       fetchOrders(true);
-      
       router.refresh();
-      // Redirect to success page
       router.push(`/bag/checkout/success?id=${order.id}`);
-    } catch (error) {
+
+    } catch (error: any) {
       console.error("Finalize error:", error);
-      toast.error(t("cart.summary.messages.orderError"));
-    } finally {
+      toast.error(error.message || t("cart.summary.messages.orderError"));
+      setProcessingStage(null);
       setIsFinalizing(false);
     }
   };
@@ -214,13 +271,22 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       <div className="space-y-4">
         {!isAdmin ? (
           variant === "cart" ? (
-            <Link href="/bag/checkout" className="block">
-              <Button className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20">
-                {t("cart.summary.proceedToCheckout")} <ArrowRight className="ml-2 w-4 h-4" />
+            session?.user ? (
+              <Link href="/bag/checkout" className="block">
+                <Button className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20">
+                  {t("cart.summary.proceedToCheckout")} <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                onClick={() => openModal("/bag/checkout")}
+                className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20"
+              >
+                Sign In to Checkout <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
-            </Link>
+            )
           ) : (
-            <Button 
+            <Button
               onClick={handleFinalize}
               disabled={isFinalizing || items.length === 0}
               className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20"
@@ -258,6 +324,43 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
           <span>{t("cart.summary.badges.securePayment").split(' ').slice(0, 1).join(' ')} <br /> {t("cart.summary.badges.securePayment").split(' ').slice(1).join(' ')}</span>
         </div>
       </div>
+
+      {/* Full-screen processing overlay */}
+      {processingStage && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background/95 backdrop-blur-md">
+          <div className="flex flex-col items-center gap-8 max-w-sm text-center px-8">
+            {/* Animated ring */}
+            <div className="relative w-20 h-20">
+              <div className="absolute inset-0 rounded-full border-2 border-primary/20" />
+              <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin" />
+              <div className="absolute inset-2 rounded-full border border-primary/10" />
+              <ShieldCheck className="absolute inset-0 m-auto w-7 h-7 text-primary opacity-70" />
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-xl font-heading tracking-widest uppercase">
+                {processingStage === "verifying" ? "Confirming Payment" : "Securing Your Order"}
+              </h3>
+              <p className="text-xs text-muted-foreground uppercase tracking-[0.2em] leading-relaxed">
+                {processingStage === "verifying"
+                  ? "Verifying your payment with our secure gateway. Please do not close this window."
+                  : "Recording your order and preparing confirmation. Almost there."}
+              </p>
+            </div>
+
+            <div className="flex gap-1.5">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce"
+                  style={{ animationDelay: `${i * 150}ms` }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

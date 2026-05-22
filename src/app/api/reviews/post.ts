@@ -7,7 +7,7 @@ export default async function handler(req: NextRequest & { userEmail?: string })
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { productId, rating, comment } = await req.json();
+  const { productId, rating, comment, orderId } = await req.json();
 
   const user = await prisma.user.findUnique({
     where: { email: userEmail }
@@ -20,6 +20,7 @@ export default async function handler(req: NextRequest & { userEmail?: string })
       data: {
         userId: user.id,
         productId,
+        orderId: orderId || null,
         rating: parseInt(rating),
         comment,
       }

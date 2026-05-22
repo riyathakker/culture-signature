@@ -1,31 +1,23 @@
 import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 
-export default async function handler(req: NextRequest & { userEmail?: string; userId?: string }) {
+export default async function handler(req: NextRequest & { userId?: string }) {
   const userId = req.userId ?? null;
-  try {
-    const body = await req.json();
-    const {
-      items,
-      totalPrice,
-      discountAmount,
-      promoCode,
-      shippingAddress
-    } = body;
 
-    if (!items || items.length === 0 || !shippingAddress) {
+  try {
+    const { items, totalPrice, discountAmount, promoCode, shippingAddress, paymentId, cf_order_id } = await req.json();
+
+    if (!items?.length || !shippingAddress) {
       return NextResponse.json({ error: "Missing order information" }, { status: 400 });
     }
 
-    // Start a transaction to create order, items and clear cart
     const order = await prisma.$transaction(async (tx) => {
-      // 1. Create the Order
       const newOrder = await tx.order.create({
         data: {
           userId,
           totalPrice,
           discountAmount: discountAmount || 0,
-          promoCode,
+          promoCode: promoCode || null,
           customerName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
           street: shippingAddress.street,
           city: shippingAddress.city,
@@ -33,30 +25,26 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
           zipCode: shippingAddress.zipCode,
           country: shippingAddress.country || "India",
           phone: shippingAddress.phone,
-          status: "PENDING",
-          items: {
-            create: items.map((item: any) => ({
-              productId: item.id,
-              quantity: item.quantity,
-              price: item.price,
-            })),
-          },
-        },
-        include: {
-          items: true,
+          status: paymentId ? "PAID" : "PENDING",
+          paymentId: paymentId || null,
+          cfOrderId: cf_order_id || null,
+          paymentStatus: paymentId ? "COMPLETED" : "AWAITING_PAYMENT",
         },
       });
 
-      // 2. Validate and Increment usedCount if promoCode was used
+      await tx.orderItem.createMany({
+        data: items.map((item: any) => ({
+          orderId: newOrder.id,
+          productId: item.id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      });
+
       if (promoCode) {
         const discount = await tx.discount.findFirst({
-          where: { 
-            code: promoCode, 
-            isDeleted: false,
-            status: "ACTIVE"
-          }
+          where: { code: promoCode, isDeleted: false, status: "ACTIVE" },
         });
-
         if (discount) {
           const isExpired = discount.expiryDate && new Date(discount.expiryDate) < new Date();
           const isLimitReached = discount.usageLimit && discount.usedCount >= discount.usageLimit;
@@ -72,13 +60,8 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
                 status: nowLimitReached ? "EXPIRED" : "ACTIVE"
               }
             });
-          } else if (isExpired || isLimitReached) {
-            await tx.discount.update({
-              where: { id: discount.id },
-              data: {
-                status: "EXPIRED"
-              }
-            });
+          } else {
+            await tx.discount.update({ where: { id: discount.id }, data: { status: "EXPIRED" } });
           }
         }
       }
@@ -102,12 +85,16 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
         });
       }
 
-      return newOrder;
+      // 6. Return order with items
+      return tx.order.findUnique({
+        where: { id: newOrder.id },
+        include: { items: { include: { product: true } } },
+      });
     });
 
     return NextResponse.json(order);
-  } catch (error) {
-    console.error("[ORDERS_POST]", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("[ORDERS_POST]", error?.message || error);
+    return NextResponse.json({ error: error?.message || "Internal server error" }, { status: 500 });
   }
 }

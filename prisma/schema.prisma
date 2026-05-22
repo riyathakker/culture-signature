@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -103,6 +104,8 @@ model Order {
   shippedAt      DateTime?
   street         String?
   updatedAt      DateTime    @updatedAt
+  paymentId       String?     @unique
+  cfOrderId       String?
   user           User?       @relation(fields: [userId], references: [id])
   items          OrderItem[]
 }
@@ -125,6 +128,7 @@ model Review {
   comment   String?
   userId    String
   productId String
+  orderId   String?
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
   product   Product  @relation(fields: [productId], references: [id])
@@ -195,6 +199,7 @@ enum CategoryStatus {
 enum DiscountStatus {
   ACTIVE
   EXPIRED
+  SCHEDULED
 }
 
 enum DiscountType {
