@@ -102,7 +102,7 @@ export default function ProductPage() {
         </div>
 
         <div className="mt-20">
-          <ProductReviews />
+          <ProductReviews productName={product.name} />
         </div>
 
         {/* Related Products */}

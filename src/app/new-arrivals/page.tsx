@@ -5,7 +5,6 @@ import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useProductStore } from "@/store/productStore";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
@@ -17,19 +16,16 @@ export default function NewArrivalsPage() {
   const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [hasDiscountOnly, setHasDiscountOnly] = useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [sortBy, setSortBy] = useState("newest");
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     fetchNewArrivals();
   }, []);
 
-  const minPrice = Number(searchParams.get("minPrice")) || 0;
-  const maxPrice = Number(searchParams.get("maxPrice")) || 10000;
-
   const filtered = newArrivals
     .filter((p) => activeCategoryIds.length === 0 || activeCategoryIds.includes(String(p.category?.id ?? p.categoryId)))
-    .filter((p) => Number(p.price) >= minPrice && Number(p.price) <= maxPrice)
+    .filter((p) => Number(p.price) >= priceRange[0] && Number(p.price) <= priceRange[1])
     .filter((p) => !inStockOnly || p.stock > 0)
     .filter((p) => !hasDiscountOnly || (p.discount && p.discount > 0));
 
@@ -41,6 +37,19 @@ export default function NewArrivalsPage() {
     return 0;
   });
 
+  const sharedFilterProps = {
+    showCategories: true,
+    activeCategoryIds,
+    onCategoryChange: setActiveCategoryIds,
+    inStockOnly,
+    onInStockChange: setInStockOnly,
+    hasDiscountOnly,
+    onHasDiscountChange: setHasDiscountOnly,
+    priceRange,
+    onPriceChange: setPriceRange,
+    filteredCount: sorted.length,
+  };
+
   return (
     <HomePageContainer
       label={[{ label: t("home.newArrivals.title") }]}
@@ -50,30 +59,14 @@ export default function NewArrivalsPage() {
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <FilterSidebar
-            showCategories
-            activeCategoryIds={activeCategoryIds}
-            onCategoryChange={setActiveCategoryIds}
-            inStockOnly={inStockOnly}
-            onInStockChange={setInStockOnly}
-            hasDiscountOnly={hasDiscountOnly}
-            onHasDiscountChange={setHasDiscountOnly}
-          />
+          <FilterSidebar {...sharedFilterProps} />
         </aside>
 
         {/* Main Content */}
         <div className="flex-1 space-y-8">
           <div className="flex items-center justify-between gap-3 border-b pb-6">
             <div className="flex items-center gap-3">
-              <FilterDrawer
-                showCategories
-                activeCategoryIds={activeCategoryIds}
-                onCategoryChange={setActiveCategoryIds}
-                inStockOnly={inStockOnly}
-                onInStockChange={setInStockOnly}
-                hasDiscountOnly={hasDiscountOnly}
-                onHasDiscountChange={setHasDiscountOnly}
-              />
+              <FilterDrawer {...sharedFilterProps} />
               <p className="hidden sm:inline-block text-spaced-bold text-muted-foreground whitespace-nowrap">
                 {t("shop.showing").replace("{count}", sorted.length.toString())}
               </p>
@@ -90,9 +83,14 @@ export default function NewArrivalsPage() {
           ) : sorted.length === 0 ? (
             <div className="py-32 text-center space-y-4">
               <p className="muted-italic text-lg">{t("home.newArrivals.empty")}</p>
-              {(activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly) && (
+              {(activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly || priceRange[0] > 0 || priceRange[1] < 10000) && (
                 <button
-                  onClick={() => { setActiveCategoryIds([]); setInStockOnly(false); setHasDiscountOnly(false); }}
+                  onClick={() => {
+                    setActiveCategoryIds([]);
+                    setInStockOnly(false);
+                    setHasDiscountOnly(false);
+                    setPriceRange([0, 10000]);
+                  }}
                   className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"
                 >
                   {t("shop.clearFilters")}

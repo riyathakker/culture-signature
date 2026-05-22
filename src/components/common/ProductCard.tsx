@@ -98,7 +98,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
           {/* Out of stock overlay */}
           {isOutOfStock && (
             <div className="absolute inset-0 bg-background/20 backdrop-blur-[2px] z-20 flex items-center justify-center">
-              <div className="bg-background/90 text-foreground px-6 py-3 text-[10px] uppercase tracking-[0.4em] font-bold border border-border shadow-2xl">
+              <div className="bg-background/90 text-foreground px-6 py-3 text-[10px] uppercase tracking-[0.4em] font-bold border border-border shadow-2xl text-center whitespace-nowrap">
                 {t("shop.product.outOfStock")}
               </div>
             </div>
