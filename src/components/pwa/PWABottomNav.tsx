@@ -115,13 +115,17 @@ export function PWABottomNav() {
         {tabs.map((tab) => {
           const { label, href, icon, isBack, showBadge, authRequired } = tab as any;
 
+          const isDashboardRoute =
+            href === ROUTES.ADMIN.DASHBOARD || href === ROUTES.ACCOUNT.DASHBOARD;
+
           const isActive = isBack
             ? false
-            : href === ROUTES.ADMIN.DASHBOARD || ROUTES.ACCOUNT.DASHBOARD
+            : isDashboardRoute
               ? pathname === href
               : pathname === href || pathname.startsWith(href + "/");
 
-          const resolvedHref = href;
+          // Admin Account tab on main nav → admin dashboard
+          const resolvedHref = authRequired && isAdmin ? ROUTES.ADMIN.DASHBOARD : href;
 
           const handleClick = authRequired && !isLoggedIn && !isAdmin
             ? (e: React.MouseEvent) => { e.preventDefault(); router.push("/login"); }

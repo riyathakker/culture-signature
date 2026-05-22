@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, Share2, Truck, ShieldCheck, Bell, BellRing } from "lucide-react";
+import { useWishlistStore } from "@/store/wishlistStore";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCartStore, CartItem } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
@@ -26,7 +28,7 @@ interface ProductInfoProps {
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [notified, setNotified] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -38,6 +40,18 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem } = useCartStore();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const isWishlisted = isInWishlist(product.id);
+
+  const toggleWishlist = () => {
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+      toast.info(`Removed from wishlist`);
+    } else {
+      addToWishlist(product as any);
+      toast.success(`Added to wishlist`);
+    }
+  };
 
   const buildCartItem = (): CartItem => ({
     id: product.id,
@@ -49,11 +63,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
   });
 
   const handleAddToCart = () => {
+    if (quantity < 1) return;
     addItem(buildCartItem());
     setQuantity(1);
   };
 
   const handleBuyNow = () => {
+    if (quantity < 1) return;
     addItem(buildCartItem());
     setQuantity(1);
     router.push(ROUTES.SHOPPING_BAG);
@@ -67,8 +83,14 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <p className="text-luxury italic opacity-60 uppercase">{product.category || t("shop.product.defaultCollection")}</p>
           <div className="flex items-center gap-2">
             {!isAdmin && (
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Heart className="w-5 h-5" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full"
+                onClick={toggleWishlist}
+                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                <Heart className={cn("w-5 h-5 transition-all", isWishlisted ? "fill-primary text-primary scale-110" : "")} />
               </Button>
             )}
             <Button
@@ -119,6 +141,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
                 <QuantitySelector
                   onUpdate={setQuantity}
                   quantity={quantity}
+                  min={1}
+                  max={product.stock}
                   className="flex items-center border rounded-sm h-14 w-[40%]"
                 />
                 <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
