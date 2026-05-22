@@ -1,14 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import { ProductCard } from "@/components/common/ProductCard";
 import { useWishlistStore } from "@/store/wishlistStore";
+import { useSession } from "next-auth/react";
 import { Heart } from "lucide-react";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ROUTES } from "@/constants/routes";
 
 export default function WishlistPage() {
-  const { items } = useWishlistStore();
+  const { data: session } = useSession();
+  const { items, fetchWishlist } = useWishlistStore();
+
+  useEffect(() => {
+    if (session?.user) fetchWishlist();
+  }, [session?.user]);
 
   return (
     <HomePageContainer label={[{ label: "Your Wishlist" }]} heading="Wishlist" description="A curated list of your most desired artisanal pieces.">

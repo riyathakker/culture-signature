@@ -15,17 +15,17 @@ export function MobileFloatingCart() {
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
 
   const isAdminPage = pathname?.startsWith("/admin");
+  const isBagPage = pathname === ROUTES.SHOPPING_BAG || pathname?.startsWith("/bag/checkout");
 
   useEffect(() => {
     const handleScroll = () => {
-      // Logic matching BackToTop.tsx (window.pageYOffset > 400)
       setIsBackToTopVisible(window.pageYOffset > 400);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (itemCount === 0 || isAdminPage) return null;
+  if (itemCount === 0 || isAdminPage || isBagPage) return null;
 
   return (
     <AnimatePresence>

@@ -5,9 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReviewModal } from "./ReviewModal";
 import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ImageLightbox } from "@/components/common/ImageLightbox";
+import Link from "next/link";
 
 function statusClass(status: string) {
   if (status === "DELIVERED") return "border-green-500 text-green-500";
@@ -60,7 +61,9 @@ export function OrderRow({ order, variant = "table" }: OrderRowProps) {
         <div className="p-4 space-y-3">
           {/* Top row: ID + status */}
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold font-mono">#{order.id.slice(-8).toUpperCase()}</span>
+            <Link href={`/account/orders/${order.id}`} className="text-xs font-bold font-mono hover:text-primary transition-colors">
+              #{order.id.slice(-8).toUpperCase()}
+            </Link>
             <Badge variant="outline" className={cn("text-[9px] font-bold uppercase tracking-widest h-5", statusClass(order.status))}>
               {order.status}
             </Badge>
@@ -116,7 +119,9 @@ export function OrderRow({ order, variant = "table" }: OrderRowProps) {
     <>
       <TableRow className="hover:bg-secondary/5 transition-colors group">
         <TableCell className="font-medium text-sm py-6">
-          #{order.id.slice(-8).toUpperCase()}
+          <Link href={`/account/orders/${order.id}`} className="hover:text-primary transition-colors font-mono">
+            #{order.id.slice(-8).toUpperCase()}
+          </Link>
         </TableCell>
         <TableCell className="text-sm text-muted-foreground">
           {new Date(order.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}

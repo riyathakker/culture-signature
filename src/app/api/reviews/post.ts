@@ -15,6 +15,9 @@ export default async function handler(req: NextRequest & { userEmail?: string })
 
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
+  const existing = await prisma.review.findFirst({ where: { userId: user.id, productId } });
+  if (existing) return NextResponse.json({ error: "You have already reviewed this product." }, { status: 409 });
+
   try {
     const review = await prisma.review.create({
       data: {

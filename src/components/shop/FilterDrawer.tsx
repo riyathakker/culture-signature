@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 interface FilterDrawerProps extends FilterSidebarProps {
   filteredCount?: number;
+  maxPrice?: number;
 }
 
 export function FilterDrawer(props: FilterDrawerProps) {
@@ -30,7 +31,7 @@ export function FilterDrawer(props: FilterDrawerProps) {
     (props.activeCategoryIds?.length ?? 0) +
     (props.inStockOnly ? 1 : 0) +
     (props.hasDiscountOnly ? 1 : 0) +
-    ((props.priceRange?.[0] ?? 0) > 0 || (props.priceRange?.[1] ?? 10000) < 10000 ? 1 : 0);
+    ((props.priceRange?.[0] ?? 0) > 0 || (props.priceRange?.[1] ?? props.maxPrice ?? 100000) < (props.maxPrice ?? 100000) ? 1 : 0);
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>

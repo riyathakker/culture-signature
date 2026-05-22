@@ -16,6 +16,7 @@ export interface FilterSidebarProps {
   onHasDiscountChange?: (v: boolean) => void;
   priceRange?: [number, number];
   onPriceChange?: (val: [number, number]) => void;
+  maxPrice?: number;
   filteredCount?: number;
   onApply?: () => void;
 }
@@ -28,8 +29,9 @@ export function FilterSidebar({
   onInStockChange,
   hasDiscountOnly = false,
   onHasDiscountChange,
-  priceRange = [0, 10000],
+  priceRange = [0, 100000],
   onPriceChange,
+  maxPrice = 100000,
   filteredCount,
   onApply,
 }: FilterSidebarProps) {
@@ -39,7 +41,7 @@ export function FilterSidebar({
   const [draftCategoryIds, setDraftCategoryIds] = useState<string[]>(activeCategoryIds);
   const [draftInStock, setDraftInStock] = useState(inStockOnly);
   const [draftDiscount, setDraftDiscount] = useState(hasDiscountOnly);
-  const [draftPrice, setDraftPrice] = useState<[number, number]>(priceRange as [number, number]);
+  const [draftPrice, setDraftPrice] = useState<[number, number]>([priceRange[0], priceRange[1]]);
 
   useEffect(() => { fetchCategories(); }, [fetchCategories]);
 
@@ -61,18 +63,18 @@ export function FilterSidebar({
     setDraftCategoryIds([]);
     setDraftInStock(false);
     setDraftDiscount(false);
-    setDraftPrice([0, 10000]);
+    setDraftPrice([0, maxPrice]);
     onCategoryChange?.([]);
     onInStockChange?.(false);
     onHasDiscountChange?.(false);
-    onPriceChange?.([0, 10000]);
+    onPriceChange?.([0, maxPrice]);
     onApply?.();
   };
 
   const draftFilterCount =
     draftCategoryIds.length + (draftInStock ? 1 : 0) + (draftDiscount ? 1 : 0);
   const hasActiveFilters =
-    draftFilterCount > 0 || draftPrice[0] > 0 || draftPrice[1] < 10000;
+    draftFilterCount > 0 || draftPrice[0] > 0 || draftPrice[1] < maxPrice;
 
   return (
     <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
@@ -154,14 +156,14 @@ export function FilterSidebar({
               <div className="space-y-6 pt-4 px-1">
                 <Slider
                   value={draftPrice}
-                  max={10000}
-                  step={100}
+                  max={maxPrice}
+                  step={500}
                   className="text-primary"
                   onValueChange={(val) => setDraftPrice(val as [number, number])}
                 />
                 <div className="flex justify-between text-spaced-bold text-muted-foreground">
                   <span>₹{draftPrice[0].toLocaleString("en-IN")}</span>
-                  <span>₹{draftPrice[1].toLocaleString("en-IN")}{draftPrice[1] === 10000 ? "+" : ""}</span>
+                  <span>₹{draftPrice[1].toLocaleString("en-IN")}{draftPrice[1] >= maxPrice ? "+" : ""}</span>
                 </div>
               </div>
             </AccordionContent>

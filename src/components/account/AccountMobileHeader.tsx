@@ -26,7 +26,9 @@ export function AccountMobileHeader() {
       <header className=" sticky top-0 z-30 bg-primary px-5 py-4 flex items-center justify-between hidden [@media(display-mode:standalone)]:flex">
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
           Culture Signature
-          <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">Admin</span>
+          <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">
+            {(user as any)?.role === "ADMIN" ? "Admin" : "My Account"}
+          </span>
         </Link>
 
         <div className="flex items-center gap-3">

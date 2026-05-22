@@ -4,7 +4,7 @@ import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import { useTranslation } from "@/context/TranslationContext";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
@@ -15,7 +15,7 @@ export default function ShopPage() {
   const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [hasDiscountOnly, setHasDiscountOnly] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("newest");
@@ -38,8 +38,13 @@ export default function ShopPage() {
     fetchProducts();
   }, [activeCategoryIds]);
 
+  const priceMax = useMemo(
+    () => products.length ? Math.ceil(Math.max(...products.map((p) => p.price)) / 1000) * 1000 : 100000,
+    [products]
+  );
+
   const filtered = products
-    .filter((p) => Number(p.price) >= priceRange[0] && Number(p.price) <= priceRange[1])
+    .filter((p) => Number(p.price) >= priceRange[0] && (priceRange[1] >= priceMax || Number(p.price) <= priceRange[1]))
     .filter((p) => !inStockOnly || p.stock > 0)
     .filter((p) => !hasDiscountOnly || (p.discount && p.discount > 0));
 
@@ -61,6 +66,7 @@ export default function ShopPage() {
     onHasDiscountChange: setHasDiscountOnly,
     priceRange,
     onPriceChange: setPriceRange,
+    maxPrice: priceMax,
     filteredCount: sortedProducts.length,
   };
 
@@ -102,7 +108,7 @@ export default function ShopPage() {
                   setActiveCategoryIds([]);
                   setInStockOnly(false);
                   setHasDiscountOnly(false);
-                  setPriceRange([0, 10000]);
+                  setPriceRange([0, priceMax]);
                 }}
                 className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"
               >

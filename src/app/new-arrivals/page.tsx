@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/common/ProductCard";
 import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useProductStore } from "@/store/productStore";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
@@ -16,7 +16,11 @@ export default function NewArrivalsPage() {
   const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [hasDiscountOnly, setHasDiscountOnly] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
+  const priceMax = useMemo(
+    () => newArrivals.length ? Math.ceil(Math.max(...newArrivals.map((p) => p.price)) / 1000) * 1000 : 100000,
+    [newArrivals]
+  );
   const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
@@ -25,7 +29,7 @@ export default function NewArrivalsPage() {
 
   const filtered = newArrivals
     .filter((p) => activeCategoryIds.length === 0 || activeCategoryIds.includes(String(p.category?.id ?? p.categoryId)))
-    .filter((p) => Number(p.price) >= priceRange[0] && Number(p.price) <= priceRange[1])
+    .filter((p) => Number(p.price) >= priceRange[0] && (priceRange[1] >= priceMax || Number(p.price) <= priceRange[1]))
     .filter((p) => !inStockOnly || p.stock > 0)
     .filter((p) => !hasDiscountOnly || (p.discount && p.discount > 0));
 
@@ -47,6 +51,7 @@ export default function NewArrivalsPage() {
     onHasDiscountChange: setHasDiscountOnly,
     priceRange,
     onPriceChange: setPriceRange,
+    maxPrice: priceMax,
     filteredCount: sorted.length,
   };
 
@@ -89,7 +94,7 @@ export default function NewArrivalsPage() {
                     setActiveCategoryIds([]);
                     setInStockOnly(false);
                     setHasDiscountOnly(false);
-                    setPriceRange([0, 10000]);
+                    setPriceRange([0, priceMax]);
                   }}
                   className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"
                 >
