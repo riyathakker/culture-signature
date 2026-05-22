@@ -65,10 +65,11 @@ export interface Product {
   isLimitedDrop?: boolean;
   isNew?: boolean;
   rating?: number;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
-  isDeleted?: boolean;
-  category?: Category | string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  isDeleted: boolean;
+  category: Category;
+  reviews: any
 }
 
 export interface CartItem {
