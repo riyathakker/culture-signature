@@ -5,6 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Home, Sparkles, ShoppingBag, User,
   Package, Heart, MapPin, Settings, ChevronLeft,
+  LayoutDashboard,
+  Users,
+  Tag,
+  Star,
+  Edit,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cartStore";
@@ -28,10 +33,21 @@ const accountTabs = [
   { label: "Settings", href: ROUTES.ACCOUNT.SETTINGS, icon: Settings },
 ];
 
+const adminTabs = [
+  { label: "Back", href: ROUTES.HOME, icon: ChevronLeft, isBack: true },
+  { label: "Overview", href: ROUTES.ADMIN.DASHBOARD,icon: LayoutDashboard },
+  { label: "Products", href: ROUTES.ADMIN.PRODUCTS, icon: Package },
+  { label: "Orders", href: ROUTES.ADMIN.ORDERS,icon: ShoppingBag },
+  { label: "Discounts", href: ROUTES.ADMIN.DISCOUNTS, icon: Tag },
+  { label: "Customers", href: ROUTES.ADMIN.CUSTOMERS, icon: Users  },
+  { label: "Reviews", href: ROUTES.ADMIN.REVIEWS, icon: Star },
+  { label: "Content", href: ROUTES.ADMIN.CONTENT, icon: Edit },
+]
+
 interface NavTabProps {
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon?: React.ElementType;
   isActive: boolean;
   badge?: number;
   onClick?: (e: React.MouseEvent) => void;
@@ -55,7 +71,7 @@ function NavTab({
       )}
     >
       <div className="relative">
-        <Icon className={cn("w-5 h-5 transition-all duration-200", isActive && "scale-110")} />
+        {Icon && <Icon className={cn("w-5 h-5 transition-all duration-200", isActive && "scale-110")} />}
         {badge != null && badge > 0 && (
           <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
             {badge > 9 ? "9+" : badge}
@@ -85,8 +101,9 @@ export function PWABottomNav() {
   const isAdmin = (session?.user as any)?.role === "ADMIN";
   const isLoggedIn = !!session?.user;
   const isOnAccount = pathname.startsWith("/account");
+  const isOnAdmin = pathname.startsWith("/admin");
 
-  const tabs = isOnAccount ? accountTabs : mainTabs;
+  const tabs = (isAdmin && isOnAdmin) ? adminTabs : (isLoggedIn && isOnAccount) ? accountTabs : mainTabs;
 
   return (
     <nav
