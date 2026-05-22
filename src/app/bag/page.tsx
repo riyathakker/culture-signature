@@ -7,6 +7,7 @@ import { ShoppingBag, ArrowLeft, Heart } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
+import { EmptyState } from "@/components/common/EmptyState";
 
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
@@ -23,23 +24,12 @@ export default function BagPage() {
       description={t("cart.page.description")}
     >
       {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center space-y-8">
-          <div className="w-24 h-24 rounded-full bg-secondary/50 flex items-center justify-center relative">
-            <ShoppingBag className="w-10 h-10 text-muted-foreground opacity-30" />
-            <div className="absolute inset-0 border border-primary/20 rounded-full animate-ping" />
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-3xl font-heading">{t("cart.page.emptyTitle")}</h3>
-            <p className="muted-italic max-w-sm mx-auto">
-              {t("cart.page.emptyDescription")}
-            </p>
-          </div>
-          <Link href={ROUTES.COLLECTIONS}>
-            <Button className="px-10 py-7 h-auto uppercase tracking-[0.3em] text-xs">
-              {t("cart.page.browseCollection")}
-            </Button>
-          </Link>
-        </div>
+        <EmptyState
+          icon={ShoppingBag}
+          title={t("cart.page.emptyTitle")}
+          description={t("cart.page.emptyDescription")}
+          action={{ label: t("cart.page.browseCollection"), href: ROUTES.COLLECTIONS }}
+        />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
           {/* Cart Items List */}

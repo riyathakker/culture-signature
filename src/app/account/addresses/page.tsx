@@ -7,7 +7,8 @@ import { ROUTES } from "@/constants/routes";
 import { useAddressStore } from "@/store/addressStore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
 
 export default function AddressesPage() {
   const { data: session, status } = useSession();
@@ -38,11 +39,12 @@ export default function AddressesPage() {
       </div>
 
       {addresses.length === 0 ? (
-        <div className="py-24 text-center border border-dashed rounded-sm bg-secondary/10">
-          <div className="max-w-xs mx-auto space-y-6">
-            <p className="muted-italic">Your address book is empty. Curate your delivery locations for faster acquisition of masterpieces.</p>
-          </div>
-        </div>
+        <EmptyState
+          icon={MapPin}
+          title="No saved addresses"
+          description="Curate your delivery locations for faster acquisition of masterpieces."
+          className="py-16"
+        />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {addresses.map((addr) => (

@@ -5,13 +5,12 @@ import {
   Table, TableBody, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { OrderRow } from "@/components/account/OrderRow";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { useOrderStore } from "@/store/orderStore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShoppingBag } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
 
 export default function OrdersPage() {
   const { data: session, status } = useSession();
@@ -61,12 +60,13 @@ export default function OrdersPage() {
       </div>
 
       {myOrders.length === 0 ? (
-        <div className="py-20 text-center border-2 border-dashed rounded-sm space-y-4">
-          <p className="muted-italic">Your collection is waiting for its first masterpiece.</p>
-          <Link href={ROUTES.COLLECTIONS}>
-            <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8">Discover Collection</Button>
-          </Link>
-        </div>
+        <EmptyState
+          icon={ShoppingBag}
+          title="No orders yet"
+          description="Your collection is waiting for its first masterpiece."
+          action={{ label: "Discover Collection", href: ROUTES.COLLECTIONS }}
+          className="py-16"
+        />
       ) : (
         <>
           {/* Desktop table */}
