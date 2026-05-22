@@ -18,7 +18,7 @@ export function SectionTitle({
   return (
     <div
       className={cn(
-        "flex flex-col space-y-2 mb-10",
+        "flex flex-col space-y-2 mb-6 md:mb-10",
         {
           "items-start text-left": align === "left",
           "items-center text-center": align === "center",

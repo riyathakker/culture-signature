@@ -69,9 +69,9 @@ export default function CategoryPage() {
         {/* Main Content */}
         <div className="flex-1 space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-muted-foreground/10 pb-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-row">
               <FilterDrawer />
-              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">
+              <p className="hidden sm:inline-block text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">
                 Showing {products.length} {products.length === 1 ? 'piece' : 'pieces'}
               </p>
             </div>
@@ -105,13 +105,6 @@ export default function CategoryPage() {
             </div>
           )}
 
-          {!loading && products.length > 0 && (
-            <div className="pt-20 flex justify-center border-t border-muted-foreground/10">
-              <div className="flex gap-4">
-                <button className="w-12 h-12 flex items-center justify-center border border-primary bg-primary text-primary-foreground font-bold text-xs uppercase tracking-widest hover:bg-transparent hover:text-primary transition-all duration-300">1</button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </HomePageContainer>

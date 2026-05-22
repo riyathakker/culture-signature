@@ -4,7 +4,7 @@ import {
   Filter,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -117,7 +117,7 @@ export default function AdminCustomers() {
               {customer.name?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-bold text-sm tracking-tight">{customer.name}</span>
                 <Badge
                   variant="outline"

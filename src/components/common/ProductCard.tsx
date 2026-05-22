@@ -85,21 +85,15 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
             {/* Badges */}
             <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
               {discountPercentage && !isOutOfStock && (
-                <span className="text-spaced-bold bg-destructive/60 text-white px-2 py-1">
+                <span className="text-spaced-bold bg-success/90 text-white px-2 py-1">
                   {discountPercentage}% {t("shop.product.off")}
-                </span>
-              )}
-              {product.isNew && !isOutOfStock && (
-                <span className="text-spaced-bold bg-primary text-primary-foreground px-2 py-1">
-                  {t("shop.product.new")}
                 </span>
               )}
             </div>
 
             {/* Actions Overlay */}
-            <div className={cn(
+            {!isOutOfStock && <div className={cn(
               "absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-20 flex gap-2",
-              isOutOfStock && "group-hover:opacity-40 pointer-events-none"
             )}>
               {!isAdmin ? (
                 cartItem ? (
@@ -124,10 +118,9 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
                       e.preventDefault();
                       handleAddToCart();
                     }}
-                    disabled={isOutOfStock}
                     className="flex-1 bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground border-none backdrop-blur-sm uppercase text-[10px] tracking-widest h-10"
                   >
-                    {isOutOfStock ? t("shop.product.unavailable") : t("shop.product.addToCart")}
+                    {t("shop.product.addToCart")}
                   </Button>
                 )
               ) : null}
@@ -160,7 +153,8 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
                   )}
                 </div>
               )}
-            </div>
+            </div>}
+
 
             <div className={cn(
               "w-full h-full relative overflow-hidden transition-opacity duration-500",
@@ -188,20 +182,18 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
             isOutOfStock ? "opacity-50" : "opacity-100"
           )}>
             <div className="flex justify-between items-center">
-              <p className="text-luxury italic opacity-60 text-[10px]">
-                {typeof product.category === 'string' ? product.category : product.category?.name || t("shop.product.defaultCollection")}
-              </p>
-              <div className="flex items-center text-primary/80">
-                <Star className="w-3 h-3 fill-current" />
-                <span className="text-[10px] ml-1 font-sans font-medium text-muted-foreground">{product.rating || 5}</span>
-              </div>
+              <h3 className="font-heading text-lg group-hover:text-primary transition-colors">
+                {product.name}
+              </h3>
+              {product.rating && (
+                <div className="flex items-center text-primary/80">
+                  <Star className="w-3 h-3 fill-current" />
+                  <span className="text-[10px] ml-1 font-sans font-medium text-muted-foreground">{product.rating}</span>
+                </div>
+              )}
             </div>
 
-            <h3 className="font-heading text-lg group-hover:text-primary transition-colors">
-              {product.name}
-            </h3>
-
-            <div className="flex items-center justify-between">
+            <div className="flex justify-between flex-col gap-2 md:flex-row md:items-center md:gap-0">
               <div className="flex items-center gap-3">
                 <span className="text-sm md:text-base font-bold">₹{(product.price - product.discount).toLocaleString()}</span>
                 {product.discount > 0 && (
@@ -212,7 +204,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
               </div>
 
               {isLowStock && (
-                <span className="text-[9px] uppercase tracking-widest font-bold text-amber-600 bg-amber-500/10 px-2 py-1 border border-amber-500/20 rounded-sm">
+                <span className="text-[9px] uppercase tracking-widest font-bold text-amber-600 bg-amber-500/10 px-2 py-1 border border-amber-500/20 rounded-sm w-fit">
                   {product.stock === 1
                     ? "Only 1 left"
                     : `${product.stock} units left`}

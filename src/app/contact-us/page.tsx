@@ -70,7 +70,7 @@ export default function ContactPage() {
       description={t("contact.description")}
     >
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-14 xl:gap-24">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 xl:gap-24">
 
         {/* Left Side */}
         <div className="space-y-14">

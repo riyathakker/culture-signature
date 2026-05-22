@@ -12,14 +12,16 @@ interface Props {
 }
 export function HomePageContainer({ label, heading, description, children }: Props) {
     return (
-        <div className="bg-background min-h-screen pb-20">
-            <div className={cn("bg-secondary/20 py-8 md:py-16", heading && description && "mb-6 md:mb-10")}>
+        <div className="bg-background min-h-screen pb-10 md:pb-15">
+            <div className={cn("py-6 md:py-12", heading && description && "mb-0 md:mb-6")}>
                 <Container>
                     <Breadcrumbs items={label} />
-                    {heading && <h1 className="text-4xl md:text-6xl font-heading mt-3 md:mt-6 mb-2"> {heading}</h1>}
-                    {description && <p className="muted-italic text-lg max-w-2xl">
-                        {description}
-                    </p>}
+                    <div className="hidden sm:inline-block">
+                        {heading && <h1 className="text-4xl md:text-6xl font-heading mt-0 md:mt-3 mb-2"> {heading}</h1>}
+                        {description && <p className="muted-italic text-lg max-w-2xl">
+                            {description}
+                        </p>}
+                    </div>
                 </Container>
             </div>
             <Container>

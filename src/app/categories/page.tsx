@@ -3,7 +3,6 @@
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { CommonLoader } from "@/components/common/Loader";
 import { useCategoryStore } from "@/store/categoryStore";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -29,14 +28,14 @@ export default function CollectionsPage() {
           <p className="muted-italic text-lg">{t("collections.empty")}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+        <div className="grid-gallery-collection">
           {categories.filter((cat) => (cat?._count?.products ?? 0) > 0).map((category) => (
             <Link
               key={category.id}
               href={`/categories/${category.id}`}
               className="group block"
             >
-              <div className="aspect-[4/5] bg-secondary/30 relative overflow-hidden mb-6">
+              <div className="aspect-[4/5] bg-secondary/30 relative overflow-hidden mb-4">
                 {category.image ? (
                   <img
                     src={category.image}
@@ -45,7 +44,7 @@ export default function CollectionsPage() {
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-6xl font-heading uppercase text-foreground/20 group-hover:text-foreground/10 transition-colors select-none">
+                    <span className="text-4xl font-heading uppercase text-foreground/20 group-hover:text-foreground/10 transition-colors select-none">
                       {category.name ? category.name[0] : "?"}
                     </span>
                   </div>
@@ -59,15 +58,9 @@ export default function CollectionsPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="flex justify-between items-end">
-                  <h3 className="text-3xl font-heading group-hover:text-primary transition-colors">{category.name}</h3>
+                <div className="flex justify-between items-start flex-col md:flex-row md:items-end">
+                  <h3 className="text-2xl lg:text-3xl font-heading group-hover:text-primary transition-colors">{category.name}</h3>
                   <span className="text-spaced-bold font-bold text-muted-foreground mb-1">{category._count?.products || 0} {t("home.categories.pieces")}</span>
-                </div>
-                <p className="muted-italic text-sm leading-relaxed max-w-xs">
-                  Curated selection of artisanal {category.name.toLowerCase()} masterpieces.
-                </p>
-                <div className="pt-2 flex items-center gap-2 text-spaced-bold font-bold text-primary group-hover:gap-4 transition-all">
-                  {t("cart.page.browseCollection")} <ArrowRight className="w-3 h-3" />
                 </div>
               </div>
             </Link>

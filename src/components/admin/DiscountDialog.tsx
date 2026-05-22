@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Tag, Loader2, Save } from "lucide-react";
+import { Plus, Loader2, Save } from "lucide-react";
 import { useDiscountStore } from "@/store/discountStore";
 import { useTranslation } from "@/context/TranslationContext";
 
@@ -119,11 +119,15 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        {trigger || (
-          <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
-            <Plus className="w-4 h-4 mr-2" /> {t("admin.discounts.newOffer")}
-          </Button>
-        )}
+        {trigger ? (
+          <DialogTrigger>{trigger}</DialogTrigger>
+        ) : !isControlled ? (
+          <DialogTrigger>
+            <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
+              <Plus className="w-4 h-4 mr-2" /> {t("admin.discounts.newOffer")}
+            </Button>
+          </DialogTrigger>
+        ) : null}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px] bg-background border-none">
         <DialogHeader>

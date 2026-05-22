@@ -23,7 +23,7 @@ export default function BagPage() {
       description={t("cart.page.description")}
     >
       {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-32 text-center space-y-8">
+        <div className="flex flex-col items-center justify-center py-16 text-center space-y-8">
           <div className="w-24 h-24 rounded-full bg-secondary/50 flex items-center justify-center relative">
             <ShoppingBag className="w-10 h-10 text-muted-foreground opacity-30" />
             <div className="absolute inset-0 border border-primary/20 rounded-full animate-ping" />

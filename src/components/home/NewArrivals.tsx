@@ -30,7 +30,7 @@ export function NewArrivals() {
   }
 
   return (
-    <section className="py-20 pwa-section border-t border-border/50">
+    <section className="py-10 md:py-18 pwa-section border-t border-border/50">
       <Container>
         <SectionTitle
           title={t("home.newArrivals.title")}
@@ -57,7 +57,7 @@ export function NewArrivals() {
                 ))}
             </div>
             {newArrivals.length > 4 && (
-              <div className="flex justify-center mt-6">
+              <div className="flex justify-center mt-2 md:mt-6">
                 <Link
                   href={ROUTES.NEW_ARRIVALS}
                   className="

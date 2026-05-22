@@ -64,7 +64,7 @@ export default function AdminOverview() {
         title="Executive Overview"
         description="Real-time pulse of the Culture Signature house."
       />
-      <div className="grid-split lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
         <StatCard label="Total Revenue" value={formatPrice(data.revenue)} trend={data.revenueTrend} icon={IndianRupee} />
         <StatCard label="Active Orders" value={data.activeOrders.toString()} trend={data.ordersTrend} icon={ShoppingBag} />
         <StatCard label="Total Customers" value={data.customers.toString()} trend={data.customersTrend} icon={Users} />

@@ -33,7 +33,7 @@ export function FeaturedProducts() {
   }
 
   return (
-    <section className="py-20 pwa-section bg-secondary/50 border-t border-border/50">
+    <section className="py-10 md:py-18 pwa-section bg-secondary/50 border-t border-border/50">
       <Container>
         <SectionTitle
           title={t("home.featured.title")}
@@ -52,13 +52,13 @@ export function FeaturedProducts() {
               {featuredProducts.map((product: Product) => (
                 <div
                   key={product.id}
-                  className="pwa-card min-w-[240px] max-w-[240px] flex-shrink-0"
+                  className="min-w-[160px] max-w-[160px] lg:min-w-[240px] lg:max-w-[240px] flex-shrink-0"
                 >
                   <ProductCard product={product} />
                 </div>
               ))}
             </div>
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-2 md:mt-6">
               <Link
                 href={ROUTES.COLLECTIONS}
                 className="

@@ -8,7 +8,7 @@ export function SectionHeader({ children, className, ...props }: SectionHeaderPr
   return (
     <h3 
       className={cn(
-        "header-spaced-bold mb-6", 
+        "header-spaced-bold mb-4 md:mb-6", 
         className
       )} 
       {...props}

@@ -14,7 +14,7 @@ export default function WishlistPage() {
   return (
     <HomePageContainer label={[{ label: "Your Wishlist" }]} heading="Wishlist" description="A curated list of your most desired artisanal pieces.">
       {items.length === 0 ? (
-        <div className="py-24 flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="py-16 flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="w-24 h-24 bg-secondary/30 rounded-full flex items-center justify-center relative">
             <Heart className="w-10 h-10 text-primary/30" />
             <div className="absolute inset-0 bg-luxury-gradient opacity-10 rounded-full" />

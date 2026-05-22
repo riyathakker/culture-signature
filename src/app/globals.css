@@ -166,12 +166,6 @@
     padding-top: 94px;
   }
 
-  /* PWA product cards — smaller */
-  .pwa-card {
-    min-width: 160px !important;
-    max-width: 160px !important;
-  }
-
   /* PWA section padding — compact */
   .pwa-section {
     padding-top: 2.5rem !important;
@@ -223,11 +217,15 @@
   }
 
   .grid-gallery {
-    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8;
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8;
   }
 
   .grid-split {
     @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  }
+
+  .grid-gallery-collection {
+    @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8;
   }
 
   .text-spaced-bold {

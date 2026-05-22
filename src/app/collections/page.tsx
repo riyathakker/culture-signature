@@ -73,7 +73,7 @@ export default function ShopPage() {
               <FilterDrawer showCategories
                 activeCategoryIds={activeCategoryIds}
                 onCategoryChange={setActiveCategoryIds} />
-              <p className="text-spaced-bold text-muted-foreground">
+              <p className="hidden sm:inline-block text-spaced-bold text-muted-foreground">
                 {t("shop.showing").replace("{count}", products.length.toString())}
               </p>
             </div>

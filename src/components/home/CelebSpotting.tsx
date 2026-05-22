@@ -147,7 +147,7 @@ export function CelebSpotting() {
 
   return (
     <>
-      <section className="py-20 pwa-section bg-secondary/50 overflow-hidden border-t border-border/50">
+      <section className="py-10 md:py-18 pwa-section bg-secondary/50 overflow-hidden border-t border-border/50">
         <SectionTitle
           title={t("home.celebSpotting.title")}
           subtitle={t("home.celebSpotting.subtitle")}

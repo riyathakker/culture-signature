@@ -206,8 +206,7 @@ export default function CategoriesPage() {
         title={t("admin.categories.title")}
         description={t("admin.categories.description")}
         action={
-          <CategoryDialog
-          />
+          <CategoryDialog />
         }
       />
 

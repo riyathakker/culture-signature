@@ -29,7 +29,7 @@ export default function AboutPage() {
       heading={t("about.heading")} 
       description={t("about.description")}
     >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-24 mb-10 md:mb-16">
 
           <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
             <SectionHeader>{t("about.visionary.header")}</SectionHeader>
@@ -61,7 +61,7 @@ export default function AboutPage() {
 
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
           {aboutCards.map((card, index) => (
             <div
               key={index}
@@ -98,7 +98,7 @@ export default function AboutPage() {
             <h3 className="text-4xl font-heading">{t("about.pillars.title")}</h3>
           </div>
 
-          <div className="grid-split lg:grid-cols-3 gap-x-12 gap-y-16">
+          <div className="grid-split lg:grid-cols-3 gap-x-12 gap-y-10">
             {Array.isArray(ourValues) && ourValues.map((value, i) => (
               <div key={i} className="space-y-3 border-l border-primary/20 pl-6">
                 <h5 className="font-heading text-xl text-primary">{value.title}</h5>

@@ -39,7 +39,7 @@ export function Testimonials() {
   };
 
   return (
-    <section className="py-20 border-t border-border/50">
+    <section className="py-10 md:py-18 border-t border-border/50">
       <Container>
         <SectionTitle title={t("home.testimonials.title")} subtitle={t("home.testimonials.subtitle")} align="center" className="mb-16" />
           <div className="max-w-4xl mx-auto text-center space-y-12">
