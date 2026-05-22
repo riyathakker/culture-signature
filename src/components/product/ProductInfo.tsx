@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, Share2, Truck, ShieldCheck, Plus, Minus } from "lucide-react";
+import { Heart, Share2, Truck, ShieldCheck, Bell, BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, CartItem } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
@@ -10,6 +10,7 @@ import { useTranslation } from "@/context/TranslationContext";
 import { ShareDialog } from "./ShareDialog";
 import { QuantitySelector } from "../common/QuantitySelector";
 import { ROUTES } from "@/constants/routes";
+import { toast } from "sonner";
 
 interface ProductInfoProps {
   product: {
@@ -27,6 +28,10 @@ interface ProductInfoProps {
 export function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(0);
   const [shareOpen, setShareOpen] = useState(false);
+  const [notified, setNotified] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem(`stock_notify_${product.id}`) === "1";
+  });
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -93,20 +98,38 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
       {!isAdmin && (
         <div className="space-y-4 pt-6">
-          <div className="flex items-center gap-4">
-              <QuantitySelector
-                onUpdate={setQuantity}
-                quantity={quantity}
-                className="flex items-center border rounded-sm h-14 w-[40%]"
-              />
-              <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
-                {t("shop.product.details.addToCollection")}
+          {product.stock === 0 ? (
+            <Button
+              onClick={() => {
+                if (notified) return;
+                localStorage.setItem(`stock_notify_${product.id}`, "1");
+                setNotified(true);
+                toast.success("We'll notify you when this piece is back in stock.");
+              }}
+              variant="outline"
+              className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary gap-2"
+              disabled={notified}
+            >
+              {notified ? <BellRing className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+              {notified ? "You'll be notified" : "Notify me when available"}
+            </Button>
+          ) : (
+            <>
+              <div className="flex items-center gap-4">
+                <QuantitySelector
+                  onUpdate={setQuantity}
+                  quantity={quantity}
+                  className="flex items-center border rounded-sm h-14 w-[40%]"
+                />
+                <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
+                  {t("shop.product.details.addToCollection")}
+                </Button>
+              </div>
+              <Button onClick={handleBuyNow} variant="outline" className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                {t("shop.product.details.buyNow")}
               </Button>
-          
-          </div>
-          <Button onClick={handleBuyNow} variant="outline" className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            {t("shop.product.details.buyNow")}
-          </Button>
+            </>
+          )}
         </div>
       )}
 

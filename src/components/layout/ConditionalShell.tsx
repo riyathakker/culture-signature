@@ -5,6 +5,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { MobileFloatingCart } from "@/components/cart/MobileFloatingCart";
 import { PWABottomNav } from "@/components/pwa/PWABottomNav";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 
 const AUTH_PATHS = ["/login", "/signup"];
 
@@ -29,6 +30,7 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
         <MobileFloatingCart />
       </div>
       <PWABottomNav />
+      <PWAInstallPrompt />
     </>
   );
 }

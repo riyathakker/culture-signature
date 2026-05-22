@@ -58,23 +58,45 @@ export function OrderRow({ order, variant = "table" }: OrderRowProps) {
     return (
       <div className="bg-background border border-border/50 rounded-sm overflow-hidden">
         <div className="p-4 space-y-3">
+          {/* Top row: ID + status */}
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">#{order.id.slice(-8).toUpperCase()}</span>
+            <span className="text-xs font-bold font-mono">#{order.id.slice(-8).toUpperCase()}</span>
             <Badge variant="outline" className={cn("text-[9px] font-bold uppercase tracking-widest h-5", statusClass(order.status))}>
               {order.status}
             </Badge>
           </div>
+
+          {/* Product image strip */}
+          {order.items?.length > 0 && (
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2.5">
+                {order.items.slice(0, 4).map((item: any, i: number) => (
+                  <div key={item.id} className="relative w-10 h-10 rounded-full ring-2 ring-background overflow-hidden bg-secondary/40 shrink-0">
+                    {item.product?.images?.[0] && (
+                      <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                ))}
+                {order.items.length > 4 && (
+                  <div className="w-10 h-10 rounded-full ring-2 ring-background bg-secondary flex items-center justify-center shrink-0">
+                    <span className="text-[10px] font-bold">+{order.items.length - 4}</span>
+                  </div>
+                )}
+              </div>
+              <span className="text-[10px] text-muted-foreground">
+                {order.items.length} {order.items.length === 1 ? "item" : "items"}
+              </span>
+            </div>
+          )}
+
+          {/* Date + price */}
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">
               {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </span>
-            <span className="font-bold text-xs">₹{order.totalPrice.toLocaleString()}</span>
+            <span className="font-bold text-sm">₹{order.totalPrice.toLocaleString()}</span>
           </div>
-          {order.items?.length > 0 && (
-            <p className="text-[10px] text-muted-foreground italic">
-              {order.items.length} {order.items.length === 1 ? "item" : "items"}
-            </p>
-          )}
+
           <Button
             variant="ghost"
             size="sm"

@@ -244,8 +244,8 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         </div>
       </div>
 
-      {/* Coupon Section - Only for Cart */}
-      {variant === "cart" && (
+      {/* Coupon Section - Cart and Checkout (unless already applied) */}
+      {(variant === "cart" || (variant === "checkout" && !appliedPromo)) && (
         <div className="space-y-3 pt-4 border-t border-border/20">
           <p className="text-spaced-bold text-muted-foreground">{t("cart.summary.promotionalCode")}</p>
           <div className="flex gap-2">
