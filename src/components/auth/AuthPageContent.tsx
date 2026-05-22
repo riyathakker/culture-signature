@@ -77,7 +77,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/account
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="flex min-h-dvh [@media(display-mode:standalone)]:h-[calc(100dvh-4rem-env(safe-area-inset-bottom))] [@media(display-mode:standalone)]:min-h-0 [@media(display-mode:standalone)]:overflow-hidden">
       {/* ── Left editorial panel (desktop only) ── */}
       <div className="hidden md:flex md:w-1/2 lg:w-[55%] relative flex-col">
         <Image

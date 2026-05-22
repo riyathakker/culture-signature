@@ -13,7 +13,7 @@ interface Props {
 }
 export function HomePageContainer({ label, heading, description, children, breadcrumbClassName }: Props) {
     return (
-        <div className="bg-background min-h-screen pb-10 md:pb-15">
+        <div className="bg-background pb-10 md:pb-15">
             <div className={cn("py-6 md:py-12", heading && description && "mb-0 md:mb-6")}>
                 <Container>
                     <Breadcrumbs items={label} className={breadcrumbClassName} />

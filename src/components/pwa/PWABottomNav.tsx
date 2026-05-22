@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home, Sparkles, ShoppingBag, User,
+  Home, Sparkles, LayoutGrid, ShoppingBag, User,
   Package, Heart, MapPin, Settings, ChevronLeft,
   LayoutDashboard,
   Users,
@@ -19,7 +19,7 @@ import { ROUTES } from "@/constants/routes";
 const mainTabs = [
   { label: "Home", href: ROUTES.HOME, icon: Home },
   { label: "New In", href: ROUTES.NEW_ARRIVALS, icon: Sparkles },
-  { label: "Collections", href: ROUTES.COLLECTIONS, icon: Sparkles },
+  { label: "Collections", href: ROUTES.COLLECTIONS, icon: LayoutGrid },
   { label: "Bag", href: ROUTES.SHOPPING_BAG, icon: ShoppingBag, showBadge: true },
   { label: "Account", href: ROUTES.ACCOUNT.DASHBOARD, icon: User, authRequired: true },
 
