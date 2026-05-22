@@ -35,11 +35,11 @@ const accountTabs = [
 
 const adminTabs = [
   { label: "Back", href: ROUTES.HOME, icon: ChevronLeft, isBack: true },
-  { label: "Overview", href: ROUTES.ADMIN.DASHBOARD,icon: LayoutDashboard },
+  { label: "Overview", href: ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard },
   { label: "Products", href: ROUTES.ADMIN.PRODUCTS, icon: Package },
-  { label: "Orders", href: ROUTES.ADMIN.ORDERS,icon: ShoppingBag },
+  { label: "Orders", href: ROUTES.ADMIN.ORDERS, icon: ShoppingBag },
   { label: "Discounts", href: ROUTES.ADMIN.DISCOUNTS, icon: Tag },
-  { label: "Customers", href: ROUTES.ADMIN.CUSTOMERS, icon: Users  },
+  { label: "Customers", href: ROUTES.ADMIN.CUSTOMERS, icon: Users },
   { label: "Reviews", href: ROUTES.ADMIN.REVIEWS, icon: Star },
   { label: "Content", href: ROUTES.ADMIN.CONTENT, icon: Edit },
 ]
@@ -66,7 +66,7 @@ function NavTab({
       href={href}
       onClick={onClick}
       className={cn(
-        "relative flex-1 flex flex-col items-center justify-center gap-1 transition-colors min-w-0 py-2",
+        "relative shrink-0 min-w-[72px] flex flex-col items-center justify-center gap-1 transition-colors py-2",
         isActive ? "text-primary" : "text-muted-foreground"
       )}
     >
@@ -116,13 +116,15 @@ export function PWABottomNav() {
         </div>
       )}
 
-      <div className="flex items-stretch h-16 w-full px-2">
+      <div className="flex items-stretch h-16 w-full px-2 overflow-x-auto no-scrollbar">
         {tabs.map((tab) => {
           const { label, href, icon, isBack, showBadge, authRequired } = tab as any;
 
           const isActive = isBack
             ? false
-            : pathname === href || pathname.startsWith(href + "/");
+            : href === ROUTES.ADMIN.DASHBOARD || ROUTES.ACCOUNT.DASHBOARD
+              ? pathname === href
+              : pathname === href || pathname.startsWith(href + "/");
 
           const resolvedHref = href;
 
