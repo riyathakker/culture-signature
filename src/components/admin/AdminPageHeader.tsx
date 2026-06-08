@@ -13,7 +13,7 @@ export function AdminPageHeader({ title, description, action }: AdminPageHeaderP
     <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
       <div className="space-y-2">
         <h1 className="text-2xl lg:text-3xl font-heading tracking-tight">{title}</h1>
-        <p className="muted-italic">{description}</p>
+        <p className="muted-italic pwa-hide">{description}</p>
       </div>
       {action}
     </div>
