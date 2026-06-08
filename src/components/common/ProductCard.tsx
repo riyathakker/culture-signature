@@ -16,7 +16,6 @@ import { convertINRToDiscountPercentage } from "@/utils/helper";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
 import { Product } from "@/types";
-import { ImageLightbox } from "./ImageLightbox";
 
 interface ProductCardProps {
   product: Product;
@@ -165,33 +164,20 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
             </div>
           )}
 
-          {/* Image (links to product on tap of image area on desktop; lightbox on mobile) */}
+          {/* Image — always links to product detail page */}
           <div className={cn(
             "w-full h-full relative overflow-hidden transition-opacity duration-500",
             isOutOfStock ? "opacity-40" : "opacity-100"
           )}>
-            {isMobile && product.images?.[0] ? (
-              <ImageLightbox
-                src={product.images[0]}
-                alt={product.name}
-                images={product.images}
-                className="absolute inset-0"
-              >
-                <div className="absolute inset-0">
+            <Link href={productHref} className="absolute inset-0 block">
+              <div className="absolute inset-0 transition-all duration-700 ease-in-out group-hover:scale-110">
+                {product.images?.[0] ? (
                   <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
-                </div>
-              </ImageLightbox>
-            ) : (
-              <Link href={productHref} className="absolute inset-0 block">
-                <div className="absolute inset-0 transition-all duration-700 ease-in-out group-hover:scale-110">
-                  {product.images?.[0] ? (
-                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-muted animate-pulse" />
-                  )}
-                </div>
-              </Link>
-            )}
+                ) : (
+                  <div className="w-full h-full bg-muted animate-pulse" />
+                )}
+              </div>
+            </Link>
           </div>
         </div>
 
