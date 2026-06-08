@@ -103,8 +103,10 @@ export function PWABottomNav() {
   const isOnAccount = pathname.startsWith("/account");
   const isOnAdmin = pathname.startsWith("/admin");
 
-  // Admins don't shop — hide the Bag tab from the main nav for authenticated admins
-  const visibleMainTabs = isAdmin ? mainTabs.filter((t) => t.label !== "Bag") : mainTabs;
+  // Bag tab only for signed-in shoppers — hidden for guests and admins.
+  const visibleMainTabs = mainTabs.filter((t) =>
+    t.label === "Bag" ? isLoggedIn && !isAdmin : true
+  );
 
   const tabs = (isAdmin && isOnAdmin) ? adminTabs : (isLoggedIn && isOnAccount) ? accountTabs : visibleMainTabs;
 
@@ -126,8 +128,11 @@ export function PWABottomNav() {
               ? pathname === href
               : pathname === href || pathname.startsWith(href + "/");
 
-          // Admin Account tab on main nav → admin dashboard
-          const resolvedHref = authRequired && isAdmin ? ROUTES.ADMIN.DASHBOARD : href;
+          // Account tab on main nav: admins → admin dashboard,
+          // logged-in shoppers → their orders (Overview is no longer a tab).
+          const resolvedHref = authRequired
+            ? (isAdmin ? ROUTES.ADMIN.DASHBOARD : ROUTES.ACCOUNT.ORDERS)
+            : href;
 
           // Only divert to /login once we KNOW the user is signed out.
           // While the session is still "loading" (e.g. PWA cold-start) let the

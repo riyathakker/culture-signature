@@ -58,8 +58,8 @@ export function PWAPageHeader() {
           )}
         </Link>
 
-        <div className="flex items-center gap-3">
-          {user && (
+        {user && (
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setSignOutOpen(true)}
               className="text-primary-foreground/60 hover:text-primary-foreground transition-colors"
@@ -67,20 +67,20 @@ export function PWAPageHeader() {
             >
               <LogOut className="w-5 h-5" />
             </button>
-          )}
 
-          <div className="w-9 h-9 rounded-full bg-primary-foreground flex items-center justify-center shrink-0">
-            {user?.image ? (
-              <img
-                src={user.image}
-                alt={user.name ?? "User"}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <span className="text-primary text-xs font-bold">{initials}</span>
-            )}
+            <div className="w-9 h-9 rounded-full bg-primary-foreground flex items-center justify-center shrink-0">
+              {user.image ? (
+                <img
+                  src={user.image}
+                  alt={user.name ?? "User"}
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                <span className="text-primary text-xs font-bold">{initials}</span>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </header>
 
       <ConfirmationDialog

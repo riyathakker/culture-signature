@@ -40,7 +40,7 @@ export function AccountSidebar() {
   });
 
   return (
-    <aside className="w-full lg:w-64 space-y-8 [@media(display-mode:standalone)]:hidden">
+    <aside className="w-full lg:w-64 space-y-8">
       <div className="hidden lg:block space-y-1">
         {filteredNavItems.map((item) => {
           const isActive = pathname === item.href;
