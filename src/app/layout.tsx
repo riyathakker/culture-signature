@@ -22,6 +22,7 @@ import { ConditionalShell } from "@/components/layout/ConditionalShell";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 import { BackToTop } from "@/components/common/BackToTop";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
+import NextTopLoader from "nextjs-toploader";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -67,6 +68,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans overflow-x-hidden">
         <Providers>
+          <NextTopLoader color="#95473D" height={2} showSpinner={false} />
           <ConditionalShell>
             <LayoutWrapper>
               {children}
