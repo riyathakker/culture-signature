@@ -138,10 +138,6 @@
 }
 
 @media (display-mode: standalone) {
-  body {
-    overscroll-behavior-y: none;
-  }
-
   .pwa-hide {
     display: none !important;
   }
