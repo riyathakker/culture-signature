@@ -32,8 +32,7 @@ export function BulkGlobalDefaults({
     (!globals.name &&
       !globals.categoryId &&
       !globals.price &&
-      globals.discount === "" &&
-      !globals.stock);
+      globals.discount === "");
 
   return (
     <div className="border border-border/50 rounded-lg bg-secondary/20 p-5 space-y-3">

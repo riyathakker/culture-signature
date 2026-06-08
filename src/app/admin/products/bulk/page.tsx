@@ -42,7 +42,7 @@ export default function BulkProductUpload() {
   const [openUid, setOpenUid] = useState<string | null>(initialRows[0].uid);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globals, setGlobals] = useState<GlobalDefaults>({
-    name: "", categoryId: "", price: "", discount: "", stock: "",
+    name: "", categoryId: "", price: "", discount: "", stock: "1",
   });
   const [imagePool, setImagePool] = useState<PoolImage[]>([]);
 
@@ -53,8 +53,16 @@ export default function BulkProductUpload() {
 
   const addRow = () => {
     const nr = makeRow();
-    setRows((prev) => [...prev, nr]);
-    setOpenUid(nr.uid);
+    const prefilled: BulkRow = {
+      ...nr,
+      title: globals.name || nr.title,
+      categoryId: globals.categoryId || nr.categoryId,
+      price: globals.price || nr.price,
+      discount: globals.discount !== "" ? globals.discount : nr.discount,
+      stock: globals.stock || nr.stock,
+    };
+    setRows((prev) => [...prev, prefilled]);
+    setOpenUid(prefilled.uid);
   };
 
   const removeRow = (uid: string) => {
