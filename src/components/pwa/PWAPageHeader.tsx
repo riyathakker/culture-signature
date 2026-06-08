@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
 import { useState } from "react";
@@ -9,9 +10,27 @@ import { ROUTES } from "@/constants/routes";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useTranslation } from "@/context/TranslationContext";
 
-export function AccountMobileHeader() {
+const PATH_LABELS: { prefix: string; label: string }[] = [
+  { prefix: "/account/wishlist", label: "Wishlist" },
+  { prefix: "/account/orders", label: "My Orders" },
+  { prefix: "/account/addresses", label: "Addresses" },
+  { prefix: "/account/settings", label: "Settings" },
+  { prefix: "/account", label: "My Account" },
+  { prefix: "/new-arrivals", label: "New Arrivals" },
+  { prefix: "/collections", label: "Collections" },
+  { prefix: "/categories", label: "Categories" },
+  { prefix: "/bag", label: "My Bag" },
+  { prefix: "/product", label: "Product" },
+  { prefix: "/wishlist", label: "Wishlist" },
+  { prefix: "/about-us", label: "About Us" },
+  { prefix: "/contact-us", label: "Contact" },
+  { prefix: "/faq", label: "FAQ" },
+];
+
+export function PWAPageHeader() {
   const { data: session } = useSession();
   const { t } = useTranslation();
+  const pathname = usePathname();
   const user = session?.user;
   const [signOutOpen, setSignOutOpen] = useState(false);
 
@@ -19,26 +38,36 @@ export function AccountMobileHeader() {
     ? user.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()
     : user?.email
       ? user.email[0].toUpperCase()
-      : "A";
+      : "G";
+
+  const subtitle =
+    PATH_LABELS.find((p) => pathname.startsWith(p.prefix))?.label ?? "";
 
   return (
     <>
-      <header className=" sticky top-0 z-30 bg-primary px-5 py-4 flex items-center justify-between hidden [@media(display-mode:standalone)]:flex">
+      <header
+        className="hidden fixed top-0 left-0 right-0 z-50 bg-primary px-5 [@media(display-mode:standalone)]:flex items-center justify-between"
+        style={{ height: "calc(56px + env(safe-area-inset-top))", paddingTop: "env(safe-area-inset-top)" }}
+      >
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
           Culture Signature
-          <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">
-            {(user as any)?.role === "ADMIN" ? "Admin" : "My Account"}
-          </span>
+          {subtitle && (
+            <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">
+              {subtitle}
+            </span>
+          )}
         </Link>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setSignOutOpen(true)}
-            className="text-primary-foreground/60 hover:text-primary-foreground transition-colors"
-            aria-label={t("nav.account.signOut")}
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
+          {user && (
+            <button
+              onClick={() => setSignOutOpen(true)}
+              className="text-primary-foreground/60 hover:text-primary-foreground transition-colors"
+              aria-label={t("nav.account.signOut")}
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          )}
 
           <div className="w-9 h-9 rounded-full bg-primary-foreground flex items-center justify-center shrink-0">
             {user?.image ? (

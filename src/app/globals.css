@@ -166,13 +166,9 @@
     padding-top: 94px;
   }
 
-  /* PWA Account Header */
-  .pwa-account-header {
-    display: flex !important;
-  }
-  /* push account page content below the fixed header */
-  .pwa-page-account {
-    padding-top: calc(56px + env(safe-area-inset-top));
+  /* push page content below the fixed PWA page header */
+  .pwa-page-content {
+    padding-top: calc(56px + env(safe-area-inset-top)) !important;
   }
 
   /* PWA section padding — compact */

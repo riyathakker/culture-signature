@@ -67,7 +67,7 @@ export function ShareDialog({ open, onOpenChange, productName, productImage }: S
       href: `https://wa.me/?text=${encodeURIComponent(`${text} — ${url}`)}`,
     },
     {
-      label: "X (Twitter)",
+      label: "X",
       icon: XIcon,
       color: "hover:bg-foreground/5 hover:border-foreground/20",
       href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
@@ -109,7 +109,7 @@ export function ShareDialog({ open, onOpenChange, productName, productImage }: S
         </div>
 
         {/* Social share */}
-        <div className="grid grid-cols-4 gap-2 pt-1">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
           {shareTargets.map(({ label, icon: Icon, color, href }) => (
             <a
               key={label}
