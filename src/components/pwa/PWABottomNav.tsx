@@ -27,7 +27,6 @@ const mainTabs = [
 
 const accountTabs = [
   { label: "Back", href: ROUTES.HOME, icon: ChevronLeft, isBack: true },
-  { label: "Overview", href: ROUTES.ACCOUNT.DASHBOARD, icon: LayoutDashboard },
   { label: "Orders", href: ROUTES.ACCOUNT.ORDERS, icon: Package },
   { label: "Wishlist", href: ROUTES.ACCOUNT.WISHLIST, icon: Heart },
   { label: "Addresses", href: ROUTES.ACCOUNT.ADDRESSES, icon: MapPin },
