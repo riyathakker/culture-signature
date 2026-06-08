@@ -31,7 +31,7 @@ export default function AddressesPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-        <div className="space-y-2 [@media(display-mode:standalone)]:hidden">
+        <div className="space-y-2">
           <h2 className="text-3xl font-heading">Saved Addresses</h2>
           <p className="muted-italic pwa-hide">Manage your delivery and billing locations for a seamless checkout.</p>
         </div>

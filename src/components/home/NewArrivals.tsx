@@ -53,6 +53,7 @@ export function NewArrivals() {
                   <ProductCard
                     key={product.id}
                     product={product}
+                    hideActions
                   />
                 ))}
             </div>

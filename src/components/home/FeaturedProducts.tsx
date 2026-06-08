@@ -54,7 +54,7 @@ export function FeaturedProducts() {
                   key={product.id}
                   className="min-w-[160px] max-w-[160px] lg:min-w-[240px] lg:max-w-[240px] flex-shrink-0"
                 >
-                  <ProductCard product={product} />
+                  <ProductCard product={product} hideActions />
                 </div>
               ))}
             </div>

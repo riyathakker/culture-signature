@@ -11,7 +11,15 @@ export async function GET() {
         include: { category: true },
       }),
       prisma.exhibition.findMany({
-        where: { isDeleted: false, status: { in: ["UPCOMING", "ONGOING"] } },
+        where: {
+          isDeleted: false,
+          status: { in: ["UPCOMING", "ONGOING"] },
+          // Hide exhibitions whose end date has already passed
+          OR: [
+            { endDate: null },
+            { endDate: { gte: new Date() } },
+          ],
+        },
         orderBy: { date: "asc" },
         take: 6,
       }),

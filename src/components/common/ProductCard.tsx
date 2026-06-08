@@ -20,9 +20,11 @@ import { Product } from "@/types";
 interface ProductCardProps {
   product: Product;
   variant?: "default" | "wishlist";
+  /** Force the card to be a plain link to the product page (no inline cart/wishlist actions) */
+  hideActions?: boolean;
 }
 
-export function ProductCard({ product, variant = "default" }: ProductCardProps) {
+export function ProductCard({ product, variant = "default", hideActions: hideActionsProp = false }: ProductCardProps) {
   const pathname = usePathname();
   const from = pathname.startsWith("/collections")
     ? "collections"
@@ -85,9 +87,10 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
   const isLowStock = product.stock > 0 && product.stock < 5;
   const productHref = `/product/${product.id}${from ? `?from=${from}` : ""}`;
 
-  // On the browse pages (new-arrivals, collections, categories) the card is
-  // purely a link to the product detail page — no inline cart/wishlist actions.
-  const hideActions = !!from;
+  // On the browse pages (new-arrivals, collections, categories) and anywhere the
+  // caller opts in, the card is purely a link to the product detail page —
+  // no inline cart/wishlist actions.
+  const hideActions = hideActionsProp || !!from;
 
   return (
     <>

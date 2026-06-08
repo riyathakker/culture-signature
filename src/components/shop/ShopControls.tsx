@@ -21,7 +21,7 @@ export function ShopControls({ sortBy, onSortChange }: ShopControlsProps) {
         if (val)
           onSortChange(val)
       }}>
-        <SelectTrigger className="w-[140px] sm:w-[180px] h-11 border-muted-foreground/20 rounded-none focus:ring-primary text-spaced-bold">
+        <SelectTrigger className="w-[140px] sm:w-[180px] h-10 border-muted-foreground/20 rounded-lg focus:ring-primary text-spaced-bold">
           <SelectValue placeholder="Sort By" />
         </SelectTrigger>
         <SelectContent className="rounded border-primary/20">

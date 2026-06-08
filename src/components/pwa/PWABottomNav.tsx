@@ -66,7 +66,7 @@ function NavTab({
       href={href}
       onClick={onClick}
       className={cn(
-        "relative shrink-0 min-w-[72px] flex flex-col items-center justify-center gap-1 transition-colors py-2",
+        "relative flex-1 min-w-[72px] flex flex-col items-center justify-center gap-1 transition-colors py-2",
         isActive ? "text-primary" : "text-muted-foreground"
       )}
     >

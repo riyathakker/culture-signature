@@ -11,17 +11,17 @@ import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useTranslation } from "@/context/TranslationContext";
 
 const PATH_LABELS: { prefix: string; label: string }[] = [
-  { prefix: "/account/wishlist", label: "Wishlist" },
-  { prefix: "/account/orders", label: "My Orders" },
-  { prefix: "/account/addresses", label: "Addresses" },
-  { prefix: "/account/settings", label: "Settings" },
+  { prefix: "/account/wishlist", label: "My Wishlist" },
+  { prefix: "/account/orders", label: "Order History" },
+  { prefix: "/account/addresses", label: "Saved Addresses" },
+  { prefix: "/account/settings", label: "Account Settings" },
   { prefix: "/account", label: "My Account" },
   { prefix: "/new-arrivals", label: "New Arrivals" },
   { prefix: "/collections", label: "Collections" },
   { prefix: "/categories", label: "Categories" },
   { prefix: "/bag", label: "My Bag" },
   { prefix: "/product", label: "Product" },
-  { prefix: "/wishlist", label: "Wishlist" },
+  { prefix: "/wishlist", label: "My Wishlist" },
   { prefix: "/about-us", label: "About Us" },
   { prefix: "/contact-us", label: "Contact" },
   { prefix: "/faq", label: "FAQ" },
