@@ -39,7 +39,7 @@ export function EmptyState({ icon: Icon, title, description, action, className }
 
       {action && (
         <Link href={action.href}>
-          <Button className="py-7 px-10 uppercase tracking-[0.2em] text-xs h-auto gap-2">
+          <Button className="py-4 px-8 uppercase tracking-[0.2em] text-xs h-auto gap-2">
             {action.label} <ArrowRight className="w-4 h-4" />
           </Button>
         </Link>

@@ -88,7 +88,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-2">
+      <div className="space-y-1">
         <h2 className="text-3xl font-heading">Account Settings</h2>
         <p className="muted-italic pwa-hide">Preferences and security for your Inner Circle membership.</p>
       </div>

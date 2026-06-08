@@ -7,10 +7,12 @@ interface ProductState {
   totalProducts: number;
   newArrivals: Product[];
   featuredProducts: Product[];
+  allUserProducts: Product[];
   isLoading: boolean;
   lastFetched: number | null;
   lastFetchedNewArrivals: number | null;
   lastFetchedFeatured: number | null;
+  lastFetchedAllUser: number | null;
 
   setProducts: (products: Product[]) => void;
   setNewArrivals: (newArrivals: Product[]) => void;
@@ -24,6 +26,7 @@ interface ProductState {
   fetchProducts: (force?: boolean, params?: { page?: number; limit?: number; query?: string; categoryId?: string; status?: string }) => Promise<void>;
   fetchNewArrivals: (force?: boolean) => Promise<void>;
   fetchFeaturedProducts: (force?: boolean) => Promise<void>;
+  fetchAllUserProducts: (force?: boolean) => Promise<void>;
 
   createProduct: (data: any) => Promise<Product>;
   updateProductById: (id: string, data: any) => Promise<Product>;
@@ -36,10 +39,12 @@ export const useProductStore = create<ProductState>((set, get) => ({
   totalProducts: 0,
   newArrivals: [],
   featuredProducts: [],
+  allUserProducts: [],
   isLoading: false,
   lastFetched: null,
   lastFetchedNewArrivals: null,
   lastFetchedFeatured: null,
+  lastFetchedAllUser: null,
 
   setProducts: (products) =>
     set({
@@ -183,6 +188,28 @@ export const useProductStore = create<ProductState>((set, get) => ({
       });
     } catch (error) {
       console.error("Failed to fetch featured products", error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchAllUserProducts: async (force = false) => {
+    const state = get();
+
+    // Cache for 5 minutes
+    if (!force && state.allUserProducts.length > 0 && state.lastFetchedAllUser && (Date.now() - state.lastFetchedAllUser < 300000)) {
+      return;
+    }
+
+    set({ isLoading: true });
+
+    try {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      const prodList = Array.isArray(data) ? data : [];
+      set({ allUserProducts: prodList, lastFetchedAllUser: Date.now() });
+    } catch (error) {
+      console.error("Failed to fetch all products", error);
     } finally {
       set({ isLoading: false });
     }

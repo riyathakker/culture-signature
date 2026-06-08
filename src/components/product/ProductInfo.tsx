@@ -28,7 +28,6 @@ interface ProductInfoProps {
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const [quantity, setQuantity] = useState(1);
   const [shareOpen, setShareOpen] = useState(false);
   const [notified, setNotified] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -39,7 +38,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
-  const { addItem } = useCartStore();
+  const { addItem, items, updateQuantity, removeItem } = useCartStore();
+  const cartItem = items.find((i) => i.id === product.id);
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const isWishlisted = isInWishlist(product.id);
 
@@ -55,28 +55,24 @@ export function ProductInfo({ product }: ProductInfoProps) {
     id: product.id,
     name: product.name,
     price: product.price - (product.discount || 0),
-    quantity,
+    quantity: 1,
     image: product.images[0],
     stock: product.stock,
   });
 
   const handleAddToCart = () => {
-    if (quantity < 1) return;
     addItem(buildCartItem());
-    setQuantity(1);
   };
 
   const handleBuyNow = () => {
-    if (quantity < 1) return;
-    addItem(buildCartItem());
-    setQuantity(1);
+    if (!cartItem) addItem(buildCartItem());
     router.push(ROUTES.SHOPPING_BAG);
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-luxury italic opacity-60 uppercase">{product.category || t("shop.product.defaultCollection")}</p>
           <div className="flex items-center gap-2">
@@ -102,22 +98,22 @@ export function ProductInfo({ product }: ProductInfoProps) {
             </Button>
           </div>
         </div>
-        <h1 className="text-4xl lg:text-5xl font-heading tracking-tight">{product.name}</h1>
+        <h1 className="text-2xl lg:text-3xl font-heading tracking-tight">{product.name}</h1>
       </div>
 
-      <div className="flex items-center gap-4">
-        <span className="text-3xl font-medium">₹{(product.price - (product.discount || 0)).toLocaleString()}</span>
+      <div className="flex items-center gap-3">
+        <span className="text-2xl font-medium">₹{(product.price - (product.discount || 0)).toLocaleString()}</span>
         {product.discount > 0 && (
-          <span className="text-xl text-muted-foreground line-through opacity-50">₹{product.price.toLocaleString()}</span>
+          <span className="text-base text-muted-foreground line-through opacity-50">₹{product.price.toLocaleString()}</span>
         )}
       </div>
 
-      <p className="muted-italic text-lg leading-relaxed">
+      <p className="muted-italic text-base leading-relaxed">
         {product.description}
       </p>
 
       {!isAdmin && (
-        <div className="space-y-4 pt-6 mb-2">
+        <div className="pt-3 mb-2">
           {product.stock === 0 ? (
             <Button
               onClick={() => {
@@ -127,30 +123,31 @@ export function ProductInfo({ product }: ProductInfoProps) {
                 toast.success("We'll notify you when this piece is back in stock.");
               }}
               variant="outline"
-              className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary gap-2"
+              className="w-full h-12 uppercase tracking-[0.2em] text-xs border-primary gap-2"
               disabled={notified}
             >
               {notified ? <BellRing className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
               {notified ? "You'll be notified" : "Notify me when available"}
             </Button>
           ) : (
-            <>
-              <div className="flex items-center gap-4">
+            <div className="flex gap-3">
+              {cartItem ? (
                 <QuantitySelector
-                  onUpdate={setQuantity}
-                  quantity={quantity}
-                  min={1}
+                  quantity={cartItem.quantity}
+                  min={0}
                   max={product.stock}
-                  className="flex items-center border rounded-sm h-14 w-[40%]"
+                  onUpdate={(qty) => qty === 0 ? removeItem(product.id) : updateQuantity(product.id, qty)}
+                  className="flex-1 h-12 border rounded-sm"
                 />
-                <Button onClick={handleAddToCart} className="flex-1 h-14 uppercase tracking-[0.2em] text-xs">
+              ) : (
+                <Button onClick={handleAddToCart} className="flex-1 h-12 uppercase tracking-[0.2em] text-xs">
                   {t("shop.product.details.addToCollection")}
                 </Button>
-              </div>
-              <Button onClick={handleBuyNow} variant="outline" className="w-full h-14 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+              )}
+              <Button onClick={handleBuyNow} variant="outline" className="flex-1 h-12 uppercase tracking-[0.2em] text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground">
                 {t("shop.product.details.buyNow")}
               </Button>
-            </>
+            </div>
           )}
         </div>
       )}

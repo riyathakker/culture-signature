@@ -92,7 +92,7 @@ export default function AccountPage() {
             <div className="p-12 border-2 border-dashed rounded-sm text-center space-y-4">
               <p className="muted-italic">Your collection is waiting for its first masterpiece.</p>
               <Link href={ROUTES.COLLECTIONS}>
-                <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8">Discover Collection</Button>
+                <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-10 px-8">Discover Collection</Button>
               </Link>
             </div>
           )}

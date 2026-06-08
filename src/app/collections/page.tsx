@@ -5,38 +5,23 @@ import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useState, useEffect, useMemo } from "react";
-
+import { useProductStore } from "@/store/productStore";
 import { useTranslation } from "@/context/TranslationContext";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { ROUTES } from "@/constants/routes";
 
 export default function ShopPage() {
   const { t } = useTranslation();
+  const { allUserProducts: products, isLoading: loading, fetchAllUserProducts } = useProductStore();
   const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [hasDiscountOnly, setHasDiscountOnly] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const url = activeCategoryIds.length > 0
-          ? `/api/products?categoryId=${activeCategoryIds.join(",")}`
-          : "/api/products";
-        const res = await fetch(url);
-        const data = await res.json();
-        setProducts(data);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [activeCategoryIds]);
+    fetchAllUserProducts();
+  }, []);
 
   const priceMax = useMemo(
     () => products.length ? Math.ceil(Math.max(...products.map((p) => p.price)) / 1000) * 1000 : 100000,
@@ -44,6 +29,7 @@ export default function ShopPage() {
   );
 
   const filtered = products
+    .filter((p) => activeCategoryIds.length === 0 || activeCategoryIds.includes(String(p.categoryId ?? p.category?.id)))
     .filter((p) => Number(p.price) >= priceRange[0] && (priceRange[1] >= priceMax || Number(p.price) <= priceRange[1]))
     .filter((p) => !inStockOnly || p.stock > 0)
     .filter((p) => !hasDiscountOnly || (p.discount && p.discount > 0));

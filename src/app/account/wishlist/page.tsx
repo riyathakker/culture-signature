@@ -30,7 +30,7 @@ export default function AccountWishlistPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-2">
+      <div className="space-y-1">
         <h2 className="text-3xl font-heading">My Wishlist</h2>
         <p className="muted-italic pwa-hide">Pieces you've curated for your future collection.</p>
       </div>

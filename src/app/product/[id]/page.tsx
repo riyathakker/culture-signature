@@ -81,7 +81,7 @@ export default function ProductPage() {
 
   return (
     <div className="bg-background min-h-screen pb-20">
-      <Container className="py-8">
+      <Container className="pt-4 pb-8">
         <Breadcrumbs
           items={[
             from === "categories"
@@ -98,7 +98,7 @@ export default function ProductPage() {
           ]}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mt-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mt-6">
           <ProductGallery images={product.images || [product.image]} />
           <ProductInfo product={product} />
         </div>
@@ -116,7 +116,7 @@ export default function ProductPage() {
             />
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
               {relatedProducts.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard key={p.id} product={p} hideActions />
               ))}
             </div>
           </div>
