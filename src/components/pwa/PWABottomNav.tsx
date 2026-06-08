@@ -96,11 +96,11 @@ export function PWABottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { items } = useCartStore();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
   const isAdmin = (session?.user as any)?.role === "ADMIN";
-  const isLoggedIn = !!session?.user;
+  const isLoggedIn = status === "authenticated";
   const isOnAccount = pathname.startsWith("/account");
   const isOnAdmin = pathname.startsWith("/admin");
 
@@ -127,7 +127,10 @@ export function PWABottomNav() {
           // Admin Account tab on main nav → admin dashboard
           const resolvedHref = authRequired && isAdmin ? ROUTES.ADMIN.DASHBOARD : href;
 
-          const handleClick = authRequired && !isLoggedIn && !isAdmin
+          // Only divert to /login once we KNOW the user is signed out.
+          // While the session is still "loading" (e.g. PWA cold-start) let the
+          // Link navigate normally so a logged-in user isn't wrongly sent to login.
+          const handleClick = authRequired && status === "unauthenticated" && !isAdmin
             ? (e: React.MouseEvent) => { e.preventDefault(); router.push("/login"); }
             : undefined;
 

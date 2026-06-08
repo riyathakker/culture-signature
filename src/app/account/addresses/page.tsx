@@ -33,7 +33,7 @@ export default function AddressesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div className="space-y-2">
           <h2 className="text-3xl font-heading">Saved Addresses</h2>
-          <p className="muted-italic">Manage your delivery and billing locations for a seamless checkout.</p>
+          <p className="muted-italic pwa-hide">Manage your delivery and billing locations for a seamless checkout.</p>
         </div>
         <AddressDialog />
       </div>
