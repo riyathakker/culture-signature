@@ -85,6 +85,10 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
   const isLowStock = product.stock > 0 && product.stock < 5;
   const productHref = `/product/${product.id}${from ? `?from=${from}` : ""}`;
 
+  // On the browse pages (new-arrivals, collections, categories) the card is
+  // purely a link to the product detail page — no inline cart/wishlist actions.
+  const hideActions = !!from;
+
   return (
     <>
       {/* Outer wrapper is NOT a link — link is only on the visual card */}
@@ -112,7 +116,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
           </div>
 
           {/* Desktop hover overlay (hidden on mobile) */}
-          {!isOutOfStock && !isMobile && (
+          {!isOutOfStock && !isMobile && !hideActions && (
             <div className="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-20 flex gap-2">
               {!isAdmin && (
                 cartItem ? (
@@ -220,7 +224,7 @@ export function ProductCard({ product, variant = "default" }: ProductCardProps) 
         </Link>
 
         {/* --- MOBILE ACTION BAR (outside any Link, always visible) --- */}
-        {isMobile && !isOutOfStock && !isAdmin && (
+        {isMobile && !isOutOfStock && !isAdmin && !hideActions && (
           <div className="flex gap-2 pb-2">
             {cartItem ? (
               <QuantitySelector

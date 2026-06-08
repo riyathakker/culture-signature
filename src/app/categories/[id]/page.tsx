@@ -68,7 +68,7 @@ export default function CategoryPage() {
 
         {/* Main Content */}
         <div className="flex-1 space-y-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-muted-foreground/10 pb-6">
+          <div className="flex flex-row justify-between items-center gap-3 border-b border-muted-foreground/10 pb-6">
             <div className="flex items-center gap-4 flex-row">
               <FilterDrawer />
               <p className="hidden sm:inline-block text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">

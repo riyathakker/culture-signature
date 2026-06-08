@@ -103,7 +103,10 @@ export function PWABottomNav() {
   const isOnAccount = pathname.startsWith("/account");
   const isOnAdmin = pathname.startsWith("/admin");
 
-  const tabs = (isAdmin && isOnAdmin) ? adminTabs : (isLoggedIn && isOnAccount) ? accountTabs : mainTabs;
+  // Admins don't shop — hide the Bag tab from the main nav for authenticated admins
+  const visibleMainTabs = isAdmin ? mainTabs.filter((t) => t.label !== "Bag") : mainTabs;
+
+  const tabs = (isAdmin && isOnAdmin) ? adminTabs : (isLoggedIn && isOnAccount) ? accountTabs : visibleMainTabs;
 
   return (
     <nav

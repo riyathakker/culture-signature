@@ -15,13 +15,13 @@ interface ShopControlsProps {
 
 export function ShopControls({ sortBy, onSortChange }: ShopControlsProps) {
   return (
-    <div className="flex items-center gap-4">
-      <span className="text-spaced-bold text-muted-foreground whitespace-nowrap">Sort By</span>
+    <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+      <span className="hidden sm:inline-block text-spaced-bold text-muted-foreground whitespace-nowrap">Sort By</span>
       <Select value={sortBy} onValueChange={(val) => {
         if (val)
           onSortChange(val)
       }}>
-        <SelectTrigger className="w-[180px] h-11 border-muted-foreground/20 rounded-none focus:ring-primary text-spaced-bold">
+        <SelectTrigger className="w-[140px] sm:w-[180px] h-11 border-muted-foreground/20 rounded-none focus:ring-primary text-spaced-bold">
           <SelectValue placeholder="Sort By" />
         </SelectTrigger>
         <SelectContent className="rounded border-primary/20">

@@ -46,8 +46,8 @@ export function PWAPageHeader() {
   return (
     <>
       <header
-        className="hidden fixed top-0 left-0 right-0 z-50 bg-primary px-5 [@media(display-mode:standalone)]:flex items-center justify-between"
-        style={{ height: "calc(56px + env(safe-area-inset-top))", paddingTop: "env(safe-area-inset-top)" }}
+        className="hidden fixed top-0 left-0 right-0 z-50 bg-primary px-5 pb-4 [@media(display-mode:standalone)]:flex items-center justify-between"
+        style={{ paddingTop: "calc(1rem + env(safe-area-inset-top))" }}
       >
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
           Culture Signature

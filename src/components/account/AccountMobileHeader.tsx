@@ -23,7 +23,10 @@ export function AccountMobileHeader() {
 
   return (
     <>
-      <header className=" sticky top-0 z-30 bg-primary px-5 py-4 flex items-center justify-between hidden [@media(display-mode:standalone)]:flex">
+      <header
+        className="sticky top-0 z-30 bg-primary px-5 pb-4 items-center justify-between hidden [@media(display-mode:standalone)]:flex"
+        style={{ paddingTop: "calc(1rem + env(safe-area-inset-top))" }}
+      >
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
           Culture Signature
           <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">

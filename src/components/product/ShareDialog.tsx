@@ -88,7 +88,7 @@ export function ShareDialog({ open, onOpenChange, productName, productImage }: S
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="text-base font-heading tracking-tight">Share this piece</DialogTitle>
         </DialogHeader>
@@ -96,9 +96,9 @@ export function ShareDialog({ open, onOpenChange, productName, productImage }: S
         <p className="text-xs text-muted-foreground muted-italic truncate">{productName}</p>
 
         {/* Copy link */}
-        <div className="flex items-center gap-2 bg-secondary/40 rounded-sm px-3 py-2.5 border border-border/50">
+        <div className="flex items-center gap-2 bg-secondary/40 rounded-sm px-3 py-2.5 border border-border/50 min-w-0">
           <Link className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          <span className="text-xs text-muted-foreground flex-1 truncate">{url}</span>
+          <span className="text-xs text-muted-foreground flex-1 min-w-0 truncate">{url}</span>
           <button
             onClick={copyLink}
             className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
