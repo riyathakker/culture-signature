@@ -68,6 +68,7 @@ model Product {
   isDeleted     Boolean        @default(false)
   name          String
   isLimitedDrop Boolean        @default(false)
+  colors        Json?
   cart          CartItem[]
   orderItems    OrderItem[]
   category      Category       @relation(fields: [categoryId], references: [id])

@@ -20,6 +20,7 @@ export default function ProductPage() {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -30,11 +31,18 @@ export default function ProductPage() {
         if (!res.ok) throw new Error("Product not found");
         const data = await res.json();
 
+        const colors = Array.isArray(data.colors) ? data.colors : [];
+        const defaultImages = (colors.length > 0 && colors[0].images?.length > 0)
+          ? colors[0].images
+          : data.images || [];
+        setGalleryImages(defaultImages);
+
         setProduct({
           ...data,
           image: data.images?.[0] || "/placeholder.jpg",
           category: data.category?.name || t("shop.product.defaultCollection"),
           categoryId: data.categoryId,
+          colors,
           details: {
             description: data.description,
             specifications: [
@@ -99,8 +107,8 @@ export default function ProductPage() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mt-6">
-          <ProductGallery images={product.images || [product.image]} />
-          <ProductInfo product={product} />
+          <ProductGallery images={galleryImages.length > 0 ? galleryImages : (product.images || [product.image])} />
+          <ProductInfo product={product} onColorChange={setGalleryImages} />
         </div>
 
         <div className="mt-20">

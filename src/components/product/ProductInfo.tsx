@@ -13,6 +13,7 @@ import { ShareDialog } from "./ShareDialog";
 import { QuantitySelector } from "../common/QuantitySelector";
 import { ROUTES } from "@/constants/routes";
 import { toast } from "sonner";
+import { ColorVariant } from "@/types";
 
 interface ProductInfoProps {
   product: {
@@ -24,11 +25,15 @@ interface ProductInfoProps {
     description: string;
     images: string[];
     stock: number;
+    colors?: ColorVariant[] | null;
   };
+  onColorChange?: (images: string[]) => void;
 }
 
-export function ProductInfo({ product }: ProductInfoProps) {
+export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
   const [shareOpen, setShareOpen] = useState(false);
+  const colors = product.colors ?? [];
+  const [activeColor, setActiveColor] = useState<ColorVariant | null>(colors.length > 0 ? colors[0] : null);
   const [notified, setNotified] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem(`stock_notify_${product.id}`) === "1";
@@ -107,6 +112,34 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <span className="text-base text-muted-foreground line-through opacity-50">₹{product.price.toLocaleString()}</span>
         )}
       </div>
+
+      {colors.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            Color: <span className="text-foreground font-bold">{activeColor?.name || ""}</span>
+          </p>
+          <div className="flex items-center gap-2 flex-wrap">
+            {colors.map((c, i) => (
+              <button
+                key={i}
+                type="button"
+                title={c.name}
+                onClick={() => {
+                  setActiveColor(c);
+                  if (c.images?.length > 0) onColorChange?.(c.images);
+                }}
+                className={cn(
+                  "w-7 h-7 rounded-full border-2 transition-all",
+                  activeColor?.hex === c.hex
+                    ? "border-foreground scale-110 shadow-md"
+                    : "border-transparent hover:border-foreground/40"
+                )}
+                style={{ backgroundColor: c.hex }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       <p className="muted-italic text-base leading-relaxed">
         {product.description}

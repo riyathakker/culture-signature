@@ -1,5 +1,10 @@
 export type RowStatus = "idle" | "loading" | "success" | "error";
 
+export interface BulkColorEntry {
+  name: string;
+  hex: string;
+}
+
 export interface BulkRow {
   uid: string;
   title: string;
@@ -10,6 +15,7 @@ export interface BulkRow {
   categoryId: string;
   images: string[];
   isFeatured: boolean;
+  colors: BulkColorEntry[];
   status: RowStatus;
   errorMsg?: string;
   showImages: boolean;

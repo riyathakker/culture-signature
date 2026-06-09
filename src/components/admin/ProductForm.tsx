@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Plus,
+  Trash2,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ import { useProductStore } from "@/store/productStore";
 import { useCategoryStore } from "@/store/categoryStore";
 import { CommonLoader } from "../common/Loader";
 import { ImageUpload } from "./ImageUpload";
+import { ColorVariant } from "@/types";
 
 interface ProductFormProps {
   productId?: string;
@@ -50,6 +52,7 @@ export function ProductForm({ productId }: ProductFormProps) {
     images: [] as string[],
     isFeatured: false,
     isLimitedDrop: false,
+    colors: [] as ColorVariant[],
   });
 
   // Persist form to localStorage
@@ -104,6 +107,7 @@ export function ProductForm({ productId }: ProductFormProps) {
           images: prod.images || [],
           isFeatured: prod.isFeatured || false,
           isLimitedDrop: prod.isLimitedDrop || false,
+          colors: (prod.colors as ColorVariant[]) || [],
         });
       }
     } catch (error) {
@@ -192,6 +196,83 @@ export function ProductForm({ productId }: ProductFormProps) {
               onChange={(urls) => setFormData({ ...formData, images: urls })}
               maxFiles={4}
             />
+          </div>
+
+          {/* Color Variants */}
+          <div className="bg-background border border-border/50 p-8 rounded-lg space-y-6">
+            <div className="flex items-center justify-between border-b border-border/30 pb-4">
+              <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold">Color Variants</h3>
+              <button
+                type="button"
+                onClick={() => setFormData((prev) => ({
+                  ...prev,
+                  colors: [...prev.colors, { name: "", hex: "#000000", images: [] }],
+                }))}
+                className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-primary hover:text-primary/70 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" /> Add Color
+              </button>
+            </div>
+
+            {formData.colors.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic">No color variants added. Click "Add Color" to add variants with images.</p>
+            ) : (
+              <div className="space-y-8">
+                {formData.colors.map((color, idx) => (
+                  <div key={idx} className="space-y-4 border border-border/30 rounded-lg p-5">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 flex-1">
+                        <input
+                          type="color"
+                          value={color.hex}
+                          onChange={(e) => {
+                            const updated = [...formData.colors];
+                            updated[idx] = { ...updated[idx], hex: e.target.value };
+                            setFormData((prev) => ({ ...prev, colors: updated }));
+                          }}
+                          className="w-10 h-10 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
+                          title="Pick color"
+                        />
+                        <Input
+                          placeholder="Color name (e.g. Midnight Black)"
+                          value={color.name}
+                          onChange={(e) => {
+                            const updated = [...formData.colors];
+                            updated[idx] = { ...updated[idx], name: e.target.value };
+                            setFormData((prev) => ({ ...prev, colors: updated }));
+                          }}
+                          className="h-10 border-border/50 flex-1"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            colors: prev.colors.filter((_, i) => i !== idx),
+                          }));
+                        }}
+                        className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>
+                      <ImageUpload
+                        value={color.images}
+                        onChange={(urls) => {
+                          const updated = [...formData.colors];
+                          updated[idx] = { ...updated[idx], images: urls };
+                          setFormData((prev) => ({ ...prev, colors: updated }));
+                        }}
+                        maxFiles={4}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

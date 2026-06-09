@@ -15,7 +15,7 @@ import { QuantitySelector } from "./QuantitySelector";
 import { convertINRToDiscountPercentage } from "@/utils/helper";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
-import { Product } from "@/types";
+import { ColorVariant, Product } from "@/types";
 
 interface ProductCardProps {
   product: Product;
@@ -36,6 +36,9 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
 
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const colors = (product.colors as ColorVariant[] | null | undefined) ?? [];
+  const [activeColor, setActiveColor] = useState<ColorVariant | null>(colors.length > 0 ? colors[0] : null);
+  const displayImage = (activeColor?.images?.[0]) || product.images?.[0];
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -178,8 +181,8 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
           )}>
             <Link href={productHref} className="absolute inset-0 block">
               <div className="absolute inset-0 transition-all duration-700 ease-in-out group-hover:scale-110">
-                {product.images?.[0] ? (
-                  <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                {displayImage ? (
+                  <Image src={displayImage} alt={product.name} fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full bg-muted animate-pulse" />
                 )}
@@ -225,6 +228,28 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
             </div>
           </div>
         </Link>
+
+        {/* --- COLOR SWATCHES --- */}
+        {colors.length > 1 && (
+          <div className="flex items-center gap-1.5 pb-2" onClick={(e) => e.preventDefault()}>
+            {colors.slice(0, 5).map((c, i) => (
+              <button
+                key={i}
+                type="button"
+                title={c.name}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveColor(c); }}
+                className={cn(
+                  "w-4 h-4 rounded-full border-2 transition-all",
+                  activeColor?.hex === c.hex ? "border-foreground scale-110" : "border-transparent hover:border-foreground/40"
+                )}
+                style={{ backgroundColor: c.hex }}
+              />
+            ))}
+            {colors.length > 5 && (
+              <span className="text-[9px] text-muted-foreground">+{colors.length - 5}</span>
+            )}
+          </div>
+        )}
 
         {/* --- MOBILE ACTION BAR (outside any Link, always visible) --- */}
         {isMobile && !isOutOfStock && !isAdmin && !hideActions && (

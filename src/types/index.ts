@@ -68,7 +68,14 @@ export interface Product {
   updatedAt: string | Date;
   isDeleted: boolean;
   category: Category;
-  reviews: any
+  reviews: any;
+  colors?: ColorVariant[] | null;
+}
+
+export interface ColorVariant {
+  name: string;
+  hex: string;
+  images: string[];
 }
 
 export interface CartItem {

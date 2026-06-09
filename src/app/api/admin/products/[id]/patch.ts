@@ -12,7 +12,7 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
   try {
     const { id } = await context.params;
     const body = await req.json();
-    const { title: name, description, price, discount, stock, categoryId, images, isFeatured, isLimitedDrop } = body;
+    const { title: name, description, price, discount, stock, categoryId, images, isFeatured, isLimitedDrop, colors } = body;
 
     const product = await prisma.product.update({
       where: { id },
@@ -26,6 +26,7 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
         images,
         isFeatured,
         ...(isLimitedDrop !== undefined && { isLimitedDrop }),
+        ...(colors !== undefined && { colors }),
       },
       include: {
         category: true,

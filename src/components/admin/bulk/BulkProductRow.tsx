@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronUp, ChevronDown, Trash2, CheckCircle2, Loader2, Check } from "lucide-react";
+import { ChevronUp, ChevronDown, Trash2, CheckCircle2, Loader2, Check, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useTranslation } from "@/context/TranslationContext";
-import { BulkRow, PoolImage, RowStatus } from "@/types/bulk";
+import { BulkColorEntry, BulkRow, PoolImage, RowStatus } from "@/types/bulk";
 
 interface BulkProductRowProps {
   row: BulkRow;
@@ -165,6 +165,58 @@ export function BulkProductRow({
                 onChange={(e) => onUpdate({ description: e.target.value })}
                 disabled={disabled || row.status === "success"}
                 className="min-h-[72px] resize-none border-border/50 text-sm" />
+            </div>
+
+            {/* Colors section */}
+            <div className="px-4 pb-4 space-y-2 border-t border-inherit pt-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Colors (optional)</Label>
+                <button
+                  type="button"
+                  disabled={disabled || row.status === "success"}
+                  onClick={() => onUpdate({ colors: [...row.colors, { name: "", hex: "#000000" }] })}
+                  className="flex items-center gap-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:text-primary/70 transition-colors disabled:opacity-40"
+                >
+                  <Plus className="w-3 h-3" /> Add
+                </button>
+              </div>
+              {row.colors.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {row.colors.map((c, ci) => (
+                    <div key={ci} className="flex items-center gap-1.5 border border-border/40 rounded px-2 py-1">
+                      <input
+                        type="color"
+                        value={c.hex}
+                        disabled={disabled || row.status === "success"}
+                        onChange={(e) => {
+                          const updated: BulkColorEntry[] = row.colors.map((x, xi) => xi === ci ? { ...x, hex: e.target.value } : x);
+                          onUpdate({ colors: updated });
+                        }}
+                        className="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent"
+                      />
+                      <input
+                        type="text"
+                        value={c.name}
+                        placeholder="Name"
+                        disabled={disabled || row.status === "success"}
+                        onChange={(e) => {
+                          const updated: BulkColorEntry[] = row.colors.map((x, xi) => xi === ci ? { ...x, name: e.target.value } : x);
+                          onUpdate({ colors: updated });
+                        }}
+                        className="text-[10px] w-24 border-0 bg-transparent outline-none placeholder:text-muted-foreground/50"
+                      />
+                      <button
+                        type="button"
+                        disabled={disabled || row.status === "success"}
+                        onClick={() => onUpdate({ colors: row.colors.filter((_, xi) => xi !== ci) })}
+                        className="text-muted-foreground hover:text-destructive disabled:opacity-40"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Images section */}
