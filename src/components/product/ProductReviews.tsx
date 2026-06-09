@@ -9,6 +9,7 @@ import { useReviewStore } from "@/store/reviewStore";
 import { useOrderStore } from "@/store/orderStore";
 import { useSession } from "next-auth/react";
 import { ReviewModal } from "@/components/account/ReviewModal";
+import { useTranslation } from "@/context/TranslationContext";
 
 function StarDisplay({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) {
   const cls = size === "sm" ? "w-3 h-3" : "w-5 h-5";
@@ -42,6 +43,7 @@ interface ProductReviewsProps {
 export function ProductReviews({ productName = "this product" }: ProductReviewsProps) {
   const { id: productId } = useParams();
   const { reviews, isLoading, fetchReviews } = useReviewStore();
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const { myOrders, fetchMyOrders } = useOrderStore();
 
@@ -111,11 +113,11 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
             />
           ) : session?.user ? (
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Purchase this product to leave a review
+              {t("shop.product.details.reviews.purchaseToReview")}
             </p>
           ) : (
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Sign in and purchase to leave a review
+              {t("shop.product.details.reviews.signInToReview")}
             </p>
           )}
         </div>
@@ -187,7 +189,7 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
                   <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold">
                     {review.user?.name?.[0] || "C"}
                   </div>
-                  <span className="text-spaced-bold">{review.user?.name || "Verified Buyer"}</span>
+                  <span className="text-spaced-bold">{review.user?.name || t("shop.product.details.reviews.verifiedBuyer")}</span>
                 </div>
               </div>
             ))}

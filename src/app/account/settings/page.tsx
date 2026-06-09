@@ -9,11 +9,12 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
-
 import { SectionHeader } from "@/components/common/SectionHeader";
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -89,8 +90,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="space-y-1">
-        <h2 className="text-3xl font-heading">Account Settings</h2>
-        <p className="muted-italic pwa-hide">Manage your preferences and account security.</p>
+        <h2 className="text-3xl font-heading">{t("account.settings.heading")}</h2>
+        <p className="muted-italic pwa-hide">{t("account.settings.subtitle")}</p>
       </div>
 
       {/* Security Section */}
@@ -139,7 +140,7 @@ export default function SettingsPage() {
         <div className="p-6 border border-destructive/20 rounded-sm bg-destructive/5 space-y-4">
           <div className="space-y-1">
             <p className="text-sm font-bold uppercase tracking-widest text-destructive">Deactivate Account</p>
-            <p className="text-xs muted-italic">This will permanently delete your account and order history.</p>
+            <p className="text-xs muted-italic">{t("account.settings.deleteWarning")}</p>
           </div>
           <Button
             variant="destructive"

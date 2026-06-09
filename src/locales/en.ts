@@ -317,6 +317,39 @@ export const en = {
       processing: "Processing...",
     }
   },
+  account: {
+    layout: {
+      heading: "My Account",
+      description: "Manage your account, orders and preferences.",
+    },
+    orders: {
+      heading: "Order History",
+      subtitle: "Your order history.",
+      emptyDescription: "No orders yet. Start shopping!",
+      orderDetails: "Order Details",
+      orderDetailsSubtitle: "Your order details.",
+      allOrders: "All Orders",
+      yourItems: "Your Items",
+      priceBreakdown: "Price Breakdown",
+      shippingAddress: "Shipping Address",
+      shippingFree: "Free",
+    },
+    wishlist: {
+      heading: "Wishlist",
+      subtitle: "Items you have saved.",
+      emptyDescription: "Your saved items will appear here.",
+    },
+    addresses: {
+      heading: "Saved Addresses",
+      subtitle: "Manage your delivery and billing addresses.",
+      emptyDescription: "Add and manage your delivery addresses.",
+    },
+    settings: {
+      heading: "Account Settings",
+      subtitle: "Manage your preferences and account security.",
+      deleteWarning: "This will permanently delete your account and order history.",
+    },
+  },
   nav: {
     account: {
       adminPanel: "Admin Panel",
@@ -343,6 +376,7 @@ export const en = {
     page: {
       title: "Shopping Bag",
       description: "Review your items before checkout.",
+      checkoutDescription: "Complete your order details below.",
       emptyTitle: "Your bag is empty",
       emptyDescription: "Discover our latest collections and find the piece that speaks to your legacy.",
       browseCollection: "Browse Collection",
@@ -523,6 +557,12 @@ export const en = {
         },
         shippingNote: "Free worldwide shipping on all orders over ₹10,000.",
         addToCollection: "Add to Cart",
+        reviews: {
+          verifiedBuyer: "Verified Buyer",
+          purchaseToReview: "Purchase this product to leave a review",
+          signInToReview: "Sign in and purchase to leave a review",
+          shareThoughts: "Share your thoughts on this product and help other buyers.",
+        },
         buyNow: "Buy Now",
         premiumShipping: "Premium Shipping",
         lifetimeWarranty: "Lifetime Warranty",

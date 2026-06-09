@@ -11,11 +11,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Loader2, ShoppingBag } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function OrdersPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { myOrders, myOrdersLoading, fetchMyOrders, applyOrderUpdate } = useOrderStore();
+  const { t } = useTranslation();
   const sseRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
@@ -55,15 +57,15 @@ export default function OrdersPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="space-y-1">
-        <h2 className="text-3xl font-heading">Order History</h2>
-        <p className="muted-italic pwa-hide">Your order history.</p>
+        <h2 className="text-3xl font-heading">{t("account.orders.heading")}</h2>
+        <p className="muted-italic pwa-hide">{t("account.orders.subtitle")}</p>
       </div>
 
       {myOrders.length === 0 ? (
         <EmptyState
           icon={ShoppingBag}
           title="No orders yet"
-          description="No orders yet. Start shopping!"
+          description={t("account.orders.emptyDescription")}
           action={{ label: "Discover Collection", href: ROUTES.COLLECTIONS }}
           className="py-16"
         />

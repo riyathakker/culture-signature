@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { ReviewModal } from "@/components/account/ReviewModal";
 import { OrderTracker } from "@/components/account/OrderTracker";
+import { useTranslation } from "@/context/TranslationContext";
 
 function statusClass(status: string) {
   if (status === "DELIVERED") return "border-green-500 text-green-500 bg-green-500/5";
@@ -25,6 +26,7 @@ export default function OrderDetailPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { myOrders, myOrdersLoading, fetchMyOrders } = useOrderStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (status === "unauthenticated") { router.push(ROUTES.HOME); return; }
@@ -66,13 +68,13 @@ export default function OrderDetailPage() {
           href={ROUTES.ACCOUNT.ORDERS}
           className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors"
         >
-          <ArrowLeft className="w-3 h-3" /> All Orders
+          <ArrowLeft className="w-3 h-3" /> {t("account.orders.allOrders")}
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
-            <h2 className="text-3xl font-heading">Order Details</h2>
-            <p className="muted-italic">Your order details.</p>
+            <h2 className="text-3xl font-heading">{t("account.orders.orderDetails")}</h2>
+            <p className="muted-italic">{t("account.orders.orderDetailsSubtitle")}</p>
           </div>
           <Badge variant="outline" className={cn("text-sm font-bold uppercase tracking-widest px-4 py-2 w-fit", statusClass(order.status))}>
             {order.status}
@@ -111,7 +113,7 @@ export default function OrderDetailPage() {
 
       {/* Items */}
       <div className="space-y-4">
-        <h3 className="text-lg font-heading">Your Items</h3>
+        <h3 className="text-lg font-heading">{t("account.orders.yourItems")}</h3>
         <div className="space-y-3">
           {order.items?.map((item: any) => (
             <div key={item.id} className="flex items-center gap-4 p-4 bg-background border border-border/40 rounded-sm">
@@ -144,7 +146,7 @@ export default function OrderDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Price Breakdown */}
         <div className="space-y-4">
-          <h3 className="text-lg font-heading">Price Breakdown</h3>
+          <h3 className="text-lg font-heading">{t("account.orders.priceBreakdown")}</h3>
           <div className="bg-secondary/20 rounded-sm p-6 border border-border/30 space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">Subtotal</span>
@@ -165,7 +167,7 @@ export default function OrderDetailPage() {
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">Shipping</span>
               {shipping === 0 ? (
-                <span className="text-primary font-bold text-[11px] uppercase tracking-widest">Free</span>
+                <span className="text-primary font-bold text-[11px] uppercase tracking-widest">{t("account.orders.shippingFree")}</span>
               ) : (
                 <span>₹{shipping}</span>
               )}
@@ -181,7 +183,7 @@ export default function OrderDetailPage() {
         {/* Shipping Address */}
         {(order as any).street && (
           <div className="space-y-4">
-            <h3 className="text-lg font-heading">Shipping Address</h3>
+            <h3 className="text-lg font-heading">{t("account.orders.shippingAddress")}</h3>
             <div className="bg-secondary/20 rounded-sm p-6 border border-border/30 space-y-2">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-primary/60 mt-0.5 shrink-0" />

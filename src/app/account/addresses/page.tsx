@@ -9,11 +9,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Loader2, MapPin } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function AddressesPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { addresses, isLoading, fetchAddresses } = useAddressStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (status === "unauthenticated") { router.push(ROUTES.HOME); return; }
@@ -32,8 +34,8 @@ export default function AddressesPage() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div className="space-y-1">
-          <h2 className="text-3xl font-heading">Saved Addresses</h2>
-          <p className="muted-italic pwa-hide">Manage your delivery and billing locations for a seamless checkout.</p>
+          <h2 className="text-3xl font-heading">{t("account.addresses.heading")}</h2>
+          <p className="muted-italic pwa-hide">{t("account.addresses.subtitle")}</p>
         </div>
         <AddressDialog />
       </div>
@@ -42,7 +44,7 @@ export default function AddressesPage() {
         <EmptyState
           icon={MapPin}
           title="No saved addresses"
-          description="Add and manage your delivery addresses."
+          description={t("account.addresses.emptyDescription")}
           className="py-16"
         />
       ) : (
