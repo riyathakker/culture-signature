@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductInfo } from "@/components/product/ProductInfo";
 import { ProductReviews } from "@/components/product/ProductReviews";
+import { RecentlyViewed } from "@/components/product/RecentlyViewed";
 import { ProductCard } from "@/components/common/ProductCard";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "@/context/TranslationContext";
+import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -22,6 +24,7 @@ export default function ProductPage() {
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const { t } = useTranslation();
+  const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -36,6 +39,15 @@ export default function ProductPage() {
           ? colors[0].images
           : data.images || [];
         setGalleryImages(defaultImages);
+
+        addRecentlyViewed({
+          id: data.id,
+          name: data.name,
+          price: data.price,
+          discount: data.discount || 0,
+          images: data.images || [],
+          category: data.category?.name || t("shop.product.defaultCollection"),
+        });
 
         setProduct({
           ...data,
@@ -129,6 +141,8 @@ export default function ProductPage() {
             </div>
           </div>
         )}
+
+        <RecentlyViewed excludeId={String(id)} />
       </Container>
     </div>
   );
