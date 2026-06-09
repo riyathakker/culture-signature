@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag, Search } from "lucide-react";
 import { IconButton } from "@/components/common/IconButton";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
 import { useAuthStore } from "@/store/authStore";
 import { UserMenu } from "./UserMenu";
+import { SearchOverlay } from "@/components/layout/SearchOverlay";
 
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
@@ -21,13 +22,24 @@ export function NavbarActions() {
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const [mounted, setMounted] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { t } = useTranslation();
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
+    <>
+    <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     <div className="flex items-center justify-end space-x-1 lg:space-x-4">
+
+      <button
+        onClick={() => setSearchOpen(true)}
+        aria-label="Search"
+        className="flex items-center justify-center w-9 h-9 rounded-full text-foreground/70 hover:text-foreground hover:bg-secondary/50 transition-colors"
+      >
+        <Search className="w-4 h-4" />
+      </button>
 
       <div className="hidden lg:flex">
         <UserMenu
@@ -62,5 +74,6 @@ export function NavbarActions() {
         </>
       )}
     </div>
+    </>
   );
 }

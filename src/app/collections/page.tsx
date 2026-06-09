@@ -9,10 +9,13 @@ import { useProductStore } from "@/store/productStore";
 import { useTranslation } from "@/context/TranslationContext";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { ROUTES } from "@/constants/routes";
+import { useSearchParams } from "next/navigation";
 
 export default function ShopPage() {
   const { t } = useTranslation();
   const { allUserProducts: products, isLoading: loading, fetchAllUserProducts } = useProductStore();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search") ?? "";
   const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [hasDiscountOnly, setHasDiscountOnly] = useState(false);
@@ -29,6 +32,13 @@ export default function ShopPage() {
   );
 
   const filtered = products
+    .filter((p) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return p.name.toLowerCase().includes(q) ||
+        (p.description ?? "").toLowerCase().includes(q) ||
+        (p.category?.name ?? "").toLowerCase().includes(q);
+    })
     .filter((p) => activeCategoryIds.length === 0 || activeCategoryIds.includes(String(p.categoryId ?? p.category?.id)))
     .filter((p) => Number(p.price) >= priceRange[0] && (priceRange[1] >= priceMax || Number(p.price) <= priceRange[1]))
     .filter((p) => !inStockOnly || p.stock > 0)
@@ -59,8 +69,8 @@ export default function ShopPage() {
   return (
     <HomePageContainer
       label={[{ label: t("shop.subtitle") }]}
-      heading={t("shop.title")}
-      description={t("shop.description")}
+      heading={searchQuery.trim() ? `Results for "${searchQuery}"` : t("shop.title")}
+      description={searchQuery.trim() ? `${sortedProducts.length} item${sortedProducts.length !== 1 ? "s" : ""} found` : t("shop.description")}
     >
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Desktop Sidebar */}
