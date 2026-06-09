@@ -72,7 +72,7 @@ export default function OrderDetailPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
             <h2 className="text-3xl font-heading">Order Details</h2>
-            <p className="muted-italic">Your artisanal acquisition record.</p>
+            <p className="muted-italic">Your order details.</p>
           </div>
           <Badge variant="outline" className={cn("text-sm font-bold uppercase tracking-widest px-4 py-2 w-fit", statusClass(order.status))}>
             {order.status}
@@ -105,13 +105,13 @@ export default function OrderDetailPage() {
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
             <Package className="w-3 h-3" /> Items
           </div>
-          <p className="text-sm font-medium">{order.items?.length || 0} {order.items?.length === 1 ? "piece" : "pieces"}</p>
+          <p className="text-sm font-medium">{order.items?.length || 0} {order.items?.length === 1 ? "item" : "items"}</p>
         </div>
       </div>
 
       {/* Items */}
       <div className="space-y-4">
-        <h3 className="text-lg font-heading">Your Pieces</h3>
+        <h3 className="text-lg font-heading">Your Items</h3>
         <div className="space-y-3">
           {order.items?.map((item: any) => (
             <div key={item.id} className="flex items-center gap-4 p-4 bg-background border border-border/40 rounded-sm">
@@ -165,7 +165,7 @@ export default function OrderDetailPage() {
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">Shipping</span>
               {shipping === 0 ? (
-                <span className="text-primary font-bold text-[11px] uppercase tracking-widest">Complimentary</span>
+                <span className="text-primary font-bold text-[11px] uppercase tracking-widest">Free</span>
               ) : (
                 <span>₹{shipping}</span>
               )}

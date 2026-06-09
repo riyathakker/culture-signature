@@ -62,7 +62,7 @@ export default function AccountPage() {
       {!isAdmin && (
         <div className="grid grid-cols-2 gap-6">
           <AccountStatCard label="Total Orders" value={user.orderCount} icon={ShoppingBag} href={ROUTES.ACCOUNT.ORDERS} />
-          <AccountStatCard label="Wishlist Pieces" value={user.wishlistCount} icon={Heart} href={ROUTES.ACCOUNT.WISHLIST} />
+          <AccountStatCard label="Wishlist Items" value={user.wishlistCount} icon={Heart} href={ROUTES.ACCOUNT.WISHLIST} />
         </div>
       )}
 
@@ -90,7 +90,7 @@ export default function AccountPage() {
             </div>
           ) : (
             <div className="p-12 border-2 border-dashed rounded-sm text-center space-y-4">
-              <p className="muted-italic">Your collection is waiting for its first masterpiece.</p>
+              <p className="muted-italic">Start shopping to place your first order.</p>
               <Link href={ROUTES.COLLECTIONS}>
                 <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-10 px-8">Discover Collection</Button>
               </Link>

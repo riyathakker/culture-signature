@@ -210,7 +210,7 @@ export default function AdminOrders() {
     <div className="space-y-8 animate-in fade-in duration-700">
       <AdminPageHeader
         title="Orders"
-        description="Track and fulfill artisanal orders."
+        description="Track and manage orders."
       />
 
       <AdminFilterBar

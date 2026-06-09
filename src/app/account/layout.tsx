@@ -6,7 +6,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     <HomePageContainer
       label={[{ label: "My Account" }]}
       heading="My Account"
-      description="Manage your personal collection and artisanal preferences."
+      description="Manage your account, orders and preferences."
       breadcrumbClassName="[@media(display-mode:standalone)]:hidden"
       headerClassName="[@media(display-mode:standalone)]:hidden [@media(display-mode:standalone)]:py-0"
     >

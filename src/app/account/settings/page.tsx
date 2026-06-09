@@ -90,7 +90,7 @@ export default function SettingsPage() {
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="space-y-1">
         <h2 className="text-3xl font-heading">Account Settings</h2>
-        <p className="muted-italic pwa-hide">Preferences and security for your Inner Circle membership.</p>
+        <p className="muted-italic pwa-hide">Manage your preferences and account security.</p>
       </div>
 
       {/* Security Section */}
@@ -139,7 +139,7 @@ export default function SettingsPage() {
         <div className="p-6 border border-destructive/20 rounded-sm bg-destructive/5 space-y-4">
           <div className="space-y-1">
             <p className="text-sm font-bold uppercase tracking-widest text-destructive">Deactivate Account</p>
-            <p className="text-xs muted-italic">This will permanently remove your Inner Circle membership and order history.</p>
+            <p className="text-xs muted-italic">This will permanently delete your account and order history.</p>
           </div>
           <Button
             variant="destructive"

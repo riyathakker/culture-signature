@@ -19,7 +19,7 @@ export default async function CheckoutPage() {
   }
 
   return (
-    <HomePageContainer label={[{ label: "Shopping Bag", href: ROUTES.SHOPPING_BAG }, { label: "Checkout" }]} heading="Checkout" description="Complete your order to begin the artisanal creation process.">
+    <HomePageContainer label={[{ label: "Shopping Bag", href: ROUTES.SHOPPING_BAG }, { label: "Checkout" }]} heading="Checkout" description="Complete your order details below.">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 lg:gap-24">
           {/* Main Checkout Flow */}
           <div className="lg:col-span-2 space-y-12">

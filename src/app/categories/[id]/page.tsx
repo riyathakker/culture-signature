@@ -89,7 +89,7 @@ export default function CategoryPage() {
               <div className="w-16 h-16 bg-secondary/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-serif italic text-muted-foreground">?</span>
               </div>
-              <p className="muted-italic text-xl">No masterpieces found in this curation yet.</p>
+              <p className="muted-italic text-xl">No products found in this category yet.</p>
               <button
                 onClick={() => window.location.href = "/collections"}
                 className="text-primary hover:text-primary/70 transition-colors text-sm uppercase tracking-[0.2em] font-bold border-b border-primary/30 pb-1 cursor-pointer"

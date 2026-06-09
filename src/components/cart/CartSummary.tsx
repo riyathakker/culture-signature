@@ -287,14 +287,14 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
           variant === "cart" ? (
             session?.user ? (
               <Link href="/bag/checkout" className="block">
-                <Button className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20">
+                <Button className="w-full h-12 uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20">
                   {t("cart.summary.proceedToCheckout")} <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
             ) : (
               <Button
                 onClick={() => openModal("/bag/checkout")}
-                className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20"
+                className="w-full h-12 uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20"
               >
                 Sign In to Checkout <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
@@ -303,7 +303,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
             <Button
               onClick={handleFinalize}
               disabled={isFinalizing || items.length === 0}
-              className="w-full py-7 uppercase tracking-[0.2em] text-xs h-auto shadow-xl shadow-primary/20"
+              className="w-full h-12 uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20"
             >
               {isFinalizing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               {t("cart.summary.finalizeAcquisition")} <ArrowRight className="ml-2 w-4 h-4" />

@@ -32,14 +32,14 @@ export default function AccountWishlistPage() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="space-y-1">
         <h2 className="text-3xl font-heading">My Wishlist</h2>
-        <p className="muted-italic pwa-hide">Pieces you've curated for your future collection.</p>
+        <p className="muted-italic pwa-hide">Items you have saved.</p>
       </div>
 
       {items.length === 0 ? (
         <EmptyState
           icon={Heart}
           title="Your wishlist is empty"
-          description="Pieces you've curated for your future collection will appear here."
+          description="Your saved items will appear here."
           action={{ label: "Explore Collection", href: ROUTES.COLLECTIONS }}
           className="py-16"
         />

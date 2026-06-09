@@ -111,7 +111,7 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
             />
           ) : session?.user ? (
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Purchase this piece to leave a review
+              Purchase this product to leave a review
             </p>
           ) : (
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
@@ -170,7 +170,7 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
                     <StarDisplay rating={review.rating} />
-                    <h4 className="font-heading text-xl">Artesian Choice</h4>
+                    <h4 className="font-heading text-xl">{review.user?.name || "Customer"}</h4>
                   </div>
                   <span className="text-spaced-bold text-muted-foreground">
                     {new Date(review.createdAt).toLocaleDateString("en-US", {
@@ -187,7 +187,7 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
                   <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold">
                     {review.user?.name?.[0] || "C"}
                   </div>
-                  <span className="text-spaced-bold">{review.user?.name || "Verified Client"}</span>
+                  <span className="text-spaced-bold">{review.user?.name || "Verified Buyer"}</span>
                 </div>
               </div>
             ))}

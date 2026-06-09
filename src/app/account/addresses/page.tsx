@@ -42,7 +42,7 @@ export default function AddressesPage() {
         <EmptyState
           icon={MapPin}
           title="No saved addresses"
-          description="Curate your delivery locations for faster acquisition of masterpieces."
+          description="Add and manage your delivery addresses."
           className="py-16"
         />
       ) : (

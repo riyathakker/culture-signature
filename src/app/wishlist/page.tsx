@@ -18,12 +18,12 @@ export default function WishlistPage() {
   }, [session?.user]);
 
   return (
-    <HomePageContainer label={[{ label: "Your Wishlist" }]} heading="Wishlist" description="A curated list of your most desired artisanal pieces.">
+    <HomePageContainer label={[{ label: "Your Wishlist" }]} heading="Wishlist" description="Items you have saved to buy later.">
       {items.length === 0 ? (
         <EmptyState
           icon={Heart}
-          title="Your collection is empty"
-          description="Discover our range of handcrafted masterpieces and save your favorites here."
+          title="Your wishlist is empty"
+          description="Browse our collection and save your favorites here."
           action={{ label: "Explore Collection", href: ROUTES.COLLECTIONS }}
         />
       ) : (

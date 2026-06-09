@@ -56,9 +56,6 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
               <X className="w-4 h-4 group-hover:scale-110 transition-transform" />
             </button>
           </div>
-          <p className="text-xs muted-italic line-clamp-2">
-            Handcrafted artisanal piece with signature cultural motifs and premium finish.
-          </p>
         </div>
 
         <div className="flex items-center justify-between mt-4">

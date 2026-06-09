@@ -342,7 +342,7 @@ export const en = {
   cart: {
     page: {
       title: "Shopping Bag",
-      description: "Review your selection of artisanal masterpieces.",
+      description: "Review your items before checkout.",
       emptyTitle: "Your bag is empty",
       emptyDescription: "Discover our latest collections and find the piece that speaks to your legacy.",
       browseCollection: "Browse Collection",
@@ -356,7 +356,7 @@ export const en = {
       qty: "Qty: {count}",
       subtotal: "Value (excl. GST)",
       shipping: "Shipping",
-      shippingComplimentary: "Complimentary",
+      shippingComplimentary: "Free",
       estimatedTax: "Estimated GST (18%)",
       total: "Total Amount",
       finalTotal: "Final Total",
@@ -364,13 +364,13 @@ export const en = {
       codePlaceholder: "ENTER CODE",
       apply: "Apply",
       proceedToCheckout: "Proceed to Checkout",
-      finalizeAcquisition: "Finalize Acquisition",
+      finalizeAcquisition: "Place Order",
       adminPreview: {
         title: "Admin Preview Mode",
         description: "Transactional features are disabled for administrative accounts."
       },
-      footerNote: "Complimentary shipping above ₹{threshold}. Securely processed via Stripe.",
-      footerNoteCheckout: "By finalizing, you agree to our Terms of Acquisition & Service.",
+      footerNote: "Free shipping above ₹{threshold}. Securely processed via Stripe.",
+      footerNoteCheckout: "By placing your order, you agree to our Terms & Conditions.",
       badges: {
         expressDelivery: "White Glove Delivery",
         securePayment: "Authenticity Guaranteed"
@@ -386,7 +386,7 @@ export const en = {
     checkout: {
       shipping: {
         title: "Shipping Information",
-        subtitle: "Where should we deliver your masterpiece?",
+        subtitle: "Where should we deliver your order?",
         useSavedAddress: "Use Saved Address",
         curatedAddresses: "Your Curated Addresses",
         default: "DEFAULT",
@@ -409,10 +409,10 @@ export const en = {
         }
       },
       success: {
-        title: "Acquisition Confirmed",
-        description: "Your order has been received and added to our artisanal creation queue.",
+        title: "Order Confirmed",
+        description: "Your order has been received and is being processed.",
         orderReference: "Order Reference",
-        emailNote: "A confirmation email with your order details and estimated craftsmanship timeline has been sent to your registered address.",
+        emailNote: "A confirmation email with your order details has been sent to your registered email address.",
         trackOrder: "Track Order",
         continueExploring: "Continue Exploring",
         pageTitle: "Thank You",
@@ -432,18 +432,18 @@ export const en = {
     categories: {
       title: "The Categories",
       subtitle: "Curated Heritage",
-      pieces: "Pieces"
+      pieces: "Items"
     },
     featured: {
-      title: "Iconic Pieces",
+      title: "Iconic Items",
       subtitle: "Handcrafted Legacy",
       viewCollection: "View Collection"
     },
     newArrivals: {
       title: "New Arrivals",
       subtitle: "Freshly Crafted",
-      description: "The latest masterpieces to join the Culture Signature house.",
-      empty: "New masterpieces are being curated as we speak.",
+      description: "The latest items added to our collection.",
+      empty: "New items coming soon.",
       viewMore: "View More"
     },
     celebSpotting: {
@@ -476,12 +476,12 @@ export const en = {
       subtitle: "Your Questions Answered",
       questions: [
         {
-          question: "How do I care for my artisanal jewelry?",
-          answer: "Store your pieces in the provided velvet pouches. Avoid direct contact with perfumes and harsh chemicals. Gently wipe with a soft cloth after use."
+          question: "How do I care for my jewelry?",
+          answer: "Store your items in the provided velvet pouches. Avoid direct contact with perfumes and harsh chemicals. Gently wipe with a soft cloth after use."
         },
         {
           question: "Do you offer international shipping?",
-          answer: "Yes, we ship globally. Complimentary shipping is provided on orders above ₹5,000 to ensure your masterpieces reach you safely."
+          answer: "Yes, we ship globally. Free shipping is available on orders above ₹5,000."
         },
         {
           question: "Are the bags made from genuine leather?",
@@ -498,7 +498,7 @@ export const en = {
     title: "The Collection",
     subtitle: "Collections",
     description: "Explore our curated selection of handcrafted jewels, bags, and home decor that celebrate Indian heritage.",
-    showing: "Showing {count} pieces",
+    showing: "Showing {count} items",
     noMatches: "No matches found in the current collection.",
     clearFilters: "Clear all filters",
     product: {
@@ -514,14 +514,14 @@ export const en = {
         loadError: "Could not load product details.",
         notFound: "Product not found.",
         relatedTitle: "Complete the Look",
-        relatedSubtitle: "You May Also Desire",
+        relatedSubtitle: "You May Also Like",
         specs: {
           category: "Category",
           stock: "Stock",
           inStock: "In Stock",
           outOfStock: "Out of Stock"
         },
-        shippingNote: "Complimentary worldwide shipping on all orders over ₹10,000.",
+        shippingNote: "Free worldwide shipping on all orders over ₹10,000.",
         addToCollection: "Add to Cart",
         buyNow: "Buy Now",
         premiumShipping: "Premium Shipping",
@@ -534,7 +534,7 @@ export const en = {
           shippingDesc: "Every Culture Signature piece is delivered in our signature lacquered box, wrapped in silk ribbon, and accompanied by a certificate of authenticity.",
           shippingList: [
             "Insured worldwide express delivery (3-5 business days).",
-            "Complimentary boutique collection available in selected cities.",
+            "Free store pickup available in selected cities.",
             "30-day extended returns for all standard collection items."
           ]
         }
