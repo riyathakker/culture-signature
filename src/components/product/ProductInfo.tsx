@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
 import { ShareDialog } from "./ShareDialog";
 import { QuantitySelector } from "../common/QuantitySelector";
+import { PincodeChecker } from "./PincodeChecker";
 import { ROUTES } from "@/constants/routes";
 import { toast } from "sonner";
 import { ColorVariant } from "@/types";
@@ -184,6 +185,8 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
           )}
         </div>
       )}
+
+      {!isAdmin && <PincodeChecker />}
 
       {/* Info Grid */}
       <div className="grid grid-cols-2 gap-4 pt-2">
