@@ -10,9 +10,27 @@ import { ROUTES } from "@/constants/routes";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useTranslation } from "@/context/TranslationContext";
 
+const PATH_LABELS: { prefix: string; label: string }[] = [
+  { prefix: "/account/wishlist", label: "My Wishlist" },
+  { prefix: "/account/orders", label: "Order History" },
+  { prefix: "/account/addresses", label: "Saved Addresses" },
+  { prefix: "/account/settings", label: "Account Settings" },
+  { prefix: "/account", label: "My Account" },
+  { prefix: "/new-arrivals", label: "New Arrivals" },
+  { prefix: "/collections", label: "Collections" },
+  { prefix: "/categories", label: "Categories" },
+  { prefix: "/bag", label: "My Bag" },
+  { prefix: "/product", label: "Product Detail" },
+  { prefix: "/wishlist", label: "My Wishlist" },
+  { prefix: "/about-us", label: "About Us" },
+  { prefix: "/contact-us", label: "Contact" },
+  { prefix: "/faq", label: "FAQ" },
+];
+
 export function PWAPageHeader() {
   const { data: session } = useSession();
   const { t } = useTranslation();
+  const pathname = usePathname();
   const user = session?.user;
   const [signOutOpen, setSignOutOpen] = useState(false);
 
@@ -22,6 +40,9 @@ export function PWAPageHeader() {
       ? user.email[0].toUpperCase()
       : "G";
 
+  const subtitle =
+    PATH_LABELS.find((p) => pathname.startsWith(p.prefix))?.label ?? "";
+
   return (
     <>
       <header
@@ -30,6 +51,11 @@ export function PWAPageHeader() {
       >
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
           Culture Signature
+          {subtitle && (
+            <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">
+              {subtitle}
+            </span>
+          )}
         </Link>
 
         {user && (
