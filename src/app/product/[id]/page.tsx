@@ -118,17 +118,17 @@ export default function ProductPage() {
           ]}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 mt-4">
           <ProductGallery images={galleryImages.length > 0 ? galleryImages : (product.images || [product.image])} />
           <ProductInfo product={product} onColorChange={setGalleryImages} />
         </div>
 
-        <div className="mt-20">
+        <div className="mt-10">
           <ProductReviews productName={product.name} />
         </div>
 
         {relatedProducts.length > 0 && (
-          <div className="mt-32">
+          <div className="mt-14">
             <SectionTitle
               title={t("shop.product.details.relatedTitle")}
               subtitle={t("shop.product.details.relatedSubtitle")}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
@@ -9,11 +10,11 @@ interface Props {
 }
 
 export function RecentlyViewed({ excludeId }: Props) {
-  const products = useRecentlyViewedStore((s) =>
-    s.products.filter((p) => p.id !== excludeId)
-  );
+  const { products, hydrate } = useRecentlyViewedStore();
+  useEffect(() => { hydrate(); }, [hydrate]);
+  const visible = products.filter((p) => p.id !== excludeId);
 
-  if (products.length === 0) return null;
+  if (visible.length === 0) return null;
 
   return (
     <div className="mt-16">
@@ -21,7 +22,7 @@ export function RecentlyViewed({ excludeId }: Props) {
         Recently Viewed
       </p>
       <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-        {products.map((p) => {
+        {visible.map((p) => {
           const finalPrice = p.price - (p.discount || 0);
           return (
             <Link

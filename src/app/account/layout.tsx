@@ -12,7 +12,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     >
       <div className="flex flex-col lg:flex-row gap-10 lg:gap-18">
         <AccountSidebar />
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 pt-2 [@media(display-mode:standalone)]:pt-4">
           {children}
         </div>
       </div>

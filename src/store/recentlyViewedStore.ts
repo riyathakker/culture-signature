@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 export interface RecentProduct {
   id: string;
@@ -10,24 +9,39 @@ export interface RecentProduct {
   category: string;
 }
 
+const STORAGE_KEY = "cs_recently_viewed";
+
+function load(): RecentProduct[] {
+  if (typeof window === "undefined") return [];
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; }
+}
+
+function save(products: RecentProduct[]) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(products)); } catch {}
+}
+
 interface RecentlyViewedStore {
   products: RecentProduct[];
+  hydrated: boolean;
+  hydrate: () => void;
   addProduct: (p: RecentProduct) => void;
   clear: () => void;
 }
 
-export const useRecentlyViewedStore = create<RecentlyViewedStore>()(
-  persist(
-    (set, get) => ({
-      products: [],
+export const useRecentlyViewedStore = create<RecentlyViewedStore>()((set, get) => ({
+  products: [],
+  hydrated: false,
 
-      addProduct: (p) => {
-        const prev = get().products.filter((x) => x.id !== p.id);
-        set({ products: [p, ...prev].slice(0, 10) });
-      },
+  hydrate: () => {
+    if (get().hydrated) return;
+    set({ products: load(), hydrated: true });
+  },
 
-      clear: () => set({ products: [] }),
-    }),
-    { name: "cs_recently_viewed" }
-  )
-);
+  addProduct: (p) => {
+    const next = [p, ...get().products.filter((x) => x.id !== p.id)].slice(0, 10);
+    set({ products: next });
+    save(next);
+  },
+
+  clear: () => { set({ products: [] }); save([]); },
+}));

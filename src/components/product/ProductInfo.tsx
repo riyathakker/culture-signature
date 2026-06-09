@@ -76,7 +76,7 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">

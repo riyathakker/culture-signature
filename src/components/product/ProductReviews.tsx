@@ -81,14 +81,14 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
 
   if (isLoading)
     return (
-      <div className="py-20 border-t flex justify-center">
+      <div className="py-10 border-t flex justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary/30" />
       </div>
     );
 
   return (
-    <div className="py-20 border-t">
-      <h3 className="font-heading text-3xl mb-12">Client Experiences</h3>
+    <div className="py-10 border-t">
+      <h3 className="font-heading text-3xl mb-8">Customer Reviews</h3>
 
       {reviews.length === 0 ? (
         /* ── Empty state ── */

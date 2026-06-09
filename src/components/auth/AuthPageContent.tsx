@@ -26,7 +26,7 @@ const PANEL_IMAGES = [
   "/celebs/celeb-5.jpg",
 ];
 
-export function AuthPageContent({ initialView = "login", callbackUrl = "/account" }: AuthPageContentProps) {
+export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: AuthPageContentProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
