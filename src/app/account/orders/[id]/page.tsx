@@ -11,6 +11,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/constants/routes";
 import { ReviewModal } from "@/components/account/ReviewModal";
+import { OrderTracker } from "@/components/account/OrderTracker";
 
 function statusClass(status: string) {
   if (status === "DELIVERED") return "border-green-500 text-green-500 bg-green-500/5";
@@ -77,6 +78,11 @@ export default function OrderDetailPage() {
             {order.status}
           </Badge>
         </div>
+      </div>
+
+      {/* Order tracker */}
+      <div className="border border-border/40 rounded-sm px-4 bg-secondary/10">
+        <OrderTracker status={order.status} createdAt={String(order.createdAt)} />
       </div>
 
       {/* Meta info */}
