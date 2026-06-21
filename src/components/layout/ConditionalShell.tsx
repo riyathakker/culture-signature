@@ -15,7 +15,9 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
   const isAuthPage = AUTH_PATHS.some((p) => pathname.startsWith(p));
   const isHome = pathname === "/";
   const isAdmin = pathname.startsWith("/admin");
-  const showPWAHeader = !isAuthPage && !isHome && !isAdmin;
+  const isAccount = pathname.startsWith("/account");
+  const showPWAHeader = !isAuthPage && !isHome && !isAdmin && !isAccount;
+  const hideHeaderOnMobile = showPWAHeader || isAccount;
 
   if (isAuthPage) {
     return <>{children}</>;
@@ -23,17 +25,23 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="pwa-hide">
-        <Header />
-      </div>
+      {!isAdmin && (
+        <div className={hideHeaderOnMobile ? "hidden lg:block pwa-hide" : "pwa-hide"}>
+          <Header />
+        </div>
+      )}
       {showPWAHeader && <PWAPageHeader />}
       {children}
-      <div className="pwa-hide">
-        <Footer />
-      </div>
-      <div className="pwa-hide">
-        <MobileFloatingCart />
-      </div>
+      {!isAdmin && (
+        <>
+          <div className="pwa-hide">
+            <Footer />
+          </div>
+          <div className="pwa-hide">
+            <MobileFloatingCart />
+          </div>
+        </>
+      )}
       <PWABottomNav />
       <PWAInstallPrompt />
     </>

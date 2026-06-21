@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { ROUTES } from "@/constants/routes";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useTranslation } from "@/context/TranslationContext";
+import { MobileMenu } from "@/components/layout/MobileMenu";
+import { usePWA } from "@/hooks/usePWA";
 
 const PATH_LABELS: { prefix: string; label: string }[] = [
   { prefix: "/account/wishlist", label: "My Wishlist" },
@@ -40,26 +42,30 @@ export function PWAPageHeader() {
       ? user.email[0].toUpperCase()
       : "G";
 
+  const isPWA = usePWA();
   const subtitle =
     PATH_LABELS.find((p) => pathname.startsWith(p.prefix))?.label ?? "";
 
   return (
     <>
       <header
-        className="hidden fixed top-0 left-0 right-0 z-50 bg-primary px-5 pb-4 [@media(display-mode:standalone)]:flex items-center justify-between"
-        style={{ paddingTop: "calc(1rem + env(safe-area-inset-top))" }}
+        className="flex lg:hidden [@media(display-mode:standalone)]:!flex fixed top-0 left-0 right-0 z-50 bg-primary px-4 pb-3 items-center justify-between"
+        style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
       >
-        <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
-          Culture Signature
-          {subtitle && (
-            <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">
-              {subtitle}
-            </span>
-          )}
-        </Link>
+        <div className="flex items-center gap-2 min-w-0">
+          {!isPWA && <MobileMenu />}
+          <Link href={ROUTES.HOME} className="text-base text-primary-foreground font-heading tracking-tighter leading-none min-w-0">
+            Culture Signature
+            {subtitle && (
+              <span className="block text-primary-foreground/60 font-serif italic text-[11px] font-normal truncate">
+                {subtitle}
+              </span>
+            )}
+          </Link>
+        </div>
 
         {user && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={() => setSignOutOpen(true)}
               className="text-primary-foreground/60 hover:text-primary-foreground transition-colors"
@@ -68,7 +74,7 @@ export function PWAPageHeader() {
               <LogOut className="w-5 h-5" />
             </button>
 
-            <div className="w-9 h-9 rounded-full bg-primary-foreground flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full bg-primary-foreground flex items-center justify-center shrink-0">
               {user.image ? (
                 <img
                   src={user.image}

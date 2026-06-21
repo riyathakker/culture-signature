@@ -12,6 +12,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isAdminPanel = pathname.startsWith("/admin");
   const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isHome = pathname === "/";
+  const isAccount = pathname.startsWith("/account");
   const { fetchWishlist, clearWishlist } = useWishlistStore();
   const { fetchCart, setIsAuthenticated, clearCart } = useCartStore();
   const { status } = useSession();
@@ -30,12 +31,13 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     prevStatus.current = status;
   }, [status, fetchWishlist, fetchCart, setIsAuthenticated, clearWishlist, clearCart]);
 
-  const showPWAHeader = !isAdminPanel && !isAuthPage && !isHome;
+  const showPWAHeader = !isAdminPanel && !isAuthPage && !isHome && !isAccount;
 
   return (
     <main className={cn(
       "flex-grow transition-all duration-500 pwa-main-content",
-      !isAdminPanel && !isAuthPage && "pt-[100px] md:pt-[160px]",
+      !isAdminPanel && !isAuthPage && !isAccount && "pt-[100px] md:pt-[160px]",
+      isAccount && "lg:pt-[160px]",
       showPWAHeader && "pwa-page-content",
     )}>
       {children}
