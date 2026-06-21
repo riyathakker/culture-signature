@@ -220,11 +220,6 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
                   </span>
                 )}
               </div>
-              {isLowStock && (
-                <span className="text-[9px] uppercase tracking-widest font-bold text-amber-600 bg-amber-500/10 px-2 py-1 border border-amber-500/20 rounded-sm w-fit">
-                  {product.stock === 1 ? "Only 1 left" : `${product.stock} units left`}
-                </span>
-              )}
             </div>
           </div>
         </Link>

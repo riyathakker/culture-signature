@@ -14,7 +14,6 @@ export default function HomePage() {
   return (
     <div className="bg-background min-h-screen pwa-page-home">
       <PWAHomeHeader />
-      <HeroSection />
       <ContentSection />
       <Categories />
       <FeaturedProducts />
