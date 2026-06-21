@@ -42,7 +42,7 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem, items, updateQuantity, removeItem } = useCartStore();
   const cartItem = items.find((i) => i.id === product.id);
@@ -50,6 +50,10 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
   const isWishlisted = isInWishlist(product.id);
 
   const toggleWishlist = () => {
+    if (status !== "authenticated") {
+      router.push(`/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
     if (isWishlisted) {
       removeFromWishlist(product.id);
     } else {
