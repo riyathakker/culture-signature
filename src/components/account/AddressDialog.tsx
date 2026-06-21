@@ -96,14 +96,14 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[90dvh] flex flex-col">
+        <DialogHeader className="shrink-0">
           <DialogTitle className="font-heading text-2xl">
             {address ? "Edit Address" : "Add New Address"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4">
+        <form id="address-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4 overflow-y-auto flex-1 pr-1">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -185,17 +185,19 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
             </div>
           </div>
 
-          <DialogFooter>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full uppercase tracking-widest text-xs font-bold h-12 gap-2"
-            >
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
-              {address ? "Update Address" : "Save Address"}
-            </Button>
-          </DialogFooter>
         </form>
+
+        <DialogFooter className="shrink-0 pt-2 border-t border-border/30">
+          <Button
+            type="submit"
+            form="address-form"
+            disabled={isLoading}
+            className="w-full uppercase tracking-widest text-xs font-bold h-12 gap-2"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
+            {address ? "Update Address" : "Save Address"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
