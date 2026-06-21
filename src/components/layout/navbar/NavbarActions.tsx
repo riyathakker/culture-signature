@@ -36,7 +36,7 @@ export function NavbarActions() {
       <button
         onClick={() => setSearchOpen(true)}
         aria-label="Search"
-        className="flex items-center justify-center w-9 h-9 rounded-full text-foreground/70 hover:text-foreground hover:bg-secondary/50 transition-colors"
+        className="hidden lg:flex items-center justify-center w-9 h-9 rounded-full text-foreground/70 hover:text-foreground hover:bg-secondary/50 transition-colors"
       >
         <Search className="w-4 h-4" />
       </button>
@@ -51,7 +51,7 @@ export function NavbarActions() {
 
       <AuthModal />
 
-      {!isAdmin && (
+      {isLoggedIn && !isAdmin && (
         <>
           <Link href="/wishlist">
             <IconButton

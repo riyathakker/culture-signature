@@ -6,11 +6,13 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { ROUTES } from "@/constants/routes";
 
 export function MobileFloatingCart() {
   const pathname = usePathname();
   const { items } = useCartStore();
+  const { status } = useSession();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
 
@@ -25,7 +27,7 @@ export function MobileFloatingCart() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (itemCount === 0 || isAdminPage || isBagPage) return null;
+  if (status !== "authenticated" || itemCount === 0 || isAdminPage || isBagPage) return null;
 
   return (
     <AnimatePresence>
