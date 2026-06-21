@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ShoppingBag, Heart, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { AccountStatCard } from "@/components/account/AccountStatCard";
@@ -30,35 +29,8 @@ export default function AccountPage() {
     );
   }
 
-  const memberSince = new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(user.createdAt));
-
-  const initials = user.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase() || "U";
-
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Profile Card */}
-      <div className="bg-secondary/10 p-8 rounded-sm flex flex-col md:flex-row items-center gap-8 border border-border/50">
-        <Avatar className="w-24 h-24 border-2 border-primary p-1 bg-background">
-          <AvatarFallback className="text-2xl font-heading bg-background">{initials}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1 text-center md:text-left space-y-2">
-          <h2 className="text-3xl font-heading">{user.name}</h2>
-          <p className="muted-italic">Member since {memberSince}</p>
-          <div className="flex items-center justify-center md:justify-start gap-4 pt-2">
-            <Link href={ROUTES.ACCOUNT.SETTINGS}>
-              <Button variant="outline" size="sm" className="text-spaced-bold">Edit Profile</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-
       {!isAdmin && (
         <div className="grid grid-cols-2 gap-6">
           <AccountStatCard label="Total Orders" value={user.orderCount} icon={ShoppingBag} href={ROUTES.ACCOUNT.ORDERS} />

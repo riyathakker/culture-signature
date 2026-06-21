@@ -24,7 +24,7 @@ export function AccountMobileHeader() {
   return (
     <>
       <header
-        className="sticky top-0 z-30 bg-primary px-5 pb-4 items-center justify-between hidden [@media(display-mode:standalone)]:flex"
+        className="sticky top-0 z-30 bg-primary px-5 pb-4 items-center justify-between flex lg:hidden [@media(display-mode:standalone)]:!flex"
         style={{ paddingTop: "calc(1rem + env(safe-area-inset-top))" }}
       >
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
@@ -34,7 +34,7 @@ export function AccountMobileHeader() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => setSignOutOpen(true)}
             className="text-primary-foreground/60 hover:text-primary-foreground transition-colors"
