@@ -20,12 +20,6 @@ interface AuthPageContentProps {
   callbackUrl?: string;
 }
 
-const PANEL_IMAGES = [
-  "/celebs/celeb-1.jpg",
-  "/celebs/celeb-3.jpg",
-  "/celebs/celeb-5.jpg",
-];
-
 export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: AuthPageContentProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -37,8 +31,6 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // pick a stable image based on view
-  const panelImage = view === "signup" ? PANEL_IMAGES[1] : PANEL_IMAGES[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,17 +71,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
   return (
     <div className="flex min-h-dvh [@media(display-mode:standalone)]:h-[calc(100dvh-4rem-env(safe-area-inset-bottom))] [@media(display-mode:standalone)]:min-h-0 [@media(display-mode:standalone)]:overflow-hidden">
       {/* ── Left editorial panel (desktop only) ── */}
-      <div className="hidden md:flex md:w-1/2 lg:w-[55%] relative flex-col">
-        <Image
-          src={panelImage}
-          alt="Culture Signature"
-          fill
-          className="object-cover object-top transition-all duration-700"
-          priority
-        />
-        {/* dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-transparent" />
-
+      <div className="hidden md:flex md:w-1/2 lg:w-[55%] relative flex-col bg-gradient-to-br from-[#160806] via-primary to-[#c4705a]">
         {/* top logo */}
         <div className="relative z-10 p-10">
           <Link href="/">
@@ -99,7 +81,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
 
         {/* bottom editorial copy */}
         <div className="relative z-10 mt-auto p-10 pb-14 space-y-4">
-          <div className="w-8 h-px bg-primary" />
+          <div className="w-8 h-px bg-white/40" />
           <p className="font-heading italic text-white/90 text-3xl lg:text-4xl leading-snug">
             {view === "signup"
               ? "Begin your journey\ninto timeless elegance."
@@ -114,22 +96,15 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
       {/* ── Right form panel ── */}
       <div className="flex-1 flex flex-col bg-background relative overflow-y-auto">
 
-        {/* Mobile: full-bleed header image */}
-        <div className="md:hidden relative h-36 overflow-hidden shrink-0">
-          <Image
-            src={panelImage}
-            alt="Culture Signature"
-            fill
-            className="object-cover object-top"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/10 to-background" />
+        {/* Mobile: branded header */}
+        <div className="md:hidden relative h-36 overflow-hidden shrink-0 bg-gradient-to-br from-[#160806] via-primary to-[#c4705a]">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/70" />
           <div className="absolute inset-0 flex flex-col justify-between p-6 pb-0">
             <div className="flex items-center justify-between">
               <Link href="/" className="text-white/80 hover:text-white transition-colors">
                 <ArrowLeft className="w-5 h-5" />
               </Link>
-                <Image src="/Logo_new.png" alt="Culture Signature" width={80} height={80} className="brightness-0 invert" />
+              <Image src="/Logo_new.png" alt="Culture Signature" width={80} height={80} className="brightness-0 invert" />
               <div className="w-5" />
             </div>
           </div>
@@ -298,10 +273,6 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
               )}
             </div>
 
-            {/* Brand footer */}
-            <p className="text-center text-[9px] uppercase tracking-[0.3em] text-muted-foreground/40 font-bold pt-4">
-              Culture Signature by Jalpa Thakkar
-            </p>
           </div>
         </div>
       </div>
