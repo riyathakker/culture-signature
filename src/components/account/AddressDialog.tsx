@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, MapPin, Loader2 } from "lucide-react";
 
 import { useAddressStore } from "@/store/addressStore";
+import { LocationSelector } from "@/components/common/LocationSelector";
 
 interface AddressFormValues {
   firstName: string;
@@ -138,51 +139,27 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
               {errors.street && <p className="text-xs text-destructive">{errors.street.message}</p>}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city" className="text-xs font-bold uppercase tracking-widest">City</Label>
-                <Input
-                  id="city"
-                  placeholder="Mumbai"
-                  {...register("city", { required: "City is required" })}
-                  className="border-muted-foreground/20"
-                />
-                {errors.city && <p className="text-xs text-destructive">{errors.city.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="state" className="text-xs font-bold uppercase tracking-widest">State</Label>
-                <Input
-                  id="state"
-                  placeholder="Maharashtra"
-                  {...register("state", { required: "State is required" })}
-                  className="border-muted-foreground/20"
-                />
-                {errors.state && <p className="text-xs text-destructive">{errors.state.message}</p>}
-              </div>
-            </div>
+            {/* Hidden inputs to register validation rules */}
+            <input type="hidden" {...register("country", { required: "Country is required" })} />
+            <input type="hidden" {...register("state", { required: "State is required" })} />
+            <input type="hidden" {...register("city", { required: "City is required" })} />
+            <input type="hidden" {...register("zipCode", { required: "Zip code is required" })} />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="zipCode" className="text-xs font-bold uppercase tracking-widest">Zip Code</Label>
-                <Input
-                  id="zipCode"
-                  placeholder="400001"
-                  {...register("zipCode", { required: "Zip Code is required" })}
-                  className="border-muted-foreground/20"
-                />
-                {errors.zipCode && <p className="text-xs text-destructive">{errors.zipCode.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country" className="text-xs font-bold uppercase tracking-widest">Country</Label>
-                <Input
-                  id="country"
-                  placeholder="India"
-                  {...register("country", { required: "Country is required" })}
-                  className="border-muted-foreground/20"
-                />
-                {errors.country && <p className="text-xs text-destructive">{errors.country.message}</p>}
-              </div>
-            </div>
+            <LocationSelector
+              values={{
+                country: watch("country") || "India",
+                state: watch("state") || "",
+                city: watch("city") || "",
+                zipCode: watch("zipCode") || "",
+              }}
+              onChange={(field, value) => setValue(field, value, { shouldValidate: true })}
+              errors={{
+                country: errors.country?.message,
+                state: errors.state?.message,
+                city: errors.city?.message,
+                zipCode: errors.zipCode?.message,
+              }}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-widest">Phone Number</Label>

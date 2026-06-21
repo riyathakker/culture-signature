@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { LocationSelector } from "@/components/common/LocationSelector";
 
 export function ShippingForm() {
   const { t } = useTranslation();
@@ -134,35 +135,16 @@ export function ShippingForm() {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="city" className="text-spaced-bold opacity-60">{t("cart.checkout.shipping.city")}</Label>
-          <Input
-            id="city"
-            placeholder={t("cart.checkout.shipping.placeholders.city")}
-            value={shippingAddress.city || ""}
-            onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="state" className="text-spaced-bold opacity-60">{t("cart.checkout.shipping.state")}</Label>
-          <Input
-            id="state"
-            placeholder={t("cart.checkout.shipping.placeholders.state")}
-            value={shippingAddress.state || ""}
-            onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="zip" className="text-spaced-bold opacity-60">{t("cart.checkout.shipping.zipCode")}</Label>
-          <Input
-            id="zip"
-            placeholder={t("cart.checkout.shipping.placeholders.zip")}
-            value={shippingAddress.zipCode || ""}
-            onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
+        <div className="md:col-span-2">
+          <LocationSelector
+            values={{
+              country: shippingAddress.country || "India",
+              state: shippingAddress.state || "",
+              city: shippingAddress.city || "",
+              zipCode: shippingAddress.zipCode || "",
+            }}
+            onChange={(field, value) => setShippingAddress({ [field]: value })}
+            labelClassName="text-spaced-bold opacity-60"
           />
         </div>
 
