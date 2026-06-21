@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Package, ShoppingBag, Tag, Users, LayoutGrid, Sparkles, Star } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Tag, Users, LayoutGrid, Sparkles, Star, ArrowLeft } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { useTranslation } from "@/context/TranslationContext";
 
@@ -11,6 +11,7 @@ export function AdminMobileNav() {
   const pathname = usePathname();
   const { t } = useTranslation();
   const allItems = [
+    { label: "Store", href: ROUTES.HOME, icon: ArrowLeft, isBack: true },
     { label: t("admin.sidebar.overview"), href: ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard },
     { label: t("admin.sidebar.products"), href: ROUTES.ADMIN.PRODUCTS, icon: Package },
     { label: t("admin.sidebar.orders"), href: ROUTES.ADMIN.ORDERS, icon: ShoppingBag },
@@ -28,12 +29,12 @@ export function AdminMobileNav() {
         style={{ scrollSnapType: "x mandatory" }}
       >
         {allItems.map((item) => {
-          const isActive =
-            item.href === ROUTES.ADMIN.DASHBOARD
+          const { isBack } = item as any;
+          const isActive = isBack
+            ? false
+            : item.href === ROUTES.ADMIN.DASHBOARD
               ? pathname === "/admin"
-              : item.href === ROUTES.HOME
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+              : pathname.startsWith(item.href);
 
           return (
             <Link
@@ -42,9 +43,11 @@ export function AdminMobileNav() {
               style={{ scrollSnapAlign: "start", minWidth: "25%" }}
               className={cn(
                 "flex flex-col items-center justify-center gap-1 py-3 transition-all duration-200",
-                isActive
-                  ? "text-primary-foreground"
-                  : "text-primary-foreground/50 hover:text-primary-foreground/80"
+                isBack
+                  ? "text-primary-foreground/40 hover:text-primary-foreground/70 border-r border-primary-foreground/20"
+                  : isActive
+                    ? "text-primary-foreground"
+                    : "text-primary-foreground/50 hover:text-primary-foreground/80"
               )}
             >
               <div

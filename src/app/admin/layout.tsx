@@ -1,6 +1,5 @@
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AccountMobileHeader } from "@/components/account/AccountMobileHeader";
-import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +11,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {children}
         </main>
       </div>
-      <AdminMobileNav />
     </div>
   );
 }

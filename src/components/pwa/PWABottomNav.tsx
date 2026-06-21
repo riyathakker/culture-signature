@@ -10,6 +10,7 @@ import {
   Tag,
   Star,
   Edit,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cartStore";
@@ -38,6 +39,7 @@ const adminTabs = [
   { label: "Overview", href: ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard },
   { label: "Products", href: ROUTES.ADMIN.PRODUCTS, icon: Package },
   { label: "Orders", href: ROUTES.ADMIN.ORDERS, icon: ShoppingBag },
+  { label: "Categories", href: ROUTES.ADMIN.CATEGORIES, icon: FolderOpen },
   { label: "Discounts", href: ROUTES.ADMIN.DISCOUNTS, icon: Tag },
   { label: "Customers", href: ROUTES.ADMIN.CUSTOMERS, icon: Users },
   { label: "Reviews", href: ROUTES.ADMIN.REVIEWS, icon: Star },
@@ -112,7 +114,11 @@ export function PWABottomNav() {
 
   return (
     <nav
-      className="pwa-bottom-nav fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/40 hidden shadow-lg"
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/40 shadow-lg",
+        "pwa-bottom-nav",
+        isOnAdmin && isAdmin ? "flex lg:hidden" : "hidden",
+      )}
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex items-stretch h-16 w-full px-2 overflow-x-auto no-scrollbar">
