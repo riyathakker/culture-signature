@@ -11,6 +11,8 @@ import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { useProductStore } from "@/store/productStore";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
+import { usePWA } from "@/hooks/usePWA";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export function NewArrivals() {
   const {
@@ -20,6 +22,9 @@ export function NewArrivals() {
   } = useProductStore();
 
   const { t } = useTranslation();
+  const isPWA = usePWA();
+  const isMobile = useIsMobile();
+  const displayLimit = isMobile && !isPWA ? 4 : 8;
 
   useEffect(() => {
     fetchNewArrivals();
@@ -48,7 +53,7 @@ export function NewArrivals() {
           <>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pwa-grid-to-scroll">
               {newArrivals
-                .slice(0, 8)
+                .slice(0, displayLimit)
                 .map((product) => (
                   <ProductCard
                     key={product.id}
@@ -57,7 +62,7 @@ export function NewArrivals() {
                   />
                 ))}
             </div>
-            {newArrivals.length > 4 && (
+            {newArrivals.length > displayLimit && (
               <div className="flex justify-center mt-2 md:mt-6">
                 <Link
                   href={ROUTES.NEW_ARRIVALS}

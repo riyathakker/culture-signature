@@ -11,13 +11,13 @@ function CategoryCards() {
   const { t } = useTranslation();
 
   return (
-    <div className="max-w-[100vw] overflow-hidden ml-4">
-      <div className="flex overflow-x-auto gap-6 pb-4 no-scrollbar -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+    <div className="max-w-[100vw] overflow-hidden">
+      <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar px-4 sm:px-6 lg:px-8 scroll-smooth">
         {categories.filter((cat) => (cat?._count?.products || 0) > 0).map((cat) => (
           <Link
             key={cat.id}
             href={`/categories/${cat.id}`}
-            className="group flex flex-col items-center p-8 bg-secondary/60 hover:bg-primary transition-all duration-700 relative overflow-hidden flex-shrink-0 min-w-[160px] md:min-w-[200px]"
+            className="group flex flex-col items-center p-8 bg-secondary/60 hover:bg-primary transition-all duration-700 relative overflow-hidden flex-shrink-0 w-[42vw] max-w-[200px] min-w-[140px] md:w-[200px]"
           >
             {cat.image && (
               <img

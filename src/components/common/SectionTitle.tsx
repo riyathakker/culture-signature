@@ -35,8 +35,8 @@ export function SectionTitle({
         className={cn(
           "font-heading tracking-tight text-foreground",
           {
-            "text-3xl md:text-4xl lg:text-5xl": size === "large",
-            "text-2xl md:text-3xl lg:text-4xl": size === "default",
+            "text-2xl md:text-4xl lg:text-5xl": size === "large",
+            "text-lg md:text-3xl lg:text-4xl": size === "default",
           }
         )}
       >

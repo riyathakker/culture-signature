@@ -87,7 +87,7 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
               <p className="text-[10px] uppercase tracking-[0.4em] text-primary-foreground/40 font-bold mb-2">
                 Where to Find Us
               </p>
-              <h2 className="font-heading text-3xl md:text-4xl tracking-tight">Exhibitions & Shoots</h2>
+              <h2 className="font-heading text-2xl md:text-4xl tracking-tight">Exhibitions & Shoots</h2>
             </div>
             <span className="text-[9px] uppercase tracking-widest font-bold text-primary-foreground/30 pb-1 hidden sm:inline">
               {exhibitions.length} {exhibitions.length === 1 ? "event" : "events"}
