@@ -1,40 +1,55 @@
 import { create } from "zustand";
+import { Product } from "@/types";
+import { ProductService } from "@/services/product";
 
 interface ProductState {
-  products: any[];
-  newArrivals: any[];
-  featuredProducts: any[];
+  products: Product[];
+  totalProducts: number;
+  newArrivals: Product[];
+  featuredProducts: Product[];
+  allUserProducts: Product[];
   isLoading: boolean;
   lastFetched: number | null;
   lastFetchedNewArrivals: number | null;
   lastFetchedFeatured: number | null;
+  lastFetchedAllUser: number | null;
 
-  setProducts: (products: any[]) => void;
-  setNewArrivals: (newArrivals: any[]) => void;
-  setFeaturedProducts: (featuredProducts: any[]) => void;
+  setProducts: (products: Product[]) => void;
+  setNewArrivals: (newArrivals: Product[]) => void;
+  setFeaturedProducts: (featuredProducts: Product[]) => void;
   setLoading: (isLoading: boolean) => void;
 
-  updateProduct: (product: any) => void;
+  updateProduct: (product: Product) => void;
   deleteProduct: (id: string) => void;
-  addProduct: (product: any) => void;
+  addProduct: (product: Product) => void;
 
-  fetchProducts: (force?: boolean) => Promise<void>;
+  fetchProducts: (force?: boolean, params?: { page?: number; limit?: number; query?: string; categoryId?: string; status?: string }) => Promise<void>;
   fetchNewArrivals: (force?: boolean) => Promise<void>;
   fetchFeaturedProducts: (force?: boolean) => Promise<void>;
+  fetchAllUserProducts: (force?: boolean) => Promise<void>;
+
+  createProduct: (data: any) => Promise<Product>;
+  updateProductById: (id: string, data: any) => Promise<Product>;
+  deleteProductById: (id: string) => Promise<void>;
+  fetchProductById: (id: string) => Promise<Product>;
 }
 
 export const useProductStore = create<ProductState>((set, get) => ({
   products: [],
+  totalProducts: 0,
   newArrivals: [],
   featuredProducts: [],
+  allUserProducts: [],
   isLoading: false,
   lastFetched: null,
   lastFetchedNewArrivals: null,
   lastFetchedFeatured: null,
+  lastFetchedAllUser: null,
 
   setProducts: (products) =>
     set({
       products,
+      totalProducts: products.length,
       lastFetched: Date.now(),
     }),
 
@@ -69,12 +84,34 @@ export const useProductStore = create<ProductState>((set, get) => ({
       products: [product, ...state.products],
     })),
 
-  fetchProducts: async (force = false) => {
+  createProduct: async (data: any): Promise<Product> => {
+    const product = await ProductService.create(data);
+    get().addProduct(product);
+    return product;
+  },
+
+  updateProductById: async (id: string, data: any): Promise<Product> => {
+    const product = await ProductService.update(id, data);
+    get().updateProduct(product);
+    return product;
+  },
+
+  deleteProductById: async (id: string): Promise<void> => {
+    await ProductService.delete(id);
+    get().deleteProduct(id);
+  },
+
+  fetchProductById: async (id: string): Promise<Product> => {
+    return ProductService.getById(id);
+  },
+
+  fetchProducts: async (force = false, params) => {
     const state = get();
 
-    // Cache for 5 minutes
+    // Cache for 5 minutes (skip cache if pagination params are active)
     if (
       !force &&
+      !params &&
       state.products.length > 0 &&
       state.lastFetched &&
       Date.now() - state.lastFetched < 300000
@@ -85,18 +122,22 @@ export const useProductStore = create<ProductState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch("/api/admin/products");
+      const data = await ProductService.getAllAdmin(params);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
+      if (data && typeof data === "object" && "items" in data) {
+        set({
+          products: data.items,
+          totalProducts: data.total,
+          lastFetched: Date.now(),
+        });
+      } else {
+        const prodList = Array.isArray(data) ? data : [];
+        set({
+          products: prodList,
+          totalProducts: prodList.length,
+          lastFetched: Date.now(),
+        });
       }
-
-      const data = await response.json();
-
-      set({
-        products: data,
-        lastFetched: Date.now(),
-      });
     } catch (error) {
       console.error("Failed to fetch products", error);
     } finally {
@@ -115,15 +156,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch(
-        "/api/products?isNew=true&limit=4"
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch new arrivals");
-      }
-
-      const data = await response.json();
+      const data = await ProductService.getNewArrivals();
 
       set({
         newArrivals: data,
@@ -147,13 +180,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const response = await fetch("/api/products?isFeatured=true");
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch featured products");
-      }
-
-      const data = await response.json();
+      const data = await ProductService.getFeatured();
 
       set({
         featuredProducts: data,
@@ -161,6 +188,28 @@ export const useProductStore = create<ProductState>((set, get) => ({
       });
     } catch (error) {
       console.error("Failed to fetch featured products", error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchAllUserProducts: async (force = false) => {
+    const state = get();
+
+    // Cache for 5 minutes
+    if (!force && state.allUserProducts.length > 0 && state.lastFetchedAllUser && (Date.now() - state.lastFetchedAllUser < 300000)) {
+      return;
+    }
+
+    set({ isLoading: true });
+
+    try {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      const prodList = Array.isArray(data) ? data : [];
+      set({ allUserProducts: prodList, lastFetchedAllUser: Date.now() });
+    } catch (error) {
+      console.error("Failed to fetch all products", error);
     } finally {
       set({ isLoading: false });
     }

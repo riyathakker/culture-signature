@@ -1,4 +1,11 @@
 export const en = {
+  footer: {
+    sections: {
+      legal: {
+        title: "Legal",
+      }
+    }
+  },
   admin: {
     sidebar: {
       overview: "Overview",
@@ -7,19 +14,8 @@ export const en = {
       customers: "Customers",
       discounts: "Discounts",
       categories: "Categories",
+      content: "Content",
       home: "Home",
-    },
-    orders: {
-      title: "Orders",
-      description: "Track and fulfill artisanal orders.",
-      searchPlaceholder: "Search order ID or customer...",
-      table: {
-        id: "Order ID",
-        customer: "Customer",
-        status: "Status",
-        date: "Date",
-        amount: "Amount",
-      }
     },
     discounts: {
       title: "Discount & Offers",
@@ -56,11 +52,14 @@ export const en = {
           value: "Value",
           usageLimit: "Usage Limit",
           expiryDate: "Expiry Date",
-          status: "Status"
         },
         buttons: {
           create: "Curate Offer",
           edit: "Update Offer"
+        },
+        messages: {
+          createSuccess: "Discount created successfully.",
+          updateSuccess: "Discount updated successfully.",
         }
       }
     },
@@ -71,12 +70,29 @@ export const en = {
       searchPlaceholder: "Search categories...",
       table: {
         collection: "Collection",
-        slug: "Slug",
-        description: "Description",
         products: "Products",
         status: "Status"
       },
       empty: "No collections match your search.",
+      messages: {
+        deleteSuccess: "Collection removed successfully",
+        deleteError: "Failed to delete collection",
+        archiveSuccess: "Collection archived successfully",
+        activateSuccess: "Collection activated successfully",
+        statusError: "Failed to change collection status",
+      },
+      status: {
+        active: "Active",
+        archived: "Archived",
+      },
+      actions: {
+        activate: "Activate",
+        archive: "Archive",
+      },
+      delete: {
+        title: "Remove Collection",
+        description: "Are you sure you want to remove the collection \"{name}\"? This will soft-delete the category.",
+      },
       dialog: {
         titleCreate: "Initiate Collection",
         titleEdit: "Refine Collection",
@@ -84,27 +100,91 @@ export const en = {
         descEdit: "Update the thematic details of this curated collection.",
         labels: {
           name: "Collection Name",
-          slug: "Slug",
-          description: "Thematic Description"
+          image: "Collection Image",
+          status: "Status",
+        },
+        placeholders: {
+          name: "e.g., Heritage Gold",
+        },
+        validation: {
+          nameRequired: "Name is required",
+        },
+        status: {
+          active: "Active",
+          archived: "Archived",
         },
         buttons: {
           create: "Establish Collection",
           edit: "Update Collection"
+        },
+        messages: {
+          createSuccess: "Collection established successfully.",
+          updateSuccess: "Collection updated successfully.",
         }
       }
     },
     common: {
-      loading: "Loading...",
-      save: "Save",
       cancel: "Cancel",
       delete: "Delete",
-      actions: "Actions",
-      noResults: "No results found.",
+      error: "Something went wrong",
+    },
+    content: {
+      title: "Exhibitions & Shoots",
+      description: "Manage pop-ups, photo shoots, and events.",
+      addButton: "Add Exhibition",
+      empty: "No exhibitions yet — add your first event",
+      messages: {
+        deleted: "Exhibition deleted",
+        deleteError: "Failed to delete",
+      },
+      dialog: {
+        titleCreate: "Add Exhibition / Shoot",
+        titleEdit: "Edit Exhibition / Shoot",
+        desc: "Add exhibitions, shoots, or pop-ups. Location opens in Google Maps.",
+        labels: {
+          title: "Title",
+          description: "Description",
+          location: "Location",
+          locationHint: "(opens in Google Maps)",
+          startDate: "Start Date",
+          endDate: "End Date",
+          startTime: "Start Time",
+          endTime: "End Time",
+          status: "Status",
+          images: "Images",
+        },
+        placeholders: {
+          title: "e.g., Summer Lookbook Shoot — Jaipur",
+          description: "Tell people about this event...",
+          location: "e.g., Jaipur, Rajasthan or full address",
+        },
+        status: {
+          upcoming: "Upcoming",
+          ongoing: "Ongoing",
+          past: "Past",
+        },
+        buttons: {
+          save: "Save Changes",
+          add: "Add Exhibition",
+        },
+        messages: {
+          updated: "Exhibition updated",
+          added: "Exhibition added",
+          error: "Something went wrong",
+        },
+      },
+      delete: {
+        title: "Delete Exhibition",
+        description: "Are you sure you want to delete \"{title}\"?",
+        confirm: "Delete",
+        cancel: "Cancel",
+      },
     },
     products: {
       title: "Artisanal Catalog",
       description: "Curate and manage your collection of timeless masterpieces.",
       newProduct: "New Product",
+      bulkUpload: "Bulk Upload",
       searchPlaceholder: "Search masterpieces...",
       noResults: "No masterpieces match your current search criteria.",
       doubleClick: "Double click to edit",
@@ -116,7 +196,6 @@ export const en = {
         featured: "Featured",
         status: "Status",
         created: "Created",
-        actions: "Actions",
       },
       status: {
         inStock: "In Stock",
@@ -137,13 +216,69 @@ export const en = {
         description: "Are you sure you want to remove this product from the catalog? This action cannot be undone.",
         confirm: "Remove",
         success: "Masterpiece removed from the catalog.",
-        error: "Failed to delete product",
       },
       messages: {
         updateSuccess: "{field} updated",
         updateError: "Failed to update",
         featuredSuccess: "Marked as Featured",
         unfeaturedSuccess: "Removed from Featured",
+      },
+      bulk: {
+        title: "Bulk Upload",
+        applyAll: "Apply Same Value to All Rows",
+        applyBtn: "Apply to All",
+        labels: {
+          name: "Name",
+          category: "Category",
+          price: "Price (₹)",
+          discount: "Discount (₹)",
+          stock: "Stock",
+          featured: "Featured",
+          description: "Description (optional)",
+          categoryRequired: "Category *",
+          priceRequired: "Price (₹) *",
+          discountShort: "Disc (₹)",
+          poolImageAssign: "Click to assign — max 4 per product",
+        },
+        placeholders: {
+          sameForAll: "Same for all",
+          productName: "Product name *",
+          select: "Select",
+        },
+        imagePool: {
+          title: "Image Pool",
+          imageCount: "image",
+          imagesCount: "images",
+          description: "Upload all your product images here at once, then assign them to individual products below.",
+          dropzoneActive: "Drop images here",
+          dropzoneInactive: "Click or drag to upload multiple images",
+          dropzoneNote: "JPEG, PNG, WebP — no limit",
+          tabPool: "From Pool",
+          tabDirect: "Upload Direct",
+          emptyPool: "No images in pool yet. Upload images to the pool above, then select them here.",
+        },
+        buttons: {
+          addAnother: "Add Another Product",
+          uploading: "Uploading...",
+          upload: "Upload",
+        },
+        stats: {
+          published: "published",
+          failed: "failed",
+        },
+        toast: {
+          applySuccess: "Applied to all pending rows.",
+          missingFields: "Fill in Name, Price, and Category for at least one product.",
+          uploadSuccessSingle: "1 product published successfully.",
+          uploadSuccessPlural: "{count} products published successfully.",
+          uploadFailSingle: "1 product failed. Review errors below.",
+          uploadFailPlural: "{count} products failed. Review errors below.",
+          imagesAddedSingle: "1 image added to pool.",
+          imagesAddedPlural: "{count} images added to pool.",
+          imagesUploadFailed: "Some images failed to upload.",
+          maxImages: "Max 4 images per product.",
+          failed: "Failed",
+        }
       }
     }
   },
@@ -182,6 +317,39 @@ export const en = {
       processing: "Processing...",
     }
   },
+  account: {
+    layout: {
+      heading: "My Account",
+      description: "Manage your account, orders and preferences.",
+    },
+    orders: {
+      heading: "Order History",
+      subtitle: "Your order history.",
+      emptyDescription: "No orders yet. Start shopping!",
+      orderDetails: "Order Details",
+      orderDetailsSubtitle: "Your order details.",
+      allOrders: "All Orders",
+      yourItems: "Your Items",
+      priceBreakdown: "Price Breakdown",
+      shippingAddress: "Shipping Address",
+      shippingFree: "Free",
+    },
+    wishlist: {
+      heading: "Wishlist",
+      subtitle: "Items you have saved.",
+      emptyDescription: "Your saved items will appear here.",
+    },
+    addresses: {
+      heading: "Saved Addresses",
+      subtitle: "Manage your delivery and billing addresses.",
+      emptyDescription: "Add and manage your delivery addresses.",
+    },
+    settings: {
+      heading: "Account Settings",
+      subtitle: "Manage your preferences and account security.",
+      deleteWarning: "This will permanently delete your account and order history.",
+    },
+  },
   nav: {
     account: {
       adminPanel: "Admin Panel",
@@ -207,7 +375,8 @@ export const en = {
   cart: {
     page: {
       title: "Shopping Bag",
-      description: "Review your selection of artisanal masterpieces.",
+      description: "Review your items before checkout.",
+      checkoutDescription: "Complete your order details below.",
       emptyTitle: "Your bag is empty",
       emptyDescription: "Discover our latest collections and find the piece that speaks to your legacy.",
       browseCollection: "Browse Collection",
@@ -221,22 +390,21 @@ export const en = {
       qty: "Qty: {count}",
       subtotal: "Value (excl. GST)",
       shipping: "Shipping",
-      shippingComplimentary: "Complimentary",
+      shippingComplimentary: "Free",
       estimatedTax: "Estimated GST (18%)",
       total: "Total Amount",
       finalTotal: "Final Total",
-      discount: "Discount",
       promotionalCode: "Promotional Discount",
       codePlaceholder: "ENTER CODE",
       apply: "Apply",
       proceedToCheckout: "Proceed to Checkout",
-      finalizeAcquisition: "Finalize Acquisition",
+      finalizeAcquisition: "Place Order",
       adminPreview: {
         title: "Admin Preview Mode",
         description: "Transactional features are disabled for administrative accounts."
       },
-      footerNote: "Complimentary shipping above ₹{threshold}. Securely processed via Stripe.",
-      footerNoteCheckout: "By finalizing, you agree to our Terms of Acquisition & Service.",
+      footerNote: "Free shipping above ₹{threshold}. Securely processed via Stripe.",
+      footerNoteCheckout: "By placing your order, you agree to our Terms & Conditions.",
       badges: {
         expressDelivery: "White Glove Delivery",
         securePayment: "Authenticity Guaranteed"
@@ -246,14 +414,13 @@ export const en = {
         codeApplied: "Promotional code {code} applied!",
         invalidOrExpiredCode: "Invalid or expired promotional code.",
         completeShipping: "Please complete your shipping information.",
-        orderSuccess: "Order finalized successfully!",
         orderError: "Something went wrong while finalizing your order."
       }
     },
     checkout: {
       shipping: {
         title: "Shipping Information",
-        subtitle: "Where should we deliver your masterpiece?",
+        subtitle: "Where should we deliver your order?",
         useSavedAddress: "Use Saved Address",
         curatedAddresses: "Your Curated Addresses",
         default: "DEFAULT",
@@ -265,7 +432,6 @@ export const en = {
         zipCode: "ZIP / Postal Code",
         phone: "Phone Number (For Delivery Updates)",
         billingSame: "Billing address is same as shipping",
-        addressApplied: "Address applied to form",
         placeholders: {
           firstName: "John",
           lastName: "Doe",
@@ -277,10 +443,10 @@ export const en = {
         }
       },
       success: {
-        title: "Acquisition Confirmed",
-        description: "Your order has been received and added to our artisanal creation queue.",
+        title: "Order Confirmed",
+        description: "Your order has been received and is being processed.",
         orderReference: "Order Reference",
-        emailNote: "A confirmation email with your order details and estimated craftsmanship timeline has been sent to your registered address.",
+        emailNote: "A confirmation email with your order details has been sent to your registered email address.",
         trackOrder: "Track Order",
         continueExploring: "Continue Exploring",
         pageTitle: "Thank You",
@@ -298,19 +464,21 @@ export const en = {
       imageAlt: "Luxury Jewelry"
     },
     categories: {
-      title: "The Collections",
+      title: "The Categories",
       subtitle: "Curated Heritage",
-      pieces: "Pieces"
+      pieces: "Items"
     },
     featured: {
-      title: "Iconic Pieces",
-      subtitle: "Handcrafted Legacy"
+      title: "Iconic Items",
+      subtitle: "Handcrafted Legacy",
+      viewCollection: "View Collection"
     },
     newArrivals: {
       title: "New Arrivals",
       subtitle: "Freshly Crafted",
-      description: "The latest masterpieces to join the Culture Signature house.",
-      empty: "New masterpieces are being curated as we speak."
+      description: "The latest items added to our collection.",
+      empty: "New items coming soon.",
+      viewMore: "View More"
     },
     celebSpotting: {
       title: "Celeb Spotting",
@@ -318,36 +486,19 @@ export const en = {
     },
     testimonials: {
       title: "Voices of Elegance",
-      subtitle: "From Our Patrons",
-      reviews: [
-        {
-          quote: "The craftsmanship is unparalleled. Each piece tells a story of heritage and modern elegance.",
-          author: "Priya R.",
-          location: "Mumbai"
-        },
-        {
-          quote: "Culture Signature's bags are not just accessories; they are wearable art. Truly magnificent.",
-          author: "Anjali S.",
-          location: "New York"
-        },
-        {
-          quote: "I wore their handcrafted necklace for my wedding, and it felt like carrying a piece of history.",
-          author: "Meera K.",
-          location: "London"
-        }
-      ]
+      subtitle: "From Our Patrons"
     },
     faq: {
       title: "Common Inquiries",
       subtitle: "Your Questions Answered",
       questions: [
         {
-          question: "How do I care for my artisanal jewelry?",
-          answer: "Store your pieces in the provided velvet pouches. Avoid direct contact with perfumes and harsh chemicals. Gently wipe with a soft cloth after use."
+          question: "How do I care for my jewelry?",
+          answer: "Store your items in the provided velvet pouches. Avoid direct contact with perfumes and harsh chemicals. Gently wipe with a soft cloth after use."
         },
         {
           question: "Do you offer international shipping?",
-          answer: "Yes, we ship globally. Complimentary shipping is provided on orders above ₹5,000 to ensure your masterpieces reach you safely."
+          answer: "Yes, we ship globally. Free shipping is available on orders above ₹5,000."
         },
         {
           question: "Are the bags made from genuine leather?",
@@ -364,15 +515,11 @@ export const en = {
     title: "The Collection",
     subtitle: "Collections",
     description: "Explore our curated selection of handcrafted jewels, bags, and home decor that celebrate Indian heritage.",
-    categories: "Categories",
-    showing: "Showing {count} pieces",
+    showing: "Showing {count} items",
     noMatches: "No matches found in the current collection.",
     clearFilters: "Clear all filters",
-    loadError: "Could not load the collection.",
     product: {
       outOfStock: "Out of Stock",
-      soldOut: "Sold Out",
-      new: "New",
       off: "OFF",
       addToCart: "Add to Cart",
       unavailable: "Unavailable",
@@ -384,15 +531,21 @@ export const en = {
         loadError: "Could not load product details.",
         notFound: "Product not found.",
         relatedTitle: "Complete the Look",
-        relatedSubtitle: "You May Also Desire",
+        relatedSubtitle: "You May Also Like",
         specs: {
           category: "Category",
           stock: "Stock",
           inStock: "In Stock",
           outOfStock: "Out of Stock"
         },
-        shippingNote: "Complimentary worldwide shipping on all orders over ₹10,000.",
+        shippingNote: "Free worldwide shipping on all orders over ₹10,000.",
         addToCollection: "Add to Cart",
+        reviews: {
+          verifiedBuyer: "Verified Buyer",
+          purchaseToReview: "Purchase this product to leave a review",
+          signInToReview: "Sign in and purchase to leave a review",
+          shareThoughts: "Share your thoughts on this product and help other buyers.",
+        },
         buyNow: "Buy Now",
         premiumShipping: "Premium Shipping",
         lifetimeWarranty: "Lifetime Warranty",
@@ -404,7 +557,7 @@ export const en = {
           shippingDesc: "Every Culture Signature piece is delivered in our signature lacquered box, wrapped in silk ribbon, and accompanied by a certificate of authenticity.",
           shippingList: [
             "Insured worldwide express delivery (3-5 business days).",
-            "Complimentary boutique collection available in selected cities.",
+            "Free store pickup available in selected cities.",
             "30-day extended returns for all standard collection items."
           ]
         }
@@ -506,7 +659,11 @@ export const en = {
         subject: "Inquiry about artisanal jewelry",
         message: "How can we assist you today?"
       },
-      submit: "Send Inquiry"
+      submit: "Send Inquiry",
+      sending: "Sending...",
+      success: "Thank you — your inquiry has been received.",
+      error: "Something went wrong. Please try again.",
+      validation: "Please fill in your name, email and message."
     }
   },
   legal: {

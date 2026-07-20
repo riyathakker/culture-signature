@@ -10,33 +10,52 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus, Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, Loader2, Save } from "lucide-react";
+import { useCategoryStore } from "@/store/categoryStore";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useTranslation } from "@/context/TranslationContext";
 
 interface CategoryFormValues {
   name: string;
-  slug: string;
-  description?: string;
-  isArchived: boolean;
+  status: "ACTIVE" | "ARCHIVED";
 }
 
 interface CategoryDialogProps {
   category?: any;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onSuccess?: (category: any) => void;
 }
 
-export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogProps) {
+export function CategoryDialog({
+  category,
+  trigger,
+  open: externalOpen,
+  onOpenChange: setExternalOpen,
+  onSuccess,
+}: CategoryDialogProps) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const { createCategory, updateCategoryById } = useCategoryStore();
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState<string[]>([]);
   const router = useRouter();
+
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen : internalOpen;
+  const setOpen = isControlled ? setExternalOpen : setInternalOpen;
 
   const {
     register,
@@ -46,48 +65,32 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
     watch,
     formState: { errors },
   } = useForm<CategoryFormValues>({
-    defaultValues: category || {
-      name: "",
-      slug: "",
-      description: "",
-      isArchived: false,
-    },
+    defaultValues: { name: "", status: "ACTIVE" },
   });
 
-  const categoryName = watch("name");
-
-  // Auto-generate slug from name
   useEffect(() => {
-    if (!category && categoryName) {
-      const slug = categoryName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
-      setValue("slug", slug);
+    if (category) {
+      reset({ name: category.name || "", status: category.status || "ACTIVE" });
+      setImage(category.image ? [category.image] : []);
+    } else {
+      reset({ name: "", status: "ACTIVE" });
+      setImage([]);
     }
-  }, [categoryName, setValue, category]);
+  }, [category, reset]);
+
+  const categoryStatus = watch("status");
 
   const onSubmit = async (data: CategoryFormValues) => {
     setIsLoading(true);
     try {
-      const url = category ? `/api/categories/${category.id}` : "/api/categories";
-      const method = category ? "PATCH" : "POST";
+      const img = image[0] ?? null;
+      const savedCategory = category
+        ? await updateCategoryById(category.id, data.name, data.status, img)
+        : await createCategory(data.name, img);
 
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || t("admin.categories.dialog.saveError"));
-      }
-
-      const savedCategory = await response.json();
       toast.success(category ? t("admin.categories.dialog.messages.updateSuccess") : t("admin.categories.dialog.messages.createSuccess"));
-      setOpen(false);
-      if (!category) reset();
+      setOpen?.(false);
+      if (!category) { reset(); setImage([]); }
       if (onSuccess) onSuccess(savedCategory);
       router.refresh();
     } catch (error: any) {
@@ -99,19 +102,21 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        {trigger || (
-          <Button className="btn-luxury px-6 gap-2">
-            <Plus className="w-4 h-4" /> {t("admin.categories.newCategory")}
+      {trigger ? (
+        <DialogTrigger>{trigger}</DialogTrigger>
+      ) : !isControlled ? (
+        <DialogTrigger>
+          <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
+            <Plus className="w-4 h-4 mr-2" /> {category ? t("admin.categories.dialog.buttons.edit") : t("admin.categories.newCategory")}
           </Button>
-        )}
-      </DialogTrigger>
+        </DialogTrigger>
+      ) : null}
       <DialogContent className="sm:max-w-[500px] bg-background border-none">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl tracking-tight">
             {category ? t("admin.categories.dialog.titleEdit") : t("admin.categories.dialog.titleCreate")}
           </DialogTitle>
-          <p className="text-muted-foreground font-serif italic text-sm">
+          <p className="muted-italic text-sm">
             {category ? t("admin.categories.dialog.descEdit") : t("admin.categories.dialog.descCreate")}
           </p>
         </DialogHeader>
@@ -119,45 +124,40 @@ export function CategoryDialog({ category, trigger, onSuccess }: CategoryDialogP
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto px-2">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.categories.dialog.labels.name")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.categories.dialog.labels.name")}</Label>
               <Input
-                placeholder="e.g., Heritage Gold"
-                {...register("name", { required: "Name is required" })}
+                placeholder={t("admin.categories.dialog.placeholders.name")}
+                {...register("name", { required: t("admin.categories.dialog.validation.nameRequired") })}
                 className="h-12 border-border/50"
               />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.categories.dialog.labels.slug")}</Label>
-              <Input
-                placeholder="heritage-gold"
-                {...register("slug", { required: "Slug is required" })}
-                className="h-12 border-border/50 font-mono text-xs"
-              />
-              {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
+              <Label className="text-spaced-bold opacity-60">{t("admin.categories.dialog.labels.image")}</Label>
+              <ImageUpload value={image} onChange={setImage} maxFiles={1} />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.categories.dialog.labels.description")}</Label>
-              <Textarea
-                placeholder="Describe the thematic essence of this collection..."
-                {...register("description")}
-                className="min-h-[100px] border-border/50 font-serif italic"
-              />
-            </div>
+            {category && (
+              <div className="space-y-2">
+                <Label className="text-spaced-bold opacity-60">{t("admin.categories.dialog.labels.status")}</Label>
+                <Select value={categoryStatus} onValueChange={(val: any) => setValue("status", val)}>
+                  <SelectTrigger className="h-12 border-border/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ACTIVE">{t("admin.categories.dialog.status.active")}</SelectItem>
+                    <SelectItem value="ARCHIVED">{t("admin.categories.dialog.status.archived")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
-          <DialogFooter>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-14 uppercase tracking-[0.2em] text-[10px] font-bold mt-4"
-            >
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              {category ? t("admin.categories.dialog.buttons.edit") : t("admin.categories.dialog.buttons.create")}
-            </Button>
-          </DialogFooter>
+          <Button type="submit" disabled={isLoading} className="w-full h-14 uppercase tracking-[0.2em] text-[10px] font-bold mt-4">
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+            {category ? t("admin.categories.dialog.buttons.edit") : t("admin.categories.dialog.buttons.create")}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

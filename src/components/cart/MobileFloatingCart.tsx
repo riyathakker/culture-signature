@@ -6,25 +6,28 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { ROUTES } from "@/constants/routes";
 
 export function MobileFloatingCart() {
   const pathname = usePathname();
   const { items } = useCartStore();
+  const { status } = useSession();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
 
   const isAdminPage = pathname?.startsWith("/admin");
+  const isBagPage = pathname === ROUTES.SHOPPING_BAG || pathname?.startsWith("/bag/checkout");
 
   useEffect(() => {
     const handleScroll = () => {
-      // Logic matching BackToTop.tsx (window.pageYOffset > 400)
       setIsBackToTopVisible(window.pageYOffset > 400);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (itemCount === 0 || isAdminPage) return null;
+  if (status !== "authenticated" || itemCount === 0 || isAdminPage || isBagPage) return null;
 
   return (
     <AnimatePresence>
@@ -40,7 +43,7 @@ export function MobileFloatingCart() {
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
         className="fixed right-8 z-50 md:hidden"
       >
-        <Link href="/bag">
+        <Link href={ROUTES.SHOPPING_BAG}>
           <button 
             className="p-4 rounded-full bg-primary text-primary-foreground shadow-2xl transition-transform hover:scale-110 active:scale-95 group overflow-hidden relative"
             aria-label="Go to shopping bag"

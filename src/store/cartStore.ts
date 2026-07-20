@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { toast } from "sonner";
+import { Discount } from "@/types";
+import { CartService } from "@/services/cart";
 
 export type CartItem = {
   id: string;
@@ -13,7 +15,7 @@ export type CartItem = {
 type CartStore = {
   items: CartItem[];
   isLoading: boolean;
-  appliedPromo: any | null;
+  appliedPromo: Discount | null;
   isAuthenticated: boolean;
   setIsAuthenticated: (status: boolean) => void;
   fetchCart: (force?: boolean) => Promise<void>;
@@ -21,7 +23,7 @@ type CartStore = {
   removeItem: (id: string) => Promise<void>;
   updateQuantity: (id: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
-  setAppliedPromo: (promo: any | null) => void;
+  setAppliedPromo: (promo: Discount | null) => void;
   getTotalPrice: () => number;
   getDiscountAmount: () => number;
 };
@@ -38,11 +40,8 @@ export const useCartStore = create<CartStore>((set, get) => ({
     if (!get().isAuthenticated && !force) return;
     set({ isLoading: true });
     try {
-      const response = await fetch("/api/cart");
-      if (response.ok) {
-        const items = await response.json();
-        set({ items });
-      }
+      const items = await CartService.getCart();
+      set({ items });
     } catch (error) {
       console.error("Failed to fetch cart:", error);
     } finally {
@@ -73,26 +72,15 @@ export const useCartStore = create<CartStore>((set, get) => ({
     });
 
     if (!get().isAuthenticated) {
-      toast.success(`${item.name} added to cart`);
       return;
     }
 
     try {
-      const response = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: item.id, quantity: item.quantity }),
-      });
-      
-      if (!response.ok) {
-        const data = await response.json();
-        toast.error(data.error || "Failed to add to cart");
-        get().fetchCart(); // Re-sync with server
-      } else {
-        toast.success(`${item.name} added to cart`);
-      }
-    } catch (error) {
+      await CartService.addItem(item.id, item.quantity);
+    } catch (error: any) {
       console.error("Failed to add to cart:", error);
+      toast.error(error.message || "Failed to add to cart");
+      get().fetchCart(); // Re-sync with server
     }
   },
 
@@ -104,11 +92,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     if (!get().isAuthenticated) return;
 
     try {
-      await fetch("/api/cart", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: id }),
-      });
+      await CartService.removeItem(id);
     } catch (error) {
       console.error("Failed to remove from cart:", error);
     }
@@ -122,7 +106,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
     const state = get();
     const item = state.items.find(i => i.id === id);
-    
+
     if (item && quantity > item.stock) {
       toast.error(`Only ${item.stock} items available in stock.`);
       return;
@@ -137,19 +121,11 @@ export const useCartStore = create<CartStore>((set, get) => ({
     if (!get().isAuthenticated) return;
 
     try {
-      const response = await fetch("/api/cart", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: id, quantity }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        toast.error(data.error || "Failed to update quantity");
-        get().fetchCart(); // Re-sync
-      }
-    } catch (error) {
+      await CartService.updateQuantity(id, quantity);
+    } catch (error: any) {
       console.error("Failed to update quantity:", error);
+      toast.error(error.message || "Failed to update quantity");
+      get().fetchCart(); // Re-sync
     }
   },
 
@@ -158,11 +134,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     if (!get().isAuthenticated) return;
 
     try {
-      await fetch("/api/cart", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
+      await CartService.clearCart();
     } catch (error) {
       console.error("Failed to clear cart:", error);
     }

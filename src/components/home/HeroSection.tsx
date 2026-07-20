@@ -7,7 +7,7 @@ import { useTranslation } from "@/context/TranslationContext";
 export function HeroSection() {
   const { t } = useTranslation();
   return (
-    <section className="relative h-[90vh] flex items-center overflow-hidden bg-background">
+    <section className="relative h-[90vh] flex items-center overflow-hidden bg-background pwa-hide">
       <div className="absolute inset-0 z-0">
         <img
           src="https://picsum.photos/200/300"

@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCheckoutStore } from "@/store/checkoutStore";
-import { useEffect, useState } from "react";
+import { useAddressStore } from "@/store/addressStore";
+import { useEffect } from "react";
 import { MapPin, Loader2, ChevronDown, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -15,40 +16,21 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { LocationSelector } from "@/components/common/LocationSelector";
 
 export function ShippingForm() {
   const { t } = useTranslation();
   const { shippingAddress, setShippingAddress } = useCheckoutStore();
-  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { addresses: savedAddresses, isLoading, fetchAddresses } = useAddressStore();
 
   useEffect(() => {
-    const fetchAddresses = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch("/api/user/address");
-        if (response.ok) {
-          const data = await response.json();
-          setSavedAddresses(data);
-
-          // If there's a default address, auto-fill it
-          const defaultAddress = data.find((addr: any) => addr.isDefault);
-          if (defaultAddress && !shippingAddress.street) {
-            handleSelectAddress(defaultAddress);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch addresses:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAddresses();
+    fetchAddresses().then(() => {
+      const defaultAddress = useAddressStore.getState().addresses.find((a) => a.isDefault);
+      if (defaultAddress && !shippingAddress.street) handleSelectAddress(defaultAddress);
+    });
   }, []);
 
   const handleSelectAddress = (addr: any) => {
-    console.log("Selecting address:", addr);
     setShippingAddress({
       firstName: addr.firstName || "",
       lastName: addr.lastName || "",
@@ -59,13 +41,6 @@ export function ShippingForm() {
       country: addr.country || "India",
       phone: addr.phone || "",
     });
-    // @ts-ignore
-    if (window.toast) {
-      // @ts-ignore
-      window.toast.success(t("cart.checkout.shipping.addressApplied"));
-    } else {
-      import("sonner").then(({ toast }) => toast.success(t("cart.checkout.shipping.addressApplied")));
-    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +72,7 @@ export function ShippingForm() {
         {savedAddresses.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Button variant="outline" className="h-10 text-[10px] uppercase tracking-widest font-bold gap-2 border-primary/20 hover:border-primary">
+              <Button variant="outline" className="h-10 text-spaced-bold gap-2 border-primary/20 hover:border-primary">
                 {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
                 {t("cart.checkout.shipping.useSavedAddress")} <ChevronDown className="w-3 h-3" />
               </Button>
@@ -129,7 +104,7 @@ export function ShippingForm() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
         <div className="space-y-2">
-          <Label htmlFor="first-name" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("cart.checkout.shipping.firstName")}</Label>
+          <Label htmlFor="first-name" className="text-spaced-bold opacity-60">{t("cart.checkout.shipping.firstName")}</Label>
           <Input
             id="first-name"
             placeholder={t("cart.checkout.shipping.placeholders.firstName")}
@@ -139,7 +114,7 @@ export function ShippingForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="last-name" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("cart.checkout.shipping.lastName")}</Label>
+          <Label htmlFor="last-name" className="text-spaced-bold opacity-60">{t("cart.checkout.shipping.lastName")}</Label>
           <Input
             id="last-name"
             placeholder={t("cart.checkout.shipping.placeholders.lastName")}
@@ -150,7 +125,7 @@ export function ShippingForm() {
         </div>
 
         <div className="md:col-span-2 space-y-2">
-          <Label htmlFor="address" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("cart.checkout.shipping.streetAddress")}</Label>
+          <Label htmlFor="address" className="text-spaced-bold opacity-60">{t("cart.checkout.shipping.streetAddress")}</Label>
           <Input
             id="address"
             placeholder={t("cart.checkout.shipping.placeholders.street")}
@@ -160,40 +135,21 @@ export function ShippingForm() {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="city" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("cart.checkout.shipping.city")}</Label>
-          <Input
-            id="city"
-            placeholder={t("cart.checkout.shipping.placeholders.city")}
-            value={shippingAddress.city || ""}
-            onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="state" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("cart.checkout.shipping.state")}</Label>
-          <Input
-            id="state"
-            placeholder={t("cart.checkout.shipping.placeholders.state")}
-            value={shippingAddress.state || ""}
-            onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="zip" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("cart.checkout.shipping.zipCode")}</Label>
-          <Input
-            id="zip"
-            placeholder={t("cart.checkout.shipping.placeholders.zip")}
-            value={shippingAddress.zipCode || ""}
-            onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
+        <div className="md:col-span-2">
+          <LocationSelector
+            values={{
+              country: shippingAddress.country || "India",
+              state: shippingAddress.state || "",
+              city: shippingAddress.city || "",
+              zipCode: shippingAddress.zipCode || "",
+            }}
+            onChange={(field, value) => setShippingAddress({ [field]: value })}
+            labelClassName="text-spaced-bold opacity-60"
           />
         </div>
 
         <div className="md:col-span-2 space-y-2">
-          <Label htmlFor="phone" className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("cart.checkout.shipping.phone")}</Label>
+          <Label htmlFor="phone" className="text-spaced-bold opacity-60">{t("cart.checkout.shipping.phone")}</Label>
           <Input
             id="phone"
             placeholder={t("cart.checkout.shipping.placeholders.phone")}
@@ -206,7 +162,7 @@ export function ShippingForm() {
 
       <div className="flex items-center space-x-2 pt-4">
         <Checkbox id="billing-same" defaultChecked className="border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
-        <Label htmlFor="billing-same" className="text-xs text-muted-foreground font-serif italic cursor-pointer">
+        <Label htmlFor="billing-same" className="text-xs muted-italic cursor-pointer">
           {t("cart.checkout.shipping.billingSame")}
         </Label>
       </div>

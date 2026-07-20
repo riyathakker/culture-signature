@@ -13,28 +13,57 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
   const query = searchParams.get("query") || "";
   const categoryId = searchParams.get("categoryId") || "";
   const status = searchParams.get("status") || "";
+  const pageVal = searchParams.get("page");
+  const limitVal = searchParams.get("limit");
 
   try {
+    const where = {
+      AND: [
+        query ? {
+          OR: [
+            { name: { contains: query, mode: "insensitive" as const } },
+            { description: { contains: query, mode: "insensitive" as const } },
+          ],
+        } : {},
+        categoryId ? { categoryId } : {},
+        status === "OUT_OF_STOCK" ? { stock: 0 } : {},
+        status === "LOW_STOCK" ? { stock: { lt: 5, gt: 0 } } : {},
+      ],
+    };
+
+    const include = {
+      category: true,
+    };
+
+    const orderBy = {
+      createdAt: "desc" as const,
+    };
+
+    if (pageVal && limitVal) {
+      const page = parseInt(pageVal);
+      const limit = parseInt(limitVal);
+      const skip = (page - 1) * limit;
+
+      const [items, total] = await Promise.all([
+        prisma.product.findMany({
+          where,
+          include,
+          orderBy,
+          skip,
+          take: limit,
+        }),
+        prisma.product.count({
+          where,
+        }),
+      ]);
+
+      return NextResponse.json({ items, total });
+    }
+
     const products = await prisma.product.findMany({
-      where: {
-        AND: [
-          query ? {
-            OR: [
-              { name: { contains: query, mode: "insensitive" } },
-              { description: { contains: query, mode: "insensitive" } },
-            ],
-          } : {},
-          categoryId ? { categoryId } : {},
-          status === "OUT_OF_STOCK" ? { stock: 0 } : {},
-          status === "LOW_STOCK" ? { stock: { lt: 5, gt: 0 } } : {},
-        ],
-      },
-      include: {
-        category: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
+      where,
+      include,
+      orderBy,
     });
 
     return NextResponse.json(products);

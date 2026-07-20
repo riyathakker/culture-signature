@@ -11,13 +11,13 @@ interface AccountStatCardProps {
   className?: string;
 }
 
-export function AccountStatCard({ 
-  label, 
-  value, 
-  icon: Icon, 
-  href, 
+export function AccountStatCard({
+  label,
+  value,
+  icon: Icon,
+  href,
   linkText = "View All",
-  className 
+  className
 }: AccountStatCardProps) {
   return (
     <div className={cn(
@@ -28,12 +28,12 @@ export function AccountStatCard({
         <Icon className="w-5 h-5" />
       </div>
       <div className="space-y-1">
-        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{label}</p>
+        <p className="text-spaced-bold font-bold text-muted-foreground">{label}</p>
         <h3 className="text-2xl font-heading">{value}</h3>
       </div>
-      <Link 
-        href={href} 
-        className="text-[10px] uppercase tracking-widest font-bold text-primary hover:opacity-70 flex items-center gap-1 group-hover:gap-2 transition-all"
+      <Link
+        href={href}
+        className="text-spaced-bold font-bold text-primary hover:opacity-70 flex items-center gap-1 group-hover:gap-2 transition-all"
       >
         {linkText} <span className="text-xs">→</span>
       </Link>

@@ -1,14 +1,12 @@
 "use client";
 
 import { StatCard } from "@/components/admin/StatCard";
-import { 
-  IndianRupee, 
-  ShoppingBag, 
-  Users, 
-  Activity,
+import {
+  IndianRupee,
+  ShoppingBag,
+  Users,
   ArrowUpRight,
   Package,
-  Loader2
 } from "lucide-react";
 import { 
   Table, 
@@ -19,13 +17,13 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
+import { useEffect } from "react";
 import Link from "next/link";
 import {cn} from "@/lib/utils"
 import { useAdminStore } from "@/store/adminStore";
 import { Button } from "@/components/ui/button";
 import { CommonLoader } from "@/components/common/Loader";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
 export default function AdminOverview() {
   const { overview: data, isLoading, fetchOverview } = useAdminStore();
@@ -51,7 +49,7 @@ export default function AdminOverview() {
   if (!data) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-center">
-        <p className="text-muted-foreground font-serif italic">Failed to load the executive summary.</p>
+        <p className="muted-italic">Failed to load the executive summary.</p>
         <Button onClick={() => fetchOverview()} variant="outline" className="uppercase tracking-widest text-[10px] font-bold">
           Try Again
         </Button>
@@ -61,16 +59,15 @@ export default function AdminOverview() {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
-      <div className="space-y-2">
-        <h1 className="text-4xl font-heading tracking-tight">Executive Overview</h1>
-        <p className="text-muted-foreground font-serif italic">Real-time pulse of the Culture Signature house.</p>
-      </div>
-
-      <div className="grid-split lg:grid-cols-4">
-        <StatCard label="Total Revenue" value={formatPrice(data.revenue)} trend="+12.5%" trendType="up" icon={IndianRupee} />
-        <StatCard label="Active Orders" value={data.activeOrders.toString()} trend="+4.2%" trendType="up" icon={ShoppingBag} />
-        <StatCard label="Total Customers" value={data.customers.toString()} trend="+8.1%" trendType="up" icon={Users} />
-        <StatCard label="Conv. Rate" value="3.8%" trend="-0.4%" trendType="down" icon={Activity} />
+      <AdminPageHeader
+        title="Executive Overview"
+        description="Real-time pulse of the Culture Signature house."
+      />
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <StatCard label="Total Revenue" value={formatPrice(data.revenue)} trend={data.revenueTrend} icon={IndianRupee} />
+        <StatCard label="Active Orders" value={data.activeOrders.toString()} trend={data.ordersTrend} icon={ShoppingBag} />
+        <StatCard label="Total Customers" value={data.customers.toString()} trend={data.customersTrend} icon={Users} />
+        <StatCard label="Low Stock" value={data.lowStockProducts.length.toString()} icon={Package} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -78,16 +75,16 @@ export default function AdminOverview() {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex justify-between items-end">
             <h3 className="text-[10px] uppercase tracking-[0.3em] font-bold">Priority Orders</h3>
-            <Link href="/admin/orders" className="text-[10px] uppercase tracking-widest font-bold text-primary hover:opacity-70">View All</Link>
+            <Link href="/admin/orders" className="text-spaced-bold text-primary hover:opacity-70">View All</Link>
           </div>
           <div className="bg-background border border-border/50 rounded-sm overflow-hidden">
             <Table>
               <TableHeader className="bg-secondary/20">
                 <TableRow>
-                  <TableHead className="text-[10px] uppercase tracking-widest font-bold h-12">ID</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-widest font-bold h-12">Customer</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-widest font-bold h-12">Total</TableHead>
-                  <TableHead className="text-[10px] uppercase tracking-widest font-bold h-12">Status</TableHead>
+                  <TableHead className="text-spaced-bold h-12">ID</TableHead>
+                  <TableHead className="text-spaced-bold h-12">Customer</TableHead>
+                  <TableHead className="text-spaced-bold h-12">Total</TableHead>
+                  <TableHead className="text-spaced-bold h-12">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -120,7 +117,7 @@ export default function AdminOverview() {
           <div className="space-y-4">
             {data.lowStockProducts.length === 0 ? (
               <div className="text-center py-8 border border-dashed border-border/50 rounded-sm">
-                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Inventory Secured</p>
+                <p className="text-spaced-bold text-muted-foreground">Inventory Secured</p>
               </div>
             ) : (
               data.lowStockProducts.map((product: any) => {
@@ -138,8 +135,8 @@ export default function AdminOverview() {
                       <Package className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] uppercase tracking-widest font-bold truncate">{product.name}</p>
-                      <p className="text-xs text-muted-foreground font-serif italic">
+                      <p className="text-spaced-bold truncate">{product.name}</p>
+                      <p className="text-xs muted-italic">
                         {isOutOfStock ? "Out of stock" : `Low stock: ${product.stock} units left`}
                       </p>
                     </div>

@@ -17,9 +17,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/common/IconButton";
 
 interface UserMenuProps {
   isLoggedIn: boolean;
@@ -46,37 +46,22 @@ export function UserMenu({
   const isAdmin = user?.role === "ADMIN";
 
   const menuItems = useMemo(
-    () => [
-      ...(isAdmin
-        ? [
-            {
-              href: "/admin",
-              label: t("nav.account.adminPanel"),
-              icon: LayoutDashboard,
-            },
-          ]
-        : []),
-
-      {
-        href: "/account",
-        label: t("nav.account.myAccount"),
-        icon: User,
-      },
-    ],
+    () => isAdmin
+      ? [{ href: "/admin", label: t("nav.account.adminPanel"), icon: LayoutDashboard }]
+      : [{ href: "/account", label: t("nav.account.myAccount"), icon: User }],
     [isAdmin, t]
   );
 
   const handleSignOut = async () => {
-    await signOut();
-
+    await signOut({ callbackUrl: "/" });
     toast.success(t("nav.account.signOutSuccess"));
   };
 
   if (!isLoggedIn) {
     return (
-      <IconButton 
-        icon={User} 
-        onClick={onAuthModalOpen} 
+      <IconButton
+        icon={User}
+        onClick={onAuthModalOpen}
         aria-label={t("nav.account.label")}
       />
     );

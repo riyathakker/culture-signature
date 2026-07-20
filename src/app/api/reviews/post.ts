@@ -7,7 +7,7 @@ export default async function handler(req: NextRequest & { userEmail?: string })
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { productId, rating, comment } = await req.json();
+  const { productId, rating, comment, orderId } = await req.json();
 
   const user = await prisma.user.findUnique({
     where: { email: userEmail }
@@ -15,12 +15,16 @@ export default async function handler(req: NextRequest & { userEmail?: string })
 
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
+  const existing = await prisma.review.findFirst({ where: { userId: user.id, productId } });
+  if (existing) return NextResponse.json({ error: "You have already reviewed this product." }, { status: 409 });
+
   try {
     const review = await prisma.review.create({
       data: {
         userId: user.id,
         productId,
-        rating: parseInt(rating),
+        orderId: orderId || null,
+        rating: parseFloat(rating),
         comment,
       }
     });

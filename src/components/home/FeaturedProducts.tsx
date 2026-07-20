@@ -3,13 +3,16 @@
 import { useEffect } from "react";
 
 import { Container } from "@/components/layout/Container";
-import { SectionTitle } from "@/components/ui/SectionTitle";
-import { ProductCard } from "@/components/ui/ProductCard";
+import { SectionTitle } from "@/components/common/SectionTitle";
+import { ProductCard } from "@/components/common/ProductCard";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 
 import { useProductStore } from "@/store/productStore";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { Product } from "@/types";
+import Link from "next/link";
+import { ROUTES } from "@/constants/routes";
 
 export function FeaturedProducts() {
   const {
@@ -30,7 +33,7 @@ export function FeaturedProducts() {
   }
 
   return (
-    <section className=" py-24 border-t border-border/50">
+    <section className="py-10 pwa-section bg-secondary/50 border-t border-border/50">
       <Container>
         <SectionTitle
           title={t("home.featured.title")}
@@ -38,20 +41,45 @@ export function FeaturedProducts() {
         />
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {[...Array(4)].map((_, i) => (
               <ProductSkeleton key={i} />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product: any) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-              />
-            ))}
-          </div>
+          <>
+            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar" style={{ WebkitOverflowScrolling: "touch" }}>
+              {featuredProducts.map((product: Product) => (
+                <div
+                  key={product.id}
+                  className="min-w-[160px] max-w-[160px] lg:min-w-[240px] lg:max-w-[240px] flex-shrink-0"
+                >
+                  <ProductCard product={product} hideActions />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center mt-2 md:mt-6">
+              <Link
+                href={ROUTES.COLLECTIONS}
+                className="
+                  px-8
+                  py-3
+                  border
+                  border-primary
+                  text-primary
+                  uppercase
+                  tracking-[0.2em]
+                  text-sm
+                  transition-all
+                  duration-300
+                  hover:bg-primary
+                  hover:text-white
+                "
+              >
+                {t("home.featured.viewCollection")}
+              </Link>
+            </div>
+          </>
         )}
       </Container>
     </section>

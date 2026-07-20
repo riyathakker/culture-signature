@@ -2,24 +2,28 @@
 
 import { cn } from "@/lib/utils";
 import { Container } from "../layout/Container";
-import { BreadcrumbItem, Breadcrumbs } from "../ui/Breadcrumbs";
+import { BreadcrumbItem, Breadcrumbs } from "./Breadcrumbs";
 
 interface Props {
     label: BreadcrumbItem[];
     heading?: string;
     description?: string;
     children: React.ReactNode;
+    breadcrumbClassName?: string;
+    headerClassName?: string;
 }
-export function HomePageContainer({ label, heading, description, children }: Props) {
+export function HomePageContainer({ label, heading, description, children, breadcrumbClassName, headerClassName }: Props) {
     return (
-        <div className="bg-background min-h-screen pb-20">
-            <div className={cn("bg-secondary/20 py-16", heading && description && "mb-10")}>
+        <div className="bg-background pb-10 md:pb-15">
+            <div className={cn("py-4 md:py-12 [@media(display-mode:standalone)]:py-2", heading && description && "mb-0 md:mb-6", headerClassName)}>
                 <Container>
-                    <Breadcrumbs items={label} />
-                    {heading && <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2"> {heading}</h1>}
-                    {description && <p className="text-muted-foreground font-serif italic text-lg max-w-2xl">
-                        {description}
-                    </p>}
+                    <Breadcrumbs items={label} className={breadcrumbClassName} />
+                    <div className="hidden sm:inline-block">
+                        {heading && <h1 className="text-3xl font-heading mt-0 md:mt-3 mb-2"> {heading}</h1>}
+                        {description && <p className="muted-italic text-l max-w-2xl">
+                            {description}
+                        </p>}
+                    </div>
                 </Container>
             </div>
             <Container>

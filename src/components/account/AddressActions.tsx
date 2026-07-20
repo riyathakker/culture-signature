@@ -5,14 +5,16 @@ import { Edit2, Trash2, MapPin, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AddressDialog } from "./AddressDialog";
-import { ConfirmationDialog } from "@/components/ui/ConfirmationDialog";
-import { cn } from "@/lib/utils";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+
+import { useAddressStore } from "@/store/addressStore";
 
 interface AddressActionsProps {
   address: any;
 }
 
 export function AddressActions({ address }: AddressActionsProps) {
+  const { deleteAddress, setDefaultAddress } = useAddressStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const router = useRouter();
@@ -20,11 +22,7 @@ export function AddressActions({ address }: AddressActionsProps) {
   const onDelete = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/user/address?id=${address.id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to delete address");
+      await deleteAddress(address.id);
 
       toast.success("Address deleted");
       setIsDeleteDialogOpen(false);
@@ -39,13 +37,7 @@ export function AddressActions({ address }: AddressActionsProps) {
   const onSetDefault = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/user/address", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...address, isDefault: true }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update address");
+      await setDefaultAddress(address);
 
       toast.success("Default address updated");
       router.refresh();
@@ -59,15 +51,15 @@ export function AddressActions({ address }: AddressActionsProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 absolute top-4 right-4 md:top-6 md:right-6">
-        <AddressDialog 
-          address={address} 
+        <AddressDialog
+          address={address}
           trigger={
             <button className="p-2.5 bg-background border border-border/50 hover:border-primary hover:text-primary rounded-full shadow-sm transition-all duration-300">
               <Edit2 className="w-3.5 h-3.5" />
             </button>
-          } 
+          }
         />
-        <button 
+        <button
           onClick={() => setIsDeleteDialogOpen(true)}
           disabled={isLoading}
           className="p-2.5 bg-background border border-border/50 hover:border-destructive hover:text-destructive rounded-full shadow-sm transition-all duration-300 disabled:opacity-50"
@@ -78,15 +70,15 @@ export function AddressActions({ address }: AddressActionsProps) {
 
       <div className="pt-2">
         {address.isDefault ? (
-          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-full w-fit">
+          <div className="flex items-center gap-1.5 text-spaced-bold font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-full w-fit">
             <Check className="w-3 h-3" />
             Default Shipping
           </div>
         ) : (
-          <button 
+          <button
             onClick={onSetDefault}
             disabled={isLoading}
-            className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary bg-secondary/30 hover:bg-primary/5 px-3 py-1.5 rounded-full transition-all duration-300 disabled:opacity-50 group/btn"
+            className="flex items-center gap-2 text-spaced-bold font-bold text-muted-foreground hover:text-primary bg-secondary/30 hover:bg-primary/5 px-3 py-1.5 rounded-full transition-all duration-300 disabled:opacity-50 group/btn"
           >
             {isLoading ? (
               <Loader2 className="w-3 h-3 animate-spin" />

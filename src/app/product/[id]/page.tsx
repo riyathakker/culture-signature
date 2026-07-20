@@ -1,19 +1,19 @@
 "use client";
 
 import { Container } from "@/components/layout/Container";
-import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductInfo } from "@/components/product/ProductInfo";
-import { ProductTabs } from "@/components/product/ProductTabs";
 import { ProductReviews } from "@/components/product/ProductReviews";
-import { ProductCard } from "@/components/ui/ProductCard";
-import { SectionTitle } from "@/components/ui/SectionTitle";
+import { RecentlyViewed } from "@/components/product/RecentlyViewed";
+import { ProductCard } from "@/components/common/ProductCard";
+import { SectionTitle } from "@/components/common/SectionTitle";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-
 import { useTranslation } from "@/context/TranslationContext";
+import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -22,40 +22,59 @@ export default function ProductPage() {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const { t } = useTranslation();
+  const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/products`);
-        const allProducts = await response.json();
-        const foundProduct = allProducts.find((p: any) => p.id === id);
+        const res = await fetch(`/api/products/${id}`);
+        if (!res.ok) throw new Error("Product not found");
+        const data = await res.json();
 
-        if (!foundProduct) throw new Error("Product not found");
+        const colors = Array.isArray(data.colors) ? data.colors : [];
+        const defaultImages = (colors.length > 0 && colors[0].images?.length > 0)
+          ? colors[0].images
+          : data.images || [];
+        setGalleryImages(defaultImages);
 
-        setProduct({
-          ...foundProduct,
-          name: foundProduct.name,
-          image: foundProduct.images?.[0] || "/placeholder.jpg",
-          category: foundProduct.category?.name || t("shop.product.defaultCollection"),
-          categoryId: foundProduct.categoryId,
-          details: {
-            description: foundProduct.description,
-            specifications: [
-              { label: t("shop.product.details.specs.category"), value: foundProduct.category?.name || t("shop.product.defaultCollection") },
-              { label: t("shop.product.details.specs.stock"), value: foundProduct.stock > 0 ? t("shop.product.details.specs.inStock") : t("shop.product.details.specs.outOfStock") }
-            ],
-            shipping: t("shop.product.details.shippingNote")
-          }
+        addRecentlyViewed({
+          id: data.id,
+          name: data.name,
+          price: data.price,
+          discount: data.discount || 0,
+          images: data.images || [],
+          category: data.category?.name || t("shop.product.defaultCollection"),
         });
 
-        // Simple related products (same category)
-        const related = allProducts
-          .filter((p: any) => p.categoryId === foundProduct.categoryId && p.id !== id)
-          .slice(0, 3);
-        setRelatedProducts(related);
+        setProduct({
+          ...data,
+          image: data.images?.[0] || "/placeholder.jpg",
+          category: data.category?.name || t("shop.product.defaultCollection"),
+          categoryId: data.categoryId,
+          colors,
+          details: {
+            description: data.description,
+            specifications: [
+              { label: t("shop.product.details.specs.category"), value: data.category?.name || t("shop.product.defaultCollection") },
+              { label: t("shop.product.details.specs.stock"), value: data.stock > 0 ? t("shop.product.details.specs.inStock") : t("shop.product.details.specs.outOfStock") },
+            ],
+            shipping: t("shop.product.details.shippingNote"),
+          },
+        });
 
+        // Fetch related products from same category
+        if (data.categoryId) {
+          const relRes = await fetch(`/api/products?categoryId=${data.categoryId}&limit=5`);
+          const relData = await relRes.json();
+          setRelatedProducts(
+            (Array.isArray(relData) ? relData : [])
+              .filter((p: any) => p.id !== id)
+              .slice(0, 4)
+          );
+        }
       } catch (error) {
         toast.error(t("shop.product.details.loadError"));
       } finally {
@@ -66,61 +85,71 @@ export default function ProductPage() {
     if (id) fetchProduct();
   }, [id, t]);
 
-  if (loading) return (
-    <div className="h-screen flex items-center justify-center">
-      <Loader2 className="w-10 h-10 animate-spin text-primary" />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      </div>
+    );
 
-  if (!product) return (
-    <div className="h-screen flex items-center justify-center">
-      <p className="text-xl font-serif italic">{t("shop.product.details.notFound")}</p>
-    </div>
-  );
+  if (!product)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p className="text-xl font-serif italic">{t("shop.product.details.notFound")}</p>
+      </div>
+    );
 
-  console.log("Efrwefwef", product)
   return (
     <div className="bg-background min-h-screen pb-20">
-      <Container className="py-8">
+      <Container className="pt-4 pb-8">
         <Breadcrumbs
           items={[
             from === "categories"
-              ? { label: "Categories", href: "/categories" }
-              : { label: "Collections", href: "/collections" },
+              ? { label: t("nav.links.categories") || "Categories", href: "/categories" }
+              : from === "new-arrivals"
+              ? { label: t("nav.links.newArrivals") || "New Arrivals", href: "/new-arrivals" }
+              : { label: t("nav.links.collections") || "Collections", href: "/collections" },
 
             ...(from === "categories"
-              ? [
-                {
-                  label: product.category,
-                  href: `/categories/${product.categoryId}`,
-                },
-              ]
+              ? [{ label: product.category, href: `/categories/${product.categoryId}` }]
               : []),
 
             { label: product.name },
           ]}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mt-10">
-          <ProductGallery images={product.images || [product.image]} />
-          <ProductInfo product={product} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 mt-4">
+          <ProductGallery images={galleryImages.length > 0 ? galleryImages : (product.images || [product.image])} />
+          <ProductInfo product={product} onColorChange={setGalleryImages} />
         </div>
 
-        <div className="mt-20">
-          <ProductReviews />
+        <div className="mt-10">
+          <ProductReviews productName={product.name} />
         </div>
 
-        {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div className="mt-32">
+          <div className="mt-14">
             <SectionTitle
               title={t("shop.product.details.relatedTitle")}
               subtitle={t("shop.product.details.relatedSubtitle")}
               align="center"
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+            <div
+              className={
+                "mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 md:max-w-3xl lg:max-w-4xl md:mx-auto " +
+                // PWA: collapse to a single horizontal scroll row
+                "[@media(display-mode:standalone)]:flex [@media(display-mode:standalone)]:max-w-none [@media(display-mode:standalone)]:mx-0 " +
+                "[@media(display-mode:standalone)]:flex-nowrap [@media(display-mode:standalone)]:overflow-x-auto [@media(display-mode:standalone)]:gap-4 " +
+                "[@media(display-mode:standalone)]:snap-x [@media(display-mode:standalone)]:snap-mandatory [@media(display-mode:standalone)]:pb-2 no-scrollbar"
+              }
+            >
               {relatedProducts.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <div
+                  key={p.id}
+                  className="[@media(display-mode:standalone)]:min-w-[46%] [@media(display-mode:standalone)]:shrink-0 [@media(display-mode:standalone)]:snap-start"
+                >
+                  <ProductCard product={p} hideActions />
+                </div>
               ))}
             </div>
           </div>

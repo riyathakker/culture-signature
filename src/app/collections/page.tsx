@@ -1,47 +1,56 @@
 "use client";
-import { ProductCard } from "@/components/ui/ProductCard";
-import { FilterSidebar } from "@/components/shop/FilterSidebar";
+import { ProductCard } from "@/components/common/ProductCard";
+import { FilterSidebar, FilterDraft } from "@/components/shop/FilterSidebar";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-
+import { useState, useEffect, useMemo } from "react";
+import { useProductStore } from "@/store/productStore";
 import { useTranslation } from "@/context/TranslationContext";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
+import { ROUTES } from "@/constants/routes";
+import { useSearchParams } from "next/navigation";
 
 export default function ShopPage() {
   const { t } = useTranslation();
+  const { allUserProducts: products, isLoading: loading, fetchAllUserProducts } = useProductStore();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search") ?? "";
   const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [hasDiscountOnly, setHasDiscountOnly] = useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
   const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const url = activeCategoryIds.length > 0
-          ? `/api/products?categoryId=${activeCategoryIds.join(",")}`
-          : "/api/products";
-        const res = await fetch(url);
-        const data = await res.json();
-        setProducts(data);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchAllUserProducts();
+  }, []);
 
-    fetchProducts();
-  }, [activeCategoryIds]);
+  const priceMax = useMemo(
+    () => products.length ? Math.ceil(Math.max(...products.map((p) => p.price)) / 1000) * 1000 : 100000,
+    [products]
+  );
 
-  const searchParams = useSearchParams();
-  const minPrice = Number(searchParams.get("minPrice")) || 0;
-  const maxPrice = Number(searchParams.get("maxPrice")) || 10000;
+  const matchesFilters = (p: (typeof products)[number], f: FilterDraft) => {
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const inSearch = p.name.toLowerCase().includes(q) ||
+        (p.description ?? "").toLowerCase().includes(q) ||
+        (p.category?.name ?? "").toLowerCase().includes(q);
+      if (!inSearch) return false;
+    }
+    if (f.categoryIds.length > 0 && !f.categoryIds.includes(String(p.categoryId ?? p.category?.id))) return false;
+    if (!(Number(p.price) >= f.price[0] && (f.price[1] >= priceMax || Number(p.price) <= f.price[1]))) return false;
+    if (f.inStock && !(p.stock > 0)) return false;
+    if (f.discount && !(p.discount && p.discount > 0)) return false;
+    return true;
+  };
 
-  const filteredProducts = products.filter((p) => Number(p.price) >= minPrice && Number(p.price) <= maxPrice);
+  const filtered = products.filter((p) =>
+    matchesFilters(p, { categoryIds: activeCategoryIds, inStock: inStockOnly, discount: hasDiscountOnly, price: priceRange })
+  );
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  const sortedProducts = [...filtered].sort((a, b) => {
     if (sortBy === "price-low") return a.price - b.price;
     if (sortBy === "price-high") return b.price - a.price;
     if (sortBy === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -49,65 +58,71 @@ export default function ShopPage() {
     return 0;
   });
 
+  const sharedFilterProps = {
+    showCategories: true,
+    activeCategoryIds,
+    onCategoryChange: setActiveCategoryIds,
+    inStockOnly,
+    onInStockChange: setInStockOnly,
+    hasDiscountOnly,
+    onHasDiscountChange: setHasDiscountOnly,
+    priceRange,
+    onPriceChange: setPriceRange,
+    maxPrice: priceMax,
+    filteredCount: sortedProducts.length,
+    getFilteredCount: (draft: FilterDraft) => products.filter((p) => matchesFilters(p, draft)).length,
+  };
+
   return (
     <HomePageContainer
       label={[{ label: t("shop.subtitle") }]}
-      heading={t("shop.title")}
-      description={t("shop.description")}
+      heading={searchQuery.trim() ? `Results for "${searchQuery}"` : t("shop.title")}
+      description={searchQuery.trim() ? `${sortedProducts.length} item${sortedProducts.length !== 1 ? "s" : ""} found` : t("shop.description")}
     >
-
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-64 flex-shrink-0">
-          <FilterSidebar showCategories
-            activeCategoryIds={activeCategoryIds}
-            onCategoryChange={setActiveCategoryIds}
-          />
+          <FilterSidebar {...sharedFilterProps} />
         </aside>
 
         {/* Main Content */}
         <div className="flex-1 space-y-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
-            <div className="flex items-center gap-4">
-              <FilterDrawer showCategories
-            activeCategoryIds={activeCategoryIds}
-            onCategoryChange={setActiveCategoryIds}/>
-              <p className="text-spaced-bold text-muted-foreground">
-                {t("shop.showing").replace("{count}", products.length.toString())}
+          <div className="flex items-center justify-between gap-3 border-b pb-6">
+            <div className="flex items-center gap-3">
+              <FilterDrawer {...sharedFilterProps} />
+              <p className="hidden sm:inline-block text-spaced-bold text-muted-foreground whitespace-nowrap">
+                {t("shop.showing").replace("{count}", sortedProducts.length.toString())}
               </p>
             </div>
             <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid-gallery">
               {[...Array(6)].map((_, i) => (
                 <ProductSkeleton key={i} />
               ))}
             </div>
-          ) : products.length === 0 ? (
+          ) : sortedProducts.length === 0 ? (
             <div className="py-32 text-center space-y-4">
-              <p className="text-muted-foreground font-serif italic text-lg">{t("shop.noMatches")}</p>
+              <p className="muted-italic text-lg">{t("shop.noMatches")}</p>
               <button
-                onClick={() => window.location.href = "/shop"}
+                onClick={() => {
+                  setActiveCategoryIds([]);
+                  setInStockOnly(false);
+                  setHasDiscountOnly(false);
+                  setPriceRange([0, priceMax]);
+                }}
                 className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"
               >
                 {t("shop.clearFilters")}
               </button>
             </div>
           ) : (
-            <div className="grid-gallery  animate-in fade-in duration-700">
+            <div className="grid-gallery animate-in fade-in duration-700">
               {sortedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
-            </div>
-          )}
-
-          {!loading && products.length > 0 && (
-            <div className="pt-20 flex justify-center">
-              <div className="flex gap-2">
-                <button className="w-10 h-10 flex items-center justify-center border border-primary bg-primary text-primary-foreground font-bold text-xs">1</button>
-              </div>
             </div>
           )}
         </div>

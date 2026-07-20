@@ -1,14 +1,8 @@
 import { create } from "zustand";
+import { Product } from "@/types";
+import { WishlistService } from "@/services/wishlist";
 
-export type WishlistItem = {
-  id: string;
-  name: string;
-  price: number;
-  images: string[];
-  category: string;
-  rating: number;
-  description: string;
-};
+export type WishlistItem = Product;
 
 type WishlistStore = {
   items: WishlistItem[];
@@ -27,11 +21,8 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
   fetchWishlist: async () => {
     set({ isLoading: true });
     try {
-      const response = await fetch("/api/wishlist");
-      if (response.ok) {
-        const items = await response.json();
-        set({ items });
-      }
+      const items = await WishlistService.getWishlist();
+      set({ items });
     } catch (error) {
       console.error("Failed to fetch wishlist:", error);
     } finally {
@@ -46,11 +37,7 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
     set((state) => ({ items: [...state.items, item] }));
 
     try {
-      await fetch("/api/wishlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: item.id }),
-      });
+      await WishlistService.addItem(item.id);
     } catch (error) {
       console.error("Failed to add to wishlist:", error);
     }
@@ -62,11 +49,7 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
     }));
 
     try {
-      await fetch("/api/wishlist", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: id }),
-      });
+      await WishlistService.removeItem(id);
     } catch (error) {
       console.error("Failed to remove from wishlist:", error);
     }

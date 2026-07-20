@@ -1,39 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, User, ArrowRight, Mail, Lock } from "lucide-react";
-import Link from "next/link";
+import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 interface AuthModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 type AuthView = "login" | "signup" | "forgot-password";
 
 import { useTranslation } from "@/context/TranslationContext";
 
-export function AuthModal({ open, onOpenChange }: AuthModalProps) {
+export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: AuthModalProps) {
   const { t } = useTranslation();
+  const { isModalOpen, callbackUrl, closeModal } = useAuthStore();
+  const open = openProp ?? isModalOpen;
+  const onOpenChange = onOpenChangeProp ?? ((val: boolean) => { if (!val) closeModal(); });
   const [view, setView] = useState<AuthView>("login");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuthStore();
   const router = useRouter();
+
+  // On mobile, redirect to the login page instead of showing the modal
+  useEffect(() => {
+    if (open && window.innerWidth < 768) {
+      onOpenChange(false);
+      const query = callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : "";
+      router.push(`/login${query}`);
+    }
+  }, [open]);
 
   // Form states
   const [name, setName] = useState("");
@@ -57,7 +65,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         } else {
           toast.success(t("auth.login.success"));
           onOpenChange(false);
-          router.refresh();
+          if (callbackUrl) {
+            router.push(callbackUrl);
+          } else {
+            router.refresh();
+          }
         }
       } else if (view === "signup") {
         const response = await fetch("/api/auth/signup", {
@@ -86,7 +98,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           setView("login");
         } else {
           onOpenChange(false);
-          router.refresh();
+          if (callbackUrl) {
+            router.push(callbackUrl);
+          } else {
+            router.refresh();
+          }
         }
       }
     } catch (error: any) {
@@ -98,7 +114,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] p-0 border-none bg-background rounded-2xl shadow-2xl [&>button]:text-white [&>button]:opacity-100">
+      <DialogContent className="sm:max-w-[450px] p-0 border-none bg-background rounded-2xl overflow-hidden shadow-2xl [&>button]:text-white [&>button]:opacity-100">
         {/* Banner */}
         <div className="relative h-18 bg-primary flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-luxury-gradient opacity-20" />
@@ -114,7 +130,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               {view === "signup" && t("auth.signup.title")}
               {view === "forgot-password" && t("auth.forgotPassword.title")}
             </h3>
-            <p className="text-sm text-muted-foreground font-serif italic">
+            <p className="text-sm muted-italic">
               {view === "login" && t("auth.login.description")}
               {view === "signup" && t("auth.signup.description")}
               {view === "forgot-password" && t("auth.forgotPassword.description")}
@@ -227,7 +243,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
           <div className="text-center">
             {view === "login" ? (
-              <p className="text-sm text-muted-foreground font-serif italic">
+              <p className="text-sm muted-italic">
                 {t("auth.login.newToBrand")}{"  "}
                 <button
                   onClick={() => setView("signup")}

@@ -1,9 +1,12 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "@/context/TranslationContext";
+import { ContactService } from "@/services/contact";
 
 import {
   Phone,
@@ -13,11 +16,36 @@ import {
 } from "lucide-react";
 
 import { HomePageContainer } from "@/components/common/HomePageContainer";
-import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import { socialLinks } from "@/constants/constants";
 
 export default function ContactPage() {
   const { t } = useTranslation();
+
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleChange = (field: keyof typeof form) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      toast.error(t("contact.form.validation"));
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await ContactService.submitInquiry(form);
+      toast.success(t("contact.form.success"));
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      toast.error(t("contact.form.error"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const contactInfo = [
     {
@@ -70,7 +98,7 @@ export default function ContactPage() {
       description={t("contact.description")}
     >
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-14 xl:gap-24">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 xl:gap-24">
 
         {/* Left Side */}
         <div className="space-y-14">
@@ -142,7 +170,7 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
 
             <div className="grid-split">
 
@@ -152,6 +180,8 @@ export default function ContactPage() {
                 </label>
 
                 <Input
+                  value={form.name}
+                  onChange={handleChange("name")}
                   placeholder={t("contact.form.placeholders.fullName")}
                   className="h-12 bg-background border-primary/10 focus-visible:ring-primary/20"
                 />
@@ -164,6 +194,8 @@ export default function ContactPage() {
 
                 <Input
                   type="email"
+                  value={form.email}
+                  onChange={handleChange("email")}
                   placeholder={t("contact.form.placeholders.email")}
                   className="h-12 bg-background border-primary/10 focus-visible:ring-primary/20"
                 />
@@ -176,6 +208,8 @@ export default function ContactPage() {
               </label>
 
               <Input
+                value={form.subject}
+                onChange={handleChange("subject")}
                 placeholder={t("contact.form.placeholders.subject")}
                 className="h-12 bg-background border-primary/10 focus-visible:ring-primary/20"
               />
@@ -187,13 +221,19 @@ export default function ContactPage() {
               </label>
 
               <Textarea
+                value={form.message}
+                onChange={handleChange("message")}
                 placeholder={t("contact.form.placeholders.message")}
                 className="min-h-[160px] resize-none bg-background border-primary/10 focus-visible:ring-primary/20"
               />
             </div>
 
-            <Button className="w-full h-14 uppercase tracking-[0.2em] text-xs font-medium">
-              {t("contact.form.submit")}
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="w-full h-14 uppercase tracking-[0.2em] text-xs font-medium"
+            >
+              {submitting ? t("contact.form.sending") : t("contact.form.submit")}
             </Button>
           </form>
         </div>

@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Tag, Loader2, Save } from "lucide-react";
+import { Plus, Loader2, Save } from "lucide-react";
 import { useDiscountStore } from "@/store/discountStore";
 import { useTranslation } from "@/context/TranslationContext";
 
@@ -43,9 +43,9 @@ interface DiscountDialogProps {
 
 export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenChange: setExternalOpen }: DiscountDialogProps) {
   const { t } = useTranslation();
+  const { createDiscount, updateDiscountById } = useDiscountStore();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { fetchDiscounts } = useDiscountStore();
   const router = useRouter();
 
   const isControlled = externalOpen !== undefined;
@@ -66,7 +66,6 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
       value: 0,
       usageLimit: null,
       expiryDate: "",
-      status: "ACTIVE",
     },
   });
 
@@ -84,20 +83,15 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
         value: 0,
         usageLimit: null,
         expiryDate: "",
-        status: "ACTIVE",
       });
     }
   }, [discount, reset]);
 
   const discountType = watch("type");
-  const discountStatus = watch("status");
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      const url = discount ? `/api/admin/discounts/${discount.id}` : "/api/admin/discounts";
-      const method = discount ? "PATCH" : "POST";
-
       const payload = {
         ...data,
         value: parseFloat(data.value),
@@ -105,21 +99,15 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
         expiryDate: data.expiryDate ? new Date(data.expiryDate).toISOString() : null,
       };
 
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || t("admin.discounts.dialog.saveError"));
+      if (discount) {
+        await updateDiscountById(discount.id, payload);
+      } else {
+        await createDiscount(payload);
       }
 
       toast.success(discount ? t("admin.discounts.dialog.messages.updateSuccess") : t("admin.discounts.dialog.messages.createSuccess"));
       setOpen?.(false);
       if (!discount) reset();
-      await fetchDiscounts(true);
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || t("admin.common.error"));
@@ -130,20 +118,23 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {trigger && <DialogTrigger>{trigger}</DialogTrigger>}
-      {!trigger && !isControlled && (
-        <DialogTrigger>
-          <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
-            <Plus className="w-4 h-4 mr-2" /> {t("admin.discounts.newOffer")}
-          </Button>
-        </DialogTrigger>
-      )}
+      <DialogTrigger>
+        {trigger ? (
+          <DialogTrigger>{trigger}</DialogTrigger>
+        ) : !isControlled ? (
+          <DialogTrigger>
+            <Button className="uppercase tracking-[0.2em] text-[10px] font-bold h-12 px-8 shadow-xl shadow-primary/20">
+              <Plus className="w-4 h-4 mr-2" /> {t("admin.discounts.newOffer")}
+            </Button>
+          </DialogTrigger>
+        ) : null}
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[550px] bg-background border-none">
         <DialogHeader>
           <DialogTitle className="font-heading text-2xl tracking-tight">
             {discount ? t("admin.discounts.dialog.titleEdit") : t("admin.discounts.dialog.titleCreate")}
           </DialogTitle>
-          <p className="text-muted-foreground font-serif italic text-sm">
+          <p className="muted-italic text-sm">
             {discount ? t("admin.discounts.dialog.descEdit") : t("admin.discounts.dialog.descCreate")}
           </p>
         </DialogHeader>
@@ -151,7 +142,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-4 max-h-[70vh] overflow-y-auto px-2">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2 md:col-span-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.code")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.code")}</Label>
               <Input
                 placeholder="e.g., ROYAL20"
                 {...register("code", { required: "Code is required" })}
@@ -161,7 +152,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.type")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.type")}</Label>
               <Select
                 value={discountType}
                 onValueChange={(val: any) => setValue("type", val)}
@@ -177,7 +168,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.value")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.value")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -187,7 +178,7 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.usageLimit")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.usageLimit")}</Label>
               <Input
                 type="number"
                 placeholder="Unlimited"
@@ -197,29 +188,12 @@ export function DiscountDialog({ discount, trigger, open: externalOpen, onOpenCh
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.expiryDate")}</Label>
+              <Label className="text-spaced-bold opacity-60">{t("admin.discounts.dialog.labels.expiryDate")}</Label>
               <Input
                 type="date"
                 {...register("expiryDate")}
                 className="h-12 border-border/50"
               />
-            </div>
-
-            <div className="space-y-2 md:col-span-2">
-              <Label className="text-[10px] uppercase tracking-widest font-bold opacity-60">{t("admin.discounts.dialog.labels.status")}</Label>
-              <Select
-                value={discountStatus}
-                onValueChange={(val: any) => setValue("status", val)}
-              >
-                <SelectTrigger className="h-12 border-border/50">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="SCHEDULED">Scheduled</SelectItem>
-                  <SelectItem value="EXPIRED">Expired</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 

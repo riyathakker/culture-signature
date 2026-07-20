@@ -1,55 +1,54 @@
-import { ProductCard } from "@/components/ui/ProductCard";
-import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function WishlistPage() {
-  const session = await auth();
+import { useEffect } from "react";
+import { ProductCard } from "@/components/common/ProductCard";
+import { EmptyState } from "@/components/common/EmptyState";
+import { useWishlistStore } from "@/store/wishlistStore";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { ROUTES } from "@/constants/routes";
+import { useTranslation } from "@/context/TranslationContext";
 
-  if (!session || !session.user) {
-    redirect("/");
-  }
+export default function AccountWishlistPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { items, isLoading, fetchWishlist } = useWishlistStore();
+  const { t } = useTranslation();
 
-  // Debug check
-  if (!(prisma as any).wishlistItem) {
-    console.error("Prisma wishlistItem model is missing! Available keys:", Object.keys(prisma));
+  useEffect(() => {
+    if (status === "unauthenticated") { router.push(ROUTES.HOME); return; }
+    if (status === "authenticated") fetchWishlist();
+  }, [status]);
+
+  if (isLoading) {
     return (
-      <div className="py-20 text-center border-2 border-dashed rounded-sm">
-        <p className="text-destructive font-serif italic">Database configuration error. Please try again later.</p>
+      <div className="flex justify-center py-32">
+        <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
       </div>
     );
   }
 
-  const wishlist = await (prisma as any).wishlistItem.findMany({
-    where: { userId: (session.user as any).id },
-    include: {
-      product: {
-        include: {
-          category: true,
-        }
-      },
-    },
-  });
-
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-2">
-        <h2 className="text-3xl font-heading">My Wishlist</h2>
-        <p className="text-muted-foreground font-serif italic">Pieces you've curated for your future collection.</p>
+      <div className="space-y-1">
+        <h2 className="text-3xl font-heading">{t("account.wishlist.heading")}</h2>
+        <p className="muted-italic pwa-hide">{t("account.wishlist.subtitle")}</p>
       </div>
 
-      {wishlist.length === 0 ? (
-        <div className="py-20 text-center border-2 border-dashed rounded-sm">
-          <p className="text-muted-foreground font-serif italic">Your wishlist is currently empty.</p>
-        </div>
+      {items.length === 0 ? (
+        <EmptyState
+          icon={Heart}
+          title="Your wishlist is empty"
+          description={t("account.wishlist.emptyDescription")}
+          action={{ label: "Explore Collection", href: ROUTES.COLLECTIONS }}
+          className="py-16"
+        />
       ) : (
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-8">
-          {wishlist.map((item: any) => (
-            <ProductCard
-              key={item.id}
-              product={item.product}
-              variant="wishlist"
-            />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {items.map((product) => (
+            <ProductCard key={product.id} product={product} variant="wishlist" />
           ))}
         </div>
       )}

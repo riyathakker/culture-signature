@@ -11,7 +11,7 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
 
   try {
     const body = await req.json();
-    const { title: name, description, price, stock, categoryId, images, isFeatured } = body;
+    const { title: name, description, price, discount, stock, categoryId, images, isFeatured, isLimitedDrop, colors } = body;
 
     if (!name || !price || !stock || !categoryId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -22,10 +22,13 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
         name,
         description,
         price: parseFloat(price),
+        discount: discount !== undefined ? parseFloat(discount) : 0,
         stock: parseInt(stock),
         categoryId,
         images: images || [],
         isFeatured: isFeatured || false,
+        isLimitedDrop: isLimitedDrop || false,
+        ...(colors !== undefined && { colors }),
       },
       include: {
         category: true,

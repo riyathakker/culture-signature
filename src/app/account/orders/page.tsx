@@ -1,65 +1,104 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { auth } from "@/auth";
-import prisma from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import { OrderRow } from "@/components/account/OrderRow";
+import { ROUTES } from "@/constants/routes";
+import { useOrderStore } from "@/store/orderStore";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Loader2, ShoppingBag } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
+import { useTranslation } from "@/context/TranslationContext";
 
-export default async function OrdersPage() {
-  const session = await auth();
+export default function OrdersPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { myOrders, myOrdersLoading, fetchMyOrders, applyOrderUpdate } = useOrderStore();
+  const { t } = useTranslation();
+  const sseRef = useRef<EventSource | null>(null);
 
-  if (!session || !session.user) {
-    redirect("/");
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") { router.push(ROUTES.HOME); return; }
+    if (status !== "authenticated") return;
 
-  const orders = await prisma.order.findMany({
-    where: { userId: (session.user as any).id },
-    include: {
-      items: {
-        include: {
-          product: true
+    fetchMyOrders();
+
+    // SSE: subscribe to live order status updates
+    const es = new EventSource("/api/orders/stream");
+    sseRef.current = es;
+
+    es.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === "init") {
+          useOrderStore.setState({ myOrders: msg.orders, myOrdersLoading: false });
+        } else if (msg.type === "update") {
+          applyOrderUpdate(msg.orders);
         }
-      }
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      } catch {}
+    };
+
+    es.onerror = () => { es.close(); };
+
+    return () => { es.close(); sseRef.current = null; };
+  }, [status]);
+
+  if (myOrdersLoading) {
+    return (
+      <div className="flex justify-center py-32">
+        <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-2">
-        <h2 className="text-3xl font-heading">Order History</h2>
-        <p className="text-muted-foreground font-serif italic">Your journey with Culture Signature.</p>
+      <div className="space-y-1">
+        <h2 className="text-3xl font-heading">{t("account.orders.heading")}</h2>
+        <p className="muted-italic pwa-hide">{t("account.orders.subtitle")}</p>
       </div>
 
-      <div className="border rounded-sm overflow-hidden">
-        {orders.length === 0 ? (
-          <div className="py-20 text-center border-2 border-dashed rounded-sm">
-            <p className="text-muted-foreground font-serif italic">Your collection is waiting for its first masterpiece.</p>
+      {myOrders.length === 0 ? (
+        <EmptyState
+          icon={ShoppingBag}
+          title="No orders yet"
+          description={t("account.orders.emptyDescription")}
+          action={{ label: "Discover Collection", href: ROUTES.COLLECTIONS }}
+          className="py-16"
+        />
+      ) : (
+        <>
+          {/* Desktop table */}
+          <div className="hidden sm:block border rounded-sm overflow-hidden">
+            <Table>
+              <TableHeader className="bg-secondary/20">
+                <TableRow>
+                  <TableHead className="text-spaced-bold h-14">Order ID</TableHead>
+                  <TableHead className="text-spaced-bold h-14">Date</TableHead>
+                  <TableHead className="text-spaced-bold h-14">Status</TableHead>
+                  <TableHead className="text-spaced-bold h-14 text-right">Total</TableHead>
+                  <TableHead className="h-14"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {myOrders.map((order) => (
+                  <OrderRow key={order.id} order={order} variant="table" />
+                ))}
+              </TableBody>
+            </Table>
           </div>
-        ) : (
-          <Table>
-            <TableHeader className="bg-secondary/20">
-              <TableRow>
-                <TableHead className="text-[10px] uppercase tracking-widest font-bold h-14">Order ID</TableHead>
-                <TableHead className="text-[10px] uppercase tracking-widest font-bold h-14">Date</TableHead>
-                <TableHead className="text-[10px] uppercase tracking-widest font-bold h-14">Status</TableHead>
-                <TableHead className="text-[10px] uppercase tracking-widest font-bold h-14 text-right">Total</TableHead>
-                <TableHead className="h-14"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map((order) => (
-                <OrderRow key={order.id} order={order} />
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
+
+          {/* Mobile cards */}
+          <div className="sm:hidden space-y-3">
+            {myOrders.map((order) => (
+              <OrderRow key={order.id} order={order} variant="card" />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Plus,
+  Trash2,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,8 @@ import { toast } from "sonner";
 import { useProductStore } from "@/store/productStore";
 import { useCategoryStore } from "@/store/categoryStore";
 import { CommonLoader } from "../common/Loader";
-import { CategoryDialog } from "./CategoryDialog";
 import { ImageUpload } from "./ImageUpload";
+import { ColorVariant } from "@/types";
 
 interface ProductFormProps {
   productId?: string;
@@ -33,8 +34,8 @@ interface ProductFormProps {
 export function ProductForm({ productId }: ProductFormProps) {
   const router = useRouter();
   const isEdit = !!productId;
-  const { addProduct, updateProduct } = useProductStore();
   const { categories, fetchCategories, addCategory: storeAddCategory } = useCategoryStore();
+  const { fetchProductById, createProduct, updateProductById } = useProductStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(isEdit);
@@ -50,6 +51,8 @@ export function ProductForm({ productId }: ProductFormProps) {
     categoryId: "",
     images: [] as string[],
     isFeatured: false,
+    isLimitedDrop: false,
+    colors: [] as ColorVariant[],
   });
 
   // Persist form to localStorage
@@ -73,6 +76,15 @@ export function ProductForm({ productId }: ProductFormProps) {
     }
   }, [formData, isEdit, isFetching]);
 
+  // Clear draft when navigating away without submitting
+  useEffect(() => {
+    if (!isEdit) {
+      return () => {
+        localStorage.removeItem("product_draft");
+      };
+    }
+  }, [isEdit]);
+
   useEffect(() => {
     fetchInitialData();
   }, [productId]);
@@ -83,9 +95,7 @@ export function ProductForm({ productId }: ProductFormProps) {
 
       if (isEdit) {
         setIsFetching(true);
-        const prodRes = await fetch(`/api/admin/products/${productId}`);
-        if (!prodRes.ok) throw new Error("Failed to fetch product");
-        const prod = await prodRes.json();
+        const prod = await fetchProductById(productId!);
 
         setFormData({
           title: prod.name || "",
@@ -96,6 +106,8 @@ export function ProductForm({ productId }: ProductFormProps) {
           categoryId: prod.categoryId || "",
           images: prod.images || [],
           isFeatured: prod.isFeatured || false,
+          isLimitedDrop: prod.isLimitedDrop || false,
+          colors: (prod.colors as ColorVariant[]) || [],
         });
       }
     } catch (error) {
@@ -105,43 +117,22 @@ export function ProductForm({ productId }: ProductFormProps) {
     }
   };
 
-  const handleCategoryCreated = (data: any) => {
-    storeAddCategory(data);
-    setFormData((prev) => ({ ...prev, categoryId: data.id }));
-    toast.success("Category added and selected.");
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const url = isEdit ? `/api/admin/products/${productId}` : "/api/admin/products";
-      const method = isEdit ? "PATCH" : "POST";
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const savedProduct = await response.json();
-        if (isEdit) {
-          updateProduct(savedProduct);
-        } else {
-          addProduct(savedProduct);
-        }
-
-        toast.success(isEdit ? "Masterpiece updated successfully" : "Masterpiece added to collection successfully");
-        if (!isEdit) localStorage.removeItem("product_draft");
-        router.push("/admin/products");
+      if (isEdit) {
+        await updateProductById(productId!, formData);
       } else {
-        const errorData = await response.json().catch(() => ({}));
-        toast.error(errorData.error || (isEdit ? "Failed to update product" : "Failed to add product"));
+        await createProduct(formData);
       }
-    } catch (error) {
-      toast.error("Error saving product");
+
+      toast.success(isEdit ? "Masterpiece updated successfully" : "Masterpiece added to collection successfully");
+      if (!isEdit) localStorage.removeItem("product_draft");
+      router.push("/admin/products");
+    } catch (error: any) {
+      toast.error(error.message || (isEdit ? "Failed to update product" : "Failed to add product"));
     } finally {
       setIsLoading(false);
     }
@@ -168,7 +159,7 @@ export function ProductForm({ productId }: ProductFormProps) {
           <h1 className="text-4xl font-heading tracking-tight">
             {isEdit ? "Refine Masterpiece" : "New Masterpiece"}
           </h1>
-          {isEdit && <p className="text-muted-foreground font-serif italic">Update the details of your artisanal creation.</p>}
+          {isEdit && <p className="muted-italic">Update the details of your artisanal creation.</p>}
         </div>
       </div>
 
@@ -177,7 +168,7 @@ export function ProductForm({ productId }: ProductFormProps) {
           <div className="bg-background border border-border/50 p-8 rounded-sm space-y-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Product Name</Label>
+                <Label className="text-spaced-bold">Product Name</Label>
                 <Input
                   placeholder="e.g., Aurelia Diamond Ring"
                   className="h-12 border-border/50"
@@ -187,7 +178,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Description</Label>
+                <Label className="text-spaced-bold">Description</Label>
                 <Textarea
                   placeholder="Describe the inspiration, materials, and craftsmanship..."
                   className="min-h-[200px] border-border/50 resize-none"
@@ -206,28 +197,97 @@ export function ProductForm({ productId }: ProductFormProps) {
               maxFiles={4}
             />
           </div>
+
+          {/* Color Variants */}
+          <div className="bg-background border border-border/50 p-8 rounded-lg space-y-6">
+            <div className="flex items-center justify-between border-b border-border/30 pb-4">
+              <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold">Color Variants</h3>
+              <button
+                type="button"
+                onClick={() => setFormData((prev) => ({
+                  ...prev,
+                  colors: [...prev.colors, { name: "", hex: "#000000", images: [] }],
+                }))}
+                className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-primary hover:text-primary/70 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" /> Add Color
+              </button>
+            </div>
+
+            {formData.colors.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic">No color variants added. Click "Add Color" to add variants with images.</p>
+            ) : (
+              <div className="space-y-8">
+                {formData.colors.map((color, idx) => (
+                  <div key={idx} className="space-y-4 border border-border/30 rounded-lg p-5">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 flex-1">
+                        <input
+                          type="color"
+                          value={color.hex}
+                          onChange={(e) => {
+                            const updated = [...formData.colors];
+                            updated[idx] = { ...updated[idx], hex: e.target.value };
+                            setFormData((prev) => ({ ...prev, colors: updated }));
+                          }}
+                          className="w-10 h-10 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
+                          title="Pick color"
+                        />
+                        <Input
+                          placeholder="Color name (e.g. Midnight Black)"
+                          value={color.name}
+                          onChange={(e) => {
+                            const updated = [...formData.colors];
+                            updated[idx] = { ...updated[idx], name: e.target.value };
+                            setFormData((prev) => ({ ...prev, colors: updated }));
+                          }}
+                          className="h-10 border-border/50 flex-1"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            colors: prev.colors.filter((_, i) => i !== idx),
+                          }));
+                        }}
+                        className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>
+                      <ImageUpload
+                        value={color.images}
+                        onChange={(urls) => {
+                          const updated = [...formData.colors];
+                          updated[idx] = { ...updated[idx], images: urls };
+                          setFormData((prev) => ({ ...prev, colors: updated }));
+                        }}
+                        maxFiles={4}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="space-y-6">
           <div className="bg-background border border-border/50 p-8 rounded-sm space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Category</Label>
-                <CategoryDialog
-                  onSuccess={handleCategoryCreated}
-                  trigger={
-                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-secondary/50">
-                      <Plus className="w-3 h-3" />
-                    </Button>
-                  }
-                />
+                <Label className="text-spaced-bold">Category</Label>
               </div>
               <Select
                 value={formData.categoryId}
                 onValueChange={(val) => setFormData({ ...formData, categoryId: val || "" })}
                 required
               >
-                <SelectTrigger className="h-12 border-border/50 uppercase text-[10px] tracking-widest font-bold">
+                <SelectTrigger className="h-12 w-full border-border/50 uppercase text-[10px] tracking-widest font-bold">
                   <SelectValue placeholder="Select Category">
                     {categories.find(c => c.id === formData.categoryId)?.name}
                   </SelectValue>
@@ -240,7 +300,7 @@ export function ProductForm({ productId }: ProductFormProps) {
               </Select>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Price (₹)</Label>
+                <Label className="text-spaced-bold">Price (₹)</Label>
                 <Input
                   type="number"
                   placeholder="0.00"
@@ -252,7 +312,7 @@ export function ProductForm({ productId }: ProductFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">Discount (₹)</Label>
+                <Label className="text-spaced-bold">Discount (₹)</Label>
                 <Input
                   type="number"
                   placeholder="0.00"
@@ -263,7 +323,7 @@ export function ProductForm({ productId }: ProductFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] uppercase tracking-widest font-bold">
+                <Label className="text-spaced-bold">
                   {isEdit ? "Stock Count" : "Initial Stock"}
                 </Label>
                 <Input
@@ -279,12 +339,23 @@ export function ProductForm({ productId }: ProductFormProps) {
 
               <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm bg-secondary/5">
                 <div className="space-y-1">
-                  <Label className="text-[10px] uppercase tracking-widest font-bold">Featured Product</Label>
+                  <Label className="text-spaced-bold">Featured Product</Label>
                   <p className="text-[9px] text-muted-foreground uppercase tracking-widest">Show in featured collection</p>
                 </div>
                 <Switch
                   checked={formData.isFeatured}
                   onCheckedChange={(checked) => setFormData({ ...formData, isFeatured: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-4 border border-border/50 rounded-sm bg-secondary/5">
+                <div className="space-y-1">
+                  <Label className="text-spaced-bold">Limited Drop</Label>
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-widest">Highlight as limited / scarce piece</p>
+                </div>
+                <Switch
+                  checked={formData.isLimitedDrop}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isLimitedDrop: checked })}
                 />
               </div>
             </div>

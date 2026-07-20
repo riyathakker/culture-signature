@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { Container } from "./Container";
-import { IconButton } from "@/components/ui/IconButton";
+import { IconButton } from "@/components/common/IconButton";
 import { usePathname } from "next/navigation";
 import { socialLinks } from "@/constants/constants";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { ROUTES } from "@/constants/routes";
 
 export function Footer() {
   const pathname = usePathname();
@@ -18,28 +19,28 @@ export function Footer() {
     {
       title: t("shop.footer.sections.explore.title"),
       links: [
-        { name: t("shop.footer.sections.explore.home"), href: "/" },
-        { name: t("shop.footer.sections.explore.about"), href: "/about-us" },
-        { name: t("shop.footer.sections.explore.contact"), href: "/contact-us" },
-        { name: t("shop.footer.sections.explore.faq"), href: "/faq" },
+        { name: t("shop.footer.sections.explore.home"), href: ROUTES.HOME },
+        { name: t("shop.footer.sections.explore.about"), href: ROUTES.ABOUT_US },
+        { name: t("shop.footer.sections.explore.contact"), href: ROUTES.CONTACT_US },
+        { name: t("shop.footer.sections.explore.faq"), href: ROUTES.FAQ },
       ],
     },
     {
       title: t("shop.footer.sections.legal.title"),
       links: [
-        { name: t("shop.footer.sections.legal.privacy"), href: "/privacy" },
-        { name: t("shop.footer.sections.legal.refund"), href: "/refund" },
-        { name: t("shop.footer.sections.legal.shipping"), href: "/shipping" },
-        { name: t("shop.footer.sections.legal.terms"), href: "/terms" },
+        { name: t("shop.footer.sections.legal.privacy"), href: ROUTES.PRIVACY },
+        { name: t("shop.footer.sections.legal.refund"), href: ROUTES.REFUND },
+        { name: t("shop.footer.sections.legal.shipping"), href: ROUTES.SHIPPING },
+        { name: t("shop.footer.sections.legal.terms"), href: ROUTES.TERMS },
       ],
     },
   ];
 
   if (isAdminPage) return null;
   return (
-    <footer className="bg-secondary/30 pt-20 pb-10 border-t">
+    <footer className="bg-secondary/30 pt-10 md:pt-15 border-t">
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr] gap-12 lg:gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr] gap-8 mb-10 md:mb-15">
           {/* Brand Column */}
           <div className="space-y-6">
             <img
@@ -49,7 +50,7 @@ export function Footer() {
             />
 
             <Link
-              href="/"
+              href={ROUTES.HOME}
               className="text-3xl font-heading tracking-tighter"
             >
               Culture Signature
@@ -69,9 +70,9 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    // className="flex items-center justify-center w-11 h-11 rounded-full border border-border text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:border-primary hover:text-primary hover:-translate-y-1"
+                  // className="flex items-center justify-center w-11 h-11 rounded-full border border-border text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:border-primary hover:text-primary hover:-translate-y-1"
                   >
-                     <IconButton icon={Icon} aria-label={social.label} />
+                    <IconButton icon={Icon} aria-label={social.label} />
                   </a>
                   // <Link href={social.href} key={index}>
                   //   <IconButton icon={Icon} aria-label={social.label} />
@@ -105,14 +106,15 @@ export function Footer() {
             ))}
           </div>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 pt-10 border-t border-muted-foreground/10">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground text-center md:text-left">
+      </Container>
+      {/* Bottom Bar */}
+      <Container className="bg-primary/20 py-4 mx-0!">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-primary text-center md:text-left">
             © {new Date().getFullYear()} Culture Signature. {t("shop.footer.brand.rights")}
           </p>
 
-          <div className="flex items-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          <div className="flex items-center text-spaced text-primary">
             <span className="flex items-center text-center md:text-right">
               <Mail className="w-3 h-3 mr-2 shrink-0" />
               jalpathakkar@culturesignature.com

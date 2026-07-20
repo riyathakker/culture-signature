@@ -18,7 +18,6 @@ export function NavLinks() {
       case "Home": return t("nav.links.home");
       case "New Arrivals": return t("nav.links.newArrivals");
       case "Collections": return t("nav.links.collections");
-      case "Categories": return t("nav.links.categories");
       case "About Us": return t("nav.links.aboutUs");
       case "Contact Us": return t("nav.links.contactUs");
       default: return name;
