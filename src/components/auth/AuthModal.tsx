@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 interface AuthModalProps {
@@ -65,7 +65,11 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
         } else {
           toast.success(t("auth.login.success"));
           onOpenChange(false);
-          if (callbackUrl) {
+          const session = await getSession();
+          const role = (session?.user as any)?.role;
+          if (role === "ADMIN") {
+            window.location.href = "/admin";
+          } else if (callbackUrl) {
             router.push(callbackUrl);
           } else {
             router.refresh();
@@ -246,6 +250,7 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
               <p className="text-sm muted-italic">
                 {t("auth.login.newToBrand")}{"  "}
                 <button
+                  type="button"
                   onClick={() => setView("signup")}
                   className="text-primary font-sans font-bold not-italic hover:underline"
                 >
@@ -254,6 +259,7 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
               </p>
             ) : (
               <button
+                type="button"
                 onClick={() => setView("login")}
                 className="text-sm text-primary font-bold hover:underline"
               >
