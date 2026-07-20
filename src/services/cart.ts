@@ -9,27 +9,27 @@ export class CartService {
     });
   }
 
-  static async addItem(productId: string, quantity: number): Promise<void> {
+  static async addItem(productId: string, quantity: number, color = ""): Promise<void> {
     await api<void>({
       method: "POST",
       endpoint: "/cart",
-      body: { productId, quantity },
+      body: { productId, quantity, color },
     });
   }
 
-  static async removeItem(productId: string): Promise<void> {
+  static async removeItem(productId: string, color = ""): Promise<void> {
     await api<void>({
       method: "DELETE",
       endpoint: "/cart",
-      body: { productId },
+      body: { productId, color },
     });
   }
 
-  static async updateQuantity(productId: string, quantity: number): Promise<void> {
+  static async updateQuantity(productId: string, quantity: number, color = ""): Promise<void> {
     await api<void>({
       method: "PUT",
       endpoint: "/cart",
-      body: { productId, quantity },
+      body: { productId, quantity, color },
     });
   }
 

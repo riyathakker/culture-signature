@@ -50,12 +50,25 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
               {item.name}
             </h4>
             <button
-              onClick={() => removeItem(item.id)}
+              onClick={() => removeItem(item.id, item.color)}
               className="text-muted-foreground hover:text-primary transition-all p-1 rounded-full hover:bg-secondary/50 group"
             >
               <X className="w-4 h-4 group-hover:scale-110 transition-transform" />
             </button>
           </div>
+          {item.color && (
+            <div className="flex items-center gap-1.5">
+              {item.colorHex && (
+                <span
+                  className="inline-block w-3 h-3 rounded-full border border-border/50"
+                  style={{ backgroundColor: item.colorHex }}
+                />
+              )}
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                {item.color}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between mt-4">
@@ -63,9 +76,9 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
             quantity={item.quantity}
             onUpdate={(newQty) => {
               if (newQty === 0) {
-                removeItem(item.id);
+                removeItem(item.id, item.color);
               } else {
-                updateQuantity(item.id, newQty);
+                updateQuantity(item.id, newQty, item.color);
               }
             }}
             size="sm"

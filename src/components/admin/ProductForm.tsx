@@ -206,7 +206,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                 type="button"
                 onClick={() => setFormData((prev) => ({
                   ...prev,
-                  colors: [...prev.colors, { name: "", hex: "#000000", images: [] }],
+                  colors: [...prev.colors, { name: "", hex: "#000000", images: [], price: undefined, stock: undefined }],
                 }))}
                 className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-primary hover:text-primary/70 transition-colors"
               >
@@ -256,6 +256,42 @@ export function ProductForm({ productId }: ProductFormProps) {
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Price (optional)</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          placeholder="Uses base price"
+                          value={color.price ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value === "" ? undefined : Number(e.target.value);
+                            const updated = [...formData.colors];
+                            updated[idx] = { ...updated[idx], price: val };
+                            setFormData((prev) => ({ ...prev, colors: updated }));
+                          }}
+                          className="h-10 border-border/50"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Stock (optional)</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="1"
+                          placeholder="Uses base stock"
+                          value={color.stock ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value === "" ? undefined : Number(e.target.value);
+                            const updated = [...formData.colors];
+                            updated[idx] = { ...updated[idx], stock: val };
+                            setFormData((prev) => ({ ...prev, colors: updated }));
+                          }}
+                          className="h-10 border-border/50"
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>

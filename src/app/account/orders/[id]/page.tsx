@@ -124,6 +124,9 @@ export default function OrderDetailPage() {
               </div>
               <div className="flex-1 min-w-0 space-y-1">
                 <p className="font-heading text-base leading-tight">{item.product?.name}</p>
+                {item.color && (
+                  <p className="text-[11px] uppercase tracking-widest text-muted-foreground">{item.color}</p>
+                )}
                 <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
                   Qty {item.quantity} × ₹{item.price.toLocaleString("en-IN")}
                 </p>

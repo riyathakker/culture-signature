@@ -76,6 +76,10 @@ export interface ColorVariant {
   name: string;
   hex: string;
   images: string[];
+  /** Optional per-color price. Falls back to the product's base price when unset. */
+  price?: number | null;
+  /** Optional per-color stock. Falls back to the product's base stock when unset. */
+  stock?: number | null;
 }
 
 export interface CartItem {
@@ -85,6 +89,10 @@ export interface CartItem {
   quantity: number;
   image: string;
   stock: number;
+  /** Selected color variant name ("" for products without color variants). */
+  color?: string;
+  /** Selected color hex, for display. */
+  colorHex?: string;
   userId?: string;
   productId?: string;
   product?: Product;

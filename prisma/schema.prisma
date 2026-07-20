@@ -117,6 +117,7 @@ model OrderItem {
   productId String
   quantity  Int
   price     Float
+  color     String?
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
   order     Order    @relation(fields: [orderId], references: [id])
@@ -165,12 +166,13 @@ model CartItem {
   userId    String
   productId String
   quantity  Int
+  color     String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   product   Product  @relation(fields: [productId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
 
-  @@unique([userId, productId])
+  @@unique([userId, productId, color])
 }
 
 model Exhibition {

@@ -35,7 +35,6 @@ const accountTabs = [
 ];
 
 const adminTabs = [
-  { label: "Back", href: ROUTES.HOME, icon: ChevronLeft, isBack: true },
   { label: "Overview", href: ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard },
   { label: "Products", href: ROUTES.ADMIN.PRODUCTS, icon: Package },
   { label: "Orders", href: ROUTES.ADMIN.ORDERS, icon: ShoppingBag },

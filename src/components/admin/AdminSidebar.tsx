@@ -10,7 +10,6 @@ import {
   Users,
   Tag,
   ChevronRight,
-  Home,
   LayoutGrid,
   Sparkles,
   LogOut,
@@ -49,7 +48,7 @@ export function AdminSidebar() {
   return (
     <aside className="w-64 h-screen bg-primary border-r border-border/50 fixed left-0 top-0 hidden lg:flex flex-col">
       <div className="p-8">
-        <Link href={ROUTES.HOME} className="text-2xl text-primary-foreground font-heading tracking-tighter">
+        <Link href={ROUTES.ADMIN.DASHBOARD} className="text-2xl text-primary-foreground font-heading tracking-tighter">
           Culture Signature
         </Link>
         <p className="text-primary-foreground font-serif italic text-sm">Admin</p>
@@ -82,14 +81,6 @@ export function AdminSidebar() {
       </nav>
 
       <div className="p-4 border-t border-primary-foreground/10 space-y-1">
-        <Link
-          href={ROUTES.HOME}
-          className="flex items-center gap-3 px-4 py-3 text-primary-foreground hover:bg-primary-foreground/10 rounded-sm transition-all group"
-        >
-          <Home className="w-4 h-4 opacity-60 group-hover:opacity-100" />
-          <span className="text-spaced-bold font-bold">{t("admin.sidebar.home")}</span>
-        </Link>
-
         <button
           onClick={() => setSignOutOpen(true)}
           className="flex items-center gap-3 px-4 py-3 text-primary-foreground/60 hover:text-destructive hover:bg-primary-foreground/10 rounded-sm transition-all w-full group"

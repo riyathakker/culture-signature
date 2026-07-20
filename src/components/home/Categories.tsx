@@ -1,4 +1,4 @@
-"use client";
+//"use client";
 
 import Link from "next/link";
 import { useEffect } from "react";
@@ -13,7 +13,7 @@ function CategoryCards() {
   return (
     <div className="max-w-[100vw] overflow-hidden">
       <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar px-4 sm:px-6 lg:px-8 scroll-smooth">
-        {categories.filter((cat) => (cat?._count?.products || 0) > 0).map((cat) => (
+        {categories.map((cat) => (
           <Link
             key={cat.id}
             href={`/categories/${cat.id}`}

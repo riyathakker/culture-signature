@@ -5,22 +5,24 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const role = (req.auth?.user as any)?.role;
   const { nextUrl } = req;
+  const path = nextUrl.pathname;
 
-  const isAccountRoute = nextUrl.pathname.startsWith("/account");
-  const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+  const isAccountRoute = path.startsWith("/account");
+  const isAdminRoute = path.startsWith("/admin");
 
   // Auth guard: must be logged in to access /account or /admin
   if ((isAccountRoute || isAdminRoute) && !isLoggedIn) {
     return NextResponse.redirect(new URL("/", nextUrl));
   }
 
-  // Admin guard: only ADMIN role can access /admin
+  // Non-admins cannot access the admin panel
   if (isAdminRoute && role !== "ADMIN") {
     return NextResponse.redirect(new URL("/", nextUrl));
   }
 
-  // Account guard: admins are not allowed on /account — send them to admin panel
-  if (isAccountRoute && role === "ADMIN") {
+  // Admin identity is confined to the admin panel — no storefront. To browse
+  // the store, the admin switches to their customer account (role becomes USER).
+  if (isLoggedIn && role === "ADMIN" && !isAdminRoute) {
     return NextResponse.redirect(new URL("/admin", nextUrl));
   }
 

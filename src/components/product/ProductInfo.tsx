@@ -45,7 +45,17 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
   const { data: session, status } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem, items, updateQuantity, removeItem } = useCartStore();
-  const cartItem = items.find((i) => i.id === product.id);
+
+  // Effective price/stock/image for the selected color (fallback to base).
+  const activeColorName = activeColor?.name || "";
+  const effBasePrice = activeColor?.price != null ? Number(activeColor.price) : product.price;
+  const effStock = activeColor?.stock != null ? Number(activeColor.stock) : product.stock;
+  const effImage = activeColor?.images?.[0] || product.images[0];
+  const effNetPrice = effBasePrice - (product.discount || 0);
+
+  const cartItem = items.find(
+    (i) => i.id === product.id && (i.color || "") === activeColorName
+  );
   const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const isWishlisted = isInWishlist(product.id);
 
@@ -64,10 +74,12 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
   const buildCartItem = (): CartItem => ({
     id: product.id,
     name: product.name,
-    price: product.price - (product.discount || 0),
+    price: effNetPrice,
     quantity: 1,
-    image: product.images[0],
-    stock: product.stock,
+    image: effImage,
+    stock: effStock,
+    color: activeColorName,
+    colorHex: activeColor?.hex || "",
   });
 
   const handleAddToCart = () => {
@@ -112,9 +124,9 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-2xl font-medium">₹{(product.price - (product.discount || 0)).toLocaleString()}</span>
+        <span className="text-2xl font-medium">₹{effNetPrice.toLocaleString()}</span>
         {product.discount > 0 && (
-          <span className="text-base text-muted-foreground line-through opacity-50">₹{product.price.toLocaleString()}</span>
+          <span className="text-base text-muted-foreground line-through opacity-50">₹{effBasePrice.toLocaleString()}</span>
         )}
       </div>
 
@@ -122,26 +134,42 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
         <div className="space-y-2">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
             Color: <span className="text-foreground font-bold">{activeColor?.name || ""}</span>
+            {activeColor && effStock > 0 && effStock <= 5 && (
+              <span className="ml-2 text-primary/70 normal-case tracking-normal">Only {effStock} left</span>
+            )}
+            {activeColor && effStock === 0 && (
+              <span className="ml-2 text-destructive normal-case tracking-normal">Sold out</span>
+            )}
           </p>
           <div className="flex items-center gap-2 flex-wrap">
-            {colors.map((c, i) => (
-              <button
-                key={i}
-                type="button"
-                title={c.name}
-                onClick={() => {
-                  setActiveColor(c);
-                  if (c.images?.length > 0) onColorChange?.(c.images);
-                }}
-                className={cn(
-                  "w-7 h-7 rounded-full border-2 transition-all",
-                  activeColor?.hex === c.hex
-                    ? "border-foreground scale-110 shadow-md"
-                    : "border-transparent hover:border-foreground/40"
-                )}
-                style={{ backgroundColor: c.hex }}
-              />
-            ))}
+            {colors.map((c, i) => {
+              const soldOut = c.stock != null && Number(c.stock) === 0;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  title={soldOut ? `${c.name} — sold out` : c.name}
+                  onClick={() => {
+                    setActiveColor(c);
+                    if (c.images?.length > 0) onColorChange?.(c.images);
+                  }}
+                  className={cn(
+                    "relative w-7 h-7 rounded-full border-2 transition-all",
+                    activeColor?.hex === c.hex
+                      ? "border-foreground scale-110 shadow-md"
+                      : "border-transparent hover:border-foreground/40",
+                    soldOut && "opacity-40"
+                  )}
+                  style={{ backgroundColor: c.hex }}
+                >
+                  {soldOut && (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <span className="w-full h-px bg-foreground rotate-45" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -152,7 +180,7 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
 
       {!isAdmin && (
         <div className="pt-3 mb-2">
-          {product.stock === 0 ? (
+          {effStock === 0 ? (
             <Button
               onClick={() => {
                 if (notified) return;
@@ -173,8 +201,8 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
                 <QuantitySelector
                   quantity={cartItem.quantity}
                   min={0}
-                  max={product.stock}
-                  onUpdate={(qty) => qty === 0 ? removeItem(product.id) : updateQuantity(product.id, qty)}
+                  max={effStock}
+                  onUpdate={(qty) => qty === 0 ? removeItem(product.id, activeColorName) : updateQuantity(product.id, qty, activeColorName)}
                   className="flex-1 h-12 border rounded-sm"
                 />
               ) : (
