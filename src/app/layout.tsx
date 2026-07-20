@@ -75,7 +75,7 @@ export default function RootLayout({
             </LayoutWrapper>
           </ConditionalShell>
           <BackToTop />
-          <PWAInstallPrompt />
+          {/* <PWAInstallPrompt /> */}
         </Providers>
       </body>
     </html>

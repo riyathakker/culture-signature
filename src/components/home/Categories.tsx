@@ -56,7 +56,7 @@ export function Categories() {
   }
 
   return (
-    <div className="py-10 md:py-18">
+    <div className="py-10">
       <SectionTitle title={t("home.categories.title")} subtitle={t("home.categories.subtitle")} align="center" />
       <CategoryCards />
     </div>

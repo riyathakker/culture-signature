@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useCategoryStore } from "@/store/categoryStore";
 
+export interface FilterDraft {
+  categoryIds: string[];
+  inStock: boolean;
+  discount: boolean;
+  price: [number, number];
+}
+
 export interface FilterSidebarProps {
   showCategories?: boolean;
   activeCategoryIds?: string[];
@@ -18,6 +25,8 @@ export interface FilterSidebarProps {
   onPriceChange?: (val: [number, number]) => void;
   maxPrice?: number;
   filteredCount?: number;
+  // Live preview count for the current draft selection (before Apply).
+  getFilteredCount?: (draft: FilterDraft) => number;
   onApply?: () => void;
 }
 
@@ -33,6 +42,7 @@ export function FilterSidebar({
   onPriceChange,
   maxPrice = 100000,
   filteredCount,
+  getFilteredCount,
   onApply,
 }: FilterSidebarProps) {
   const { categories, fetchCategories } = useCategoryStore();
@@ -75,6 +85,16 @@ export function FilterSidebar({
     draftCategoryIds.length + (draftInStock ? 1 : 0) + (draftDiscount ? 1 : 0);
   const hasActiveFilters =
     draftFilterCount > 0 || draftPrice[0] > 0 || draftPrice[1] < maxPrice;
+
+  // Live count for the current draft; falls back to the applied count.
+  const previewCount = getFilteredCount
+    ? getFilteredCount({
+        categoryIds: draftCategoryIds,
+        inStock: draftInStock,
+        discount: draftDiscount,
+        price: draftPrice,
+      })
+    : filteredCount;
 
   return (
     <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
@@ -173,9 +193,9 @@ export function FilterSidebar({
       </div>
 
       <div className="space-y-3 pt-4 border-t border-muted-foreground/10">
-        {filteredCount !== undefined && (
+        {previewCount !== undefined && (
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold text-center">
-            {filteredCount} {filteredCount === 1 ? "Product" : "Products"}
+            {previewCount} {previewCount === 1 ? "Product" : "Products"}
           </p>
         )}
         <Button

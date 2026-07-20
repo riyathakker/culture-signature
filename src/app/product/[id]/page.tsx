@@ -134,15 +134,27 @@ export default function ProductPage() {
               subtitle={t("shop.product.details.relatedSubtitle")}
               align="center"
             />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+            <div
+              className={
+                "mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 md:max-w-3xl lg:max-w-4xl md:mx-auto " +
+                // PWA: collapse to a single horizontal scroll row
+                "[@media(display-mode:standalone)]:flex [@media(display-mode:standalone)]:max-w-none [@media(display-mode:standalone)]:mx-0 " +
+                "[@media(display-mode:standalone)]:flex-nowrap [@media(display-mode:standalone)]:overflow-x-auto [@media(display-mode:standalone)]:gap-4 " +
+                "[@media(display-mode:standalone)]:snap-x [@media(display-mode:standalone)]:snap-mandatory [@media(display-mode:standalone)]:pb-2 no-scrollbar"
+              }
+            >
               {relatedProducts.map((p) => (
-                <ProductCard key={p.id} product={p} hideActions />
+                <div
+                  key={p.id}
+                  className="[@media(display-mode:standalone)]:min-w-[46%] [@media(display-mode:standalone)]:shrink-0 [@media(display-mode:standalone)]:snap-start"
+                >
+                  <ProductCard product={p} hideActions />
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        <RecentlyViewed excludeId={String(id)} />
       </Container>
     </div>
   );

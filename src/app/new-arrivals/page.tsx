@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductCard } from "@/components/common/ProductCard";
-import { FilterSidebar } from "@/components/shop/FilterSidebar";
+import { FilterSidebar, FilterDraft } from "@/components/shop/FilterSidebar";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";
 import { useEffect, useState, useMemo } from "react";
@@ -27,11 +27,17 @@ export default function NewArrivalsPage() {
     fetchNewArrivals();
   }, []);
 
-  const filtered = newArrivals
-    .filter((p) => activeCategoryIds.length === 0 || activeCategoryIds.includes(String(p.category?.id ?? p.categoryId)))
-    .filter((p) => Number(p.price) >= priceRange[0] && (priceRange[1] >= priceMax || Number(p.price) <= priceRange[1]))
-    .filter((p) => !inStockOnly || p.stock > 0)
-    .filter((p) => !hasDiscountOnly || (p.discount && p.discount > 0));
+  const matchesFilters = (p: (typeof newArrivals)[number], f: FilterDraft) => {
+    if (f.categoryIds.length > 0 && !f.categoryIds.includes(String(p.category?.id ?? p.categoryId))) return false;
+    if (!(Number(p.price) >= f.price[0] && (f.price[1] >= priceMax || Number(p.price) <= f.price[1]))) return false;
+    if (f.inStock && !(p.stock > 0)) return false;
+    if (f.discount && !(p.discount && p.discount > 0)) return false;
+    return true;
+  };
+
+  const filtered = newArrivals.filter((p) =>
+    matchesFilters(p, { categoryIds: activeCategoryIds, inStock: inStockOnly, discount: hasDiscountOnly, price: priceRange })
+  );
 
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "price-low") return a.price - b.price;
@@ -53,6 +59,7 @@ export default function NewArrivalsPage() {
     onPriceChange: setPriceRange,
     maxPrice: priceMax,
     filteredCount: sorted.length,
+    getFilteredCount: (draft: FilterDraft) => newArrivals.filter((p) => matchesFilters(p, draft)).length,
   };
 
   return (

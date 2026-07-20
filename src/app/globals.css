@@ -154,7 +154,7 @@
     padding-top: env(safe-area-inset-top);
   }
   .pwa-back-to-top {
-    bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+    display: none !important;
   }
 
   /* PWA Home Header */

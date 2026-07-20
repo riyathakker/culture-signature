@@ -1,6 +1,6 @@
 "use client";
 import { ProductCard } from "@/components/common/ProductCard";
-import { FilterSidebar } from "@/components/shop/FilterSidebar";
+import { FilterSidebar, FilterDraft } from "@/components/shop/FilterSidebar";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ShopControls } from "@/components/shop/ShopControls";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
@@ -31,18 +31,24 @@ export default function ShopPage() {
     [products]
   );
 
-  const filtered = products
-    .filter((p) => {
-      if (!searchQuery.trim()) return true;
+  const matchesFilters = (p: (typeof products)[number], f: FilterDraft) => {
+    if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      return p.name.toLowerCase().includes(q) ||
+      const inSearch = p.name.toLowerCase().includes(q) ||
         (p.description ?? "").toLowerCase().includes(q) ||
         (p.category?.name ?? "").toLowerCase().includes(q);
-    })
-    .filter((p) => activeCategoryIds.length === 0 || activeCategoryIds.includes(String(p.categoryId ?? p.category?.id)))
-    .filter((p) => Number(p.price) >= priceRange[0] && (priceRange[1] >= priceMax || Number(p.price) <= priceRange[1]))
-    .filter((p) => !inStockOnly || p.stock > 0)
-    .filter((p) => !hasDiscountOnly || (p.discount && p.discount > 0));
+      if (!inSearch) return false;
+    }
+    if (f.categoryIds.length > 0 && !f.categoryIds.includes(String(p.categoryId ?? p.category?.id))) return false;
+    if (!(Number(p.price) >= f.price[0] && (f.price[1] >= priceMax || Number(p.price) <= f.price[1]))) return false;
+    if (f.inStock && !(p.stock > 0)) return false;
+    if (f.discount && !(p.discount && p.discount > 0)) return false;
+    return true;
+  };
+
+  const filtered = products.filter((p) =>
+    matchesFilters(p, { categoryIds: activeCategoryIds, inStock: inStockOnly, discount: hasDiscountOnly, price: priceRange })
+  );
 
   const sortedProducts = [...filtered].sort((a, b) => {
     if (sortBy === "price-low") return a.price - b.price;
@@ -64,6 +70,7 @@ export default function ShopPage() {
     onPriceChange: setPriceRange,
     maxPrice: priceMax,
     filteredCount: sortedProducts.length,
+    getFilteredCount: (draft: FilterDraft) => products.filter((p) => matchesFilters(p, draft)).length,
   };
 
   return (

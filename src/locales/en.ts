@@ -486,24 +486,7 @@ export const en = {
     },
     testimonials: {
       title: "Voices of Elegance",
-      subtitle: "From Our Patrons",
-      reviews: [
-        {
-          quote: "The craftsmanship is unparalleled. Each piece tells a story of heritage and modern elegance.",
-          author: "Priya R.",
-          location: "Mumbai"
-        },
-        {
-          quote: "Culture Signature's bags are not just accessories; they are wearable art. Truly magnificent.",
-          author: "Anjali S.",
-          location: "New York"
-        },
-        {
-          quote: "I wore their handcrafted necklace for my wedding, and it felt like carrying a piece of history.",
-          author: "Meera K.",
-          location: "London"
-        }
-      ]
+      subtitle: "From Our Patrons"
     },
     faq: {
       title: "Common Inquiries",
@@ -676,7 +659,11 @@ export const en = {
         subject: "Inquiry about artisanal jewelry",
         message: "How can we assist you today?"
       },
-      submit: "Send Inquiry"
+      submit: "Send Inquiry",
+      sending: "Sending...",
+      success: "Thank you — your inquiry has been received.",
+      error: "Something went wrong. Please try again.",
+      validation: "Please fill in your name, email and message."
     }
   },
   legal: {
