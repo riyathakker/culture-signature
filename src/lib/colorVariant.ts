@@ -24,8 +24,9 @@ export type ResolvedVariant = {
 };
 
 /**
- * Resolves effective price/stock/image for a product given a selected color.
- * Per-color price and stock fall back to the product's base values when unset.
+ * Resolves the price/stock/image for a product given a selected color.
+ * Price and stock always come from the base product; only the image and hex
+ * are color-specific.
  */
 export function resolveVariant(
   product: PricingProduct,
@@ -36,21 +37,12 @@ export function resolveVariant(
     : [];
   const discount = product.discount || 0;
   const variant = color ? colors.find((c) => c.name === color) : undefined;
-
-  const basePrice =
-    variant?.price != null && variant.price !== undefined
-      ? Number(variant.price)
-      : product.price;
-  const stock =
-    variant?.stock != null && variant.stock !== undefined
-      ? Number(variant.stock)
-      : product.stock;
   const image = variant?.images?.[0] || product.images?.[0] || "";
 
   return {
-    price: basePrice - discount,
-    basePrice,
-    stock,
+    price: product.price - discount,
+    basePrice: product.price,
+    stock: product.stock,
     image,
     colorHex: variant?.hex ?? "",
     hasVariants: colors.length > 0,

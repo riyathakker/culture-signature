@@ -33,11 +33,11 @@ export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalPr
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem } = useCartStore();
 
-  // Quick view has no color picker — default to the first color when present.
+  // Quick view has no color picker — default to the first color for its image.
   const colors = (product?.colors as ColorVariant[] | null | undefined) ?? [];
   const firstColor = colors.length > 0 ? colors[0] : null;
-  const effBasePrice = firstColor?.price != null ? Number(firstColor.price) : product?.price ?? 0;
-  const effStock = firstColor?.stock != null ? Number(firstColor.stock) : product?.stock ?? 0;
+  const effBasePrice = product?.price ?? 0;
+  const effStock = product?.stock ?? 0;
   const effImage = firstColor?.images?.[0] || product?.images?.[0] || "";
 
   const handleAddToCart = () => {

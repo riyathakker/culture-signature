@@ -73,22 +73,8 @@ export default async function handler(req: NextRequest & { userId?: string }) {
         });
       }
 
-      // 4. Update stock — per selected color when that color tracks its own
-      //    stock, otherwise the product's base stock.
+      // 4. Update product stock (shared across colors).
       for (const item of items) {
-        if (item.color) {
-          const p = await tx.product.findUnique({ where: { id: item.id } });
-          const colors = Array.isArray(p?.colors) ? [...(p!.colors as any[])] : [];
-          const ci = colors.findIndex((c: any) => c?.name === item.color);
-          if (ci >= 0 && colors[ci]?.stock != null) {
-            colors[ci] = {
-              ...colors[ci],
-              stock: Math.max(0, Number(colors[ci].stock) - item.quantity),
-            };
-            await tx.product.update({ where: { id: item.id }, data: { colors } });
-            continue;
-          }
-        }
         await tx.product.update({
           where: { id: item.id },
           data: { stock: { decrement: item.quantity } },
