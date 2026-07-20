@@ -63,7 +63,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
     // Client-side stock check
     if (newQuantity > item.stock) {
-      toast.error(`Only ${item.stock} items available in stock.`);
+      toast.error(`Only ${item.stock} ${item.stock === 1 ? "item" : "items"} available in stock.`);
       return;
     }
 
@@ -115,7 +115,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     const item = state.items.find((i) => sameLine(i, id, color));
 
     if (item && quantity > item.stock) {
-      toast.error(`Only ${item.stock} items available in stock.`);
+      toast.error(`Only ${item.stock} ${item.stock === 1 ? "item" : "items"} available in stock.`);
       return;
     }
 

@@ -27,7 +27,7 @@ export default async function handler(req: NextRequest & { userEmail?: string })
 
   if (quantity > stock) {
     return NextResponse.json({
-      error: `Only ${stock} items available in stock.`,
+      error: `Only ${stock} ${stock === 1 ? "item" : "items"} available in stock.`,
       currentStock: stock
     }, { status: 400 });
   }

@@ -23,7 +23,7 @@ export function FAQ() {
         <Accordion className="w-full">
           {Array.isArray(faqs) && faqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`} className="border-border/50 py-2">
-              <AccordionTrigger className="font-heading text-lg hover:text-primary transition-colors text-left">
+              <AccordionTrigger className="font-heading text-lg hover:text-primary transition-colors text-left cursor-pointer">
                 {faq.question}
               </AccordionTrigger>
               <AccordionContent className="font-serif italic text-muted-foreground leading-relaxed">
