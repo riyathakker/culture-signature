@@ -78,7 +78,7 @@ model Product {
 
 model Category {
   id        String         @id @default(cuid())
-  name      String
+  name      String         @unique
   createdAt DateTime       @default(now())
   isDeleted Boolean        @default(false)
   status    CategoryStatus @default(ACTIVE)
@@ -134,6 +134,16 @@ model Review {
   isDeleted Boolean  @default(false)
   product   Product  @relation(fields: [productId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  createdAt DateTime @default(now())
+  isDeleted Boolean  @default(false)
 }
 
 model Discount {
