@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCartStore, CartItem } from "@/store/cartStore";
+import { ColorVariant } from "@/types";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -32,14 +33,23 @@ export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalPr
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem } = useCartStore();
 
+  // Quick view has no color picker — default to the first color when present.
+  const colors = (product?.colors as ColorVariant[] | null | undefined) ?? [];
+  const firstColor = colors.length > 0 ? colors[0] : null;
+  const effBasePrice = firstColor?.price != null ? Number(firstColor.price) : product?.price ?? 0;
+  const effStock = firstColor?.stock != null ? Number(firstColor.stock) : product?.stock ?? 0;
+  const effImage = firstColor?.images?.[0] || product?.images?.[0] || "";
+
   const handleAddToCart = () => {
     const item: CartItem = {
       id: product.id,
       name: product.name,
-      price: product.price - (product.discount || 0),
+      price: effBasePrice - (product.discount || 0),
       quantity: quantity,
-      image: product.images?.[0] || "",
-      stock: product.stock,
+      image: effImage,
+      stock: effStock,
+      color: firstColor?.name || "",
+      colorHex: firstColor?.hex || "",
     };
     addItem(item);
     onOpenChange(false);
@@ -114,10 +124,10 @@ export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalPr
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-lg md:text-xl font-bold">₹{(product.price - (product.discount || 0)).toLocaleString()}</span>
+                <span className="text-lg md:text-xl font-bold">₹{(effBasePrice - (product.discount || 0)).toLocaleString()}</span>
                 {product.discount > 0 && (
                   <span className="text-sm md:text-base text-muted-foreground line-through opacity-50">
-                    ₹{product.price.toLocaleString()}
+                    ₹{effBasePrice.toLocaleString()}
                   </span>
                 )}
               </div>

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useCartStore } from "@/store/cartStore";
+import { useCartStore, cartLineKey } from "@/store/cartStore";
 import { useCheckoutStore } from "@/store/checkoutStore";
 import { useProductStore } from "@/store/productStore";
 import { useOrderStore } from "@/store/orderStore";
@@ -188,13 +188,16 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       {variant === "checkout" && (
         <div className="space-y-4 max-h-60 overflow-y-auto pr-2 no-scrollbar">
           {items.map((item) => (
-            <div key={item.id} className="flex gap-4 items-center">
+            <div key={cartLineKey(item.id, item.color)} className="flex gap-4 items-center">
               <div className="w-12 h-16 bg-muted rounded-sm relative flex-shrink-0 overflow-hidden">
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-luxury-gradient opacity-10" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-heading truncate">{item.name}</p>
+                {item.color && (
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{item.color}</p>
+                )}
                 <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
                   {t("cart.summary.qty", { count: item.quantity })}
                 </p>

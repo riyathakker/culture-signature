@@ -52,8 +52,13 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
   const { items, addItem, updateQuantity, removeItem } = useCartStore();
   const { t } = useTranslation();
 
-  const cartItem = items.find((i) => i.id === product.id);
-  const isOutOfStock = product.stock === 0;
+  // Effective values for the selected color (fallback to base).
+  const activeColorName = activeColor?.name || "";
+  const effBasePrice = activeColor?.price != null ? Number(activeColor.price) : product.price;
+  const effStock = activeColor?.stock != null ? Number(activeColor.stock) : product.stock;
+
+  const cartItem = items.find((i) => i.id === product.id && (i.color || "") === activeColorName);
+  const isOutOfStock = effStock === 0;
 
   const handleAddToCart = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -65,10 +70,12 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
     const item: CartItem = {
       id: product.id,
       name: product.name,
-      price: product.price - (product.discount || 0),
+      price: effBasePrice - (product.discount || 0),
       quantity: 1,
-      image: product.images?.[0] || "",
-      stock: product.stock,
+      image: displayImage || "",
+      stock: effStock,
+      color: activeColorName,
+      colorHex: activeColor?.hex || "",
     };
     addItem(item);
   };
@@ -87,7 +94,7 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
   };
 
   const discountPercentage = convertINRToDiscountPercentage(product.price, product.discount);
-  const isLowStock = product.stock > 0 && product.stock < 5;
+  const isLowStock = effStock > 0 && effStock < 5;
   const productHref = `/product/${product.id}${from ? `?from=${from}` : ""}`;
 
   // On the browse pages (new-arrivals, collections, categories) and anywhere the
@@ -130,8 +137,8 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
                     <QuantitySelector
                       quantity={cartItem.quantity}
                       min={1}
-                      max={product.stock}
-                      onUpdate={(qty) => qty === 0 ? removeItem(product.id) : updateQuantity(product.id, qty)}
+                      max={effStock}
+                      onUpdate={(qty) => qty === 0 ? removeItem(product.id, activeColorName) : updateQuantity(product.id, qty, activeColorName)}
                       className="w-full bg-background/90 backdrop-blur-sm border-none h-10"
                       size="sm"
                     />
@@ -212,11 +219,11 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
             <div className="flex justify-between flex-col gap-2 md:flex-row md:items-center md:gap-0">
               <div className="flex items-center gap-3">
                 <span className="text-sm md:text-base font-bold">
-                  ₹{(product.price - (product.discount || 0)).toLocaleString()}
+                  ₹{(effBasePrice - (product.discount || 0)).toLocaleString()}
                 </span>
                 {(product.discount || 0) > 0 && (
                   <span className="text-xs text-muted-foreground line-through opacity-50">
-                    ₹{product.price.toLocaleString()}
+                    ₹{effBasePrice.toLocaleString()}
                   </span>
                 )}
               </div>
@@ -253,8 +260,8 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
               <QuantitySelector
                 quantity={cartItem.quantity}
                 min={1}
-                max={product.stock}
-                onUpdate={(qty) => qty === 0 ? removeItem(product.id) : updateQuantity(product.id, qty)}
+                max={effStock}
+                onUpdate={(qty) => qty === 0 ? removeItem(product.id, activeColorName) : updateQuantity(product.id, qty, activeColorName)}
                 className="flex-1 bg-secondary/30 border-border/50 h-10"
                 size="sm"
               />

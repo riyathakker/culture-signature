@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+import { resolveVariant } from "@/lib/colorVariant";
 
 export default async function handler(req: NextRequest & { userEmail?: string }) {
   const userEmail = req.userEmail;
@@ -18,14 +19,19 @@ export default async function handler(req: NextRequest & { userEmail?: string })
     }
   });
 
-  const items = user?.cart.map(item => ({
-    id: item.product.id,
-    name: item.product.name,
-    price: item.product.price - (item.product.discount || 0),
-    quantity: item.quantity,
-    image: item.product.images?.[0] || "",
-    stock: item.product.stock,
-  })) || [];
+  const items = user?.cart.map(item => {
+    const v = resolveVariant(item.product as any, item.color);
+    return {
+      id: item.product.id,
+      name: item.product.name,
+      price: v.price,
+      quantity: item.quantity,
+      image: v.image,
+      stock: v.stock,
+      color: item.color || "",
+      colorHex: v.colorHex,
+    };
+  }) || [];
 
   return NextResponse.json(items);
 }

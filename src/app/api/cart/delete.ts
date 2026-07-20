@@ -7,7 +7,8 @@ export default async function handler(req: NextRequest & { userEmail?: string })
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { productId } = await req.json();
+  const { productId, color } = await req.json();
+  const selectedColor = color || "";
 
   const user = await prisma.user.findUnique({
     where: { email: userEmail }
@@ -18,9 +19,10 @@ export default async function handler(req: NextRequest & { userEmail?: string })
   if (productId) {
     await prisma.cartItem.delete({
       where: {
-        userId_productId: {
+        userId_productId_color: {
           userId: user.id,
-          productId: productId
+          productId: productId,
+          color: selectedColor
         }
       }
     });

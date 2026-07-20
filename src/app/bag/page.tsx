@@ -1,6 +1,6 @@
 "use client";
 
-import { useCartStore } from "@/store/cartStore";
+import { useCartStore, cartLineKey } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
@@ -68,7 +68,7 @@ export default function BagPage() {
             </div>
             <div className="flex flex-col">
               {items.map((item) => (
-                <CartItem key={item.id} item={item} variant="page" />
+                <CartItem key={cartLineKey(item.id, item.color)} item={item} variant="page" />
               ))}
             </div>
 

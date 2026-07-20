@@ -10,7 +10,14 @@ export type CartItem = {
   quantity: number;
   image: string;
   stock: number;
+  color?: string;
+  colorHex?: string;
 };
+
+/** Stable per-line identity: a product may appear once per selected color. */
+export const cartLineKey = (id: string, color?: string) => `${id}::${color || ""}`;
+const sameLine = (a: CartItem, id: string, color?: string) =>
+  a.id === id && (a.color || "") === (color || "");
 
 type CartStore = {
   items: CartItem[];
@@ -20,8 +27,8 @@ type CartStore = {
   setIsAuthenticated: (status: boolean) => void;
   fetchCart: (force?: boolean) => Promise<void>;
   addItem: (item: CartItem) => Promise<void>;
-  removeItem: (id: string) => Promise<void>;
-  updateQuantity: (id: string, quantity: number) => Promise<void>;
+  removeItem: (id: string, color?: string) => Promise<void>;
+  updateQuantity: (id: string, quantity: number, color?: string) => Promise<void>;
   clearCart: () => Promise<void>;
   setAppliedPromo: (promo: Discount | null) => void;
   getTotalPrice: () => number;
@@ -51,7 +58,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
   addItem: async (item) => {
     const state = get();
-    const existingItem = state.items.find((i) => i.id === item.id);
+    const existingItem = state.items.find((i) => sameLine(i, item.id, item.color));
     const newQuantity = (existingItem?.quantity || 0) + item.quantity;
 
     // Client-side stock check
@@ -64,7 +71,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
       if (existingItem) {
         return {
           items: state.items.map((i) =>
-            i.id === item.id ? { ...i, quantity: newQuantity } : i
+            sameLine(i, item.id, item.color) ? { ...i, quantity: newQuantity } : i
           ),
         };
       }
@@ -76,7 +83,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     }
 
     try {
-      await CartService.addItem(item.id, item.quantity);
+      await CartService.addItem(item.id, item.quantity, item.color);
     } catch (error: any) {
       console.error("Failed to add to cart:", error);
       toast.error(error.message || "Failed to add to cart");
@@ -84,28 +91,28 @@ export const useCartStore = create<CartStore>((set, get) => ({
     }
   },
 
-  removeItem: async (id) => {
+  removeItem: async (id, color) => {
     set((state) => ({
-      items: state.items.filter((item) => item.id !== id),
+      items: state.items.filter((item) => !sameLine(item, id, color)),
     }));
 
     if (!get().isAuthenticated) return;
 
     try {
-      await CartService.removeItem(id);
+      await CartService.removeItem(id, color);
     } catch (error) {
       console.error("Failed to remove from cart:", error);
     }
   },
 
-  updateQuantity: async (id, quantity) => {
+  updateQuantity: async (id, quantity, color) => {
     if (quantity <= 0) {
-      get().removeItem(id);
+      get().removeItem(id, color);
       return;
     }
 
     const state = get();
-    const item = state.items.find(i => i.id === id);
+    const item = state.items.find((i) => sameLine(i, id, color));
 
     if (item && quantity > item.stock) {
       toast.error(`Only ${item.stock} items available in stock.`);
@@ -114,14 +121,14 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
     set((state) => ({
       items: state.items.map((item) =>
-        item.id === id ? { ...item, quantity } : item
+        sameLine(item, id, color) ? { ...item, quantity } : item
       ),
     }));
 
     if (!get().isAuthenticated) return;
 
     try {
-      await CartService.updateQuantity(id, quantity);
+      await CartService.updateQuantity(id, quantity, color);
     } catch (error: any) {
       console.error("Failed to update quantity:", error);
       toast.error(error.message || "Failed to update quantity");
