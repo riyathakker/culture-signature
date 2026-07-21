@@ -134,26 +134,42 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
         <div className="space-y-2">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
             Color: <span className="text-foreground font-bold">{activeColor?.name || ""}</span>
+            {activeColor && effStock > 0 && effStock <= 5 && (
+              <span className="ml-2 text-primary/70 normal-case tracking-normal">Only {effStock} left</span>
+            )}
+            {activeColor && effStock === 0 && (
+              <span className="ml-2 text-destructive normal-case tracking-normal">Sold out</span>
+            )}
           </p>
           <div className="flex items-center gap-2 flex-wrap">
-            {colors.map((c, i) => (
-              <button
-                key={i}
-                type="button"
-                title={c.name}
-                onClick={() => {
-                  setActiveColor(c);
-                  if (c.images?.length > 0) onColorChange?.(c.images);
-                }}
-                className={cn(
-                  "w-7 h-7 rounded-full border-2 transition-all",
-                  activeColor?.hex === c.hex
-                    ? "border-foreground scale-110 shadow-md"
-                    : "border-transparent hover:border-foreground/40"
-                )}
-                style={{ backgroundColor: c.hex }}
-              />
-            ))}
+            {colors.map((c, i) => {
+              const soldOut = c.stock != null && Number(c.stock) === 0;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  title={soldOut ? `${c.name} — sold out` : c.name}
+                  onClick={() => {
+                    setActiveColor(c);
+                    if (c.images?.length > 0) onColorChange?.(c.images);
+                  }}
+                  className={cn(
+                    "relative w-7 h-7 rounded-full border-2 transition-all",
+                    activeColor?.hex === c.hex
+                      ? "border-foreground scale-110 shadow-md"
+                      : "border-transparent hover:border-foreground/40",
+                    soldOut && "opacity-40"
+                  )}
+                  style={{ backgroundColor: c.hex }}
+                >
+                  {soldOut && (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <span className="w-full h-px bg-foreground rotate-45" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
