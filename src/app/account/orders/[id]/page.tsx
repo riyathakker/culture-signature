@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useOrderStore } from "@/store/orderStore";
-import { Loader2, ArrowLeft, MapPin, Package, Calendar, Hash } from "lucide-react";
+import { Loader2, ArrowLeft, MapPin, Package, Calendar, Hash, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
@@ -13,6 +13,28 @@ import { ROUTES } from "@/constants/routes";
 import { ReviewModal } from "@/components/account/ReviewModal";
 import { OrderTracker } from "@/components/account/OrderTracker";
 import { useTranslation } from "@/context/TranslationContext";
+
+function StarRow({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => {
+        const full = rating >= star;
+        const half = !full && rating >= star - 0.5;
+        return (
+          <span key={star} className="relative w-3.5 h-3.5">
+            <Star className="w-3.5 h-3.5 text-muted-foreground/40 absolute inset-0" />
+            {(full || half) && (
+              <span className="absolute inset-0 overflow-hidden" style={{ width: full ? "100%" : "50%" }}>
+                <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+              </span>
+            )}
+          </span>
+        );
+      })}
+      <span className="ml-1 text-[11px] font-bold text-primary tabular-nums">{rating.toFixed(1)}</span>
+    </div>
+  );
+}
 
 function statusClass(status: string) {
   if (status === "DELIVERED") return "border-green-500 text-green-500 bg-green-500/5";
@@ -115,8 +137,10 @@ export default function OrderDetailPage() {
       <div className="space-y-4">
         <h3 className="text-lg font-heading">{t("account.orders.yourItems")}</h3>
         <div className="space-y-3">
-          {order.items?.map((item: any) => (
-            <div key={item.id} className="flex items-center gap-4 p-4 bg-background border border-border/40 rounded-sm">
+          {order.items?.map((item: any) => {
+            const review = (order as any).reviews?.find((r: any) => r.productId === item.product?.id);
+            return (
+            <div key={item.id} className="flex items-start gap-4 p-4 bg-background border border-border/40 rounded-sm">
               <div className="w-16 h-20 rounded-sm overflow-hidden bg-secondary/30 shrink-0">
                 {item.product?.images?.[0] && (
                   <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
@@ -130,19 +154,32 @@ export default function OrderDetailPage() {
                 <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
                   Qty {item.quantity} × ₹{item.price.toLocaleString("en-IN")}
                 </p>
+                {review && (
+                  <div className="mt-2 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Your review</span>
+                      <StarRow rating={review.rating} />
+                    </div>
+                    {review.comment && (
+                      <p className="text-sm text-muted-foreground italic leading-snug">“{review.comment}”</p>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col items-end gap-2 shrink-0">
                 <p className="font-bold text-sm">₹{(item.price * item.quantity).toLocaleString("en-IN")}</p>
-                {order.status === "DELIVERED" && (
+                {order.status === "DELIVERED" && !review && (
                   <ReviewModal
                     productId={item.product?.id}
                     productName={item.product?.name}
                     orderId={order.id as string}
+                    onSuccess={() => fetchMyOrders()}
                   />
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

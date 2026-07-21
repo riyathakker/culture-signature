@@ -29,6 +29,7 @@ const makeRow = (): BulkRow => ({
   images: [],
   isFeatured: false,
   colors: [],
+  enableColors: false,
   status: "idle",
   showImages: false,
 });
@@ -135,7 +136,9 @@ export default function BulkProductUpload() {
         categoryId: row.categoryId,
         images: row.images,
         isFeatured: row.isFeatured,
-        colors: row.colors.length > 0 ? row.colors.map((c) => ({ ...c, images: [] })) : undefined,
+        colors: row.enableColors && row.colors.length > 0
+          ? row.colors.map((c) => ({ name: c.name, hex: c.hex, images: c.images || [] }))
+          : undefined,
       });
       updateRow(row.uid, { status: "success", errorMsg: undefined });
       return true;

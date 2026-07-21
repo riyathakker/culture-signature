@@ -46,10 +46,10 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const { addItem, items, updateQuantity, removeItem } = useCartStore();
 
-  // Effective price/stock/image for the selected color (fallback to base).
+  // Price/stock come from the base product; only the image is color-specific.
   const activeColorName = activeColor?.name || "";
-  const effBasePrice = activeColor?.price != null ? Number(activeColor.price) : product.price;
-  const effStock = activeColor?.stock != null ? Number(activeColor.stock) : product.stock;
+  const effBasePrice = product.price;
+  const effStock = product.stock;
   const effImage = activeColor?.images?.[0] || product.images[0];
   const effNetPrice = effBasePrice - (product.discount || 0);
 

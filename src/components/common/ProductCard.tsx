@@ -36,9 +36,8 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
 
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const colors = (product.colors as ColorVariant[] | null | undefined) ?? [];
-  const [activeColor, setActiveColor] = useState<ColorVariant | null>(colors.length > 0 ? colors[0] : null);
-  const displayImage = (activeColor?.images?.[0]) || product.images?.[0];
+  // Color variants are chosen on the product detail page, not on the card.
+  const displayImage = product.images?.[0];
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -52,12 +51,12 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
   const { items, addItem, updateQuantity, removeItem } = useCartStore();
   const { t } = useTranslation();
 
-  // Effective values for the selected color (fallback to base).
-  const activeColorName = activeColor?.name || "";
-  const effBasePrice = activeColor?.price != null ? Number(activeColor.price) : product.price;
-  const effStock = activeColor?.stock != null ? Number(activeColor.stock) : product.stock;
+  const effBasePrice = product.price;
+  const effStock = product.stock;
 
-  const cartItem = items.find((i) => i.id === product.id && (i.color || "") === activeColorName);
+  // Card add-to-cart uses the base line (no color); colors are picked on the detail page.
+  const activeColorName = "";
+  const cartItem = items.find((i) => i.id === product.id && !i.color);
   const isOutOfStock = effStock === 0;
 
   const handleAddToCart = (e?: React.MouseEvent) => {
@@ -74,8 +73,8 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
       quantity: 1,
       image: displayImage || "",
       stock: effStock,
-      color: activeColorName,
-      colorHex: activeColor?.hex || "",
+      color: "",
+      colorHex: "",
     };
     addItem(item);
   };
@@ -230,28 +229,6 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
             </div>
           </div>
         </Link>
-
-        {/* --- COLOR SWATCHES --- */}
-        {colors.length > 1 && (
-          <div className="flex items-center gap-1.5 pb-2" onClick={(e) => e.preventDefault()}>
-            {colors.slice(0, 5).map((c, i) => (
-              <button
-                key={i}
-                type="button"
-                title={c.name}
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveColor(c); }}
-                className={cn(
-                  "w-4 h-4 rounded-full border-2 transition-all",
-                  activeColor?.hex === c.hex ? "border-foreground scale-110" : "border-transparent hover:border-foreground/40"
-                )}
-                style={{ backgroundColor: c.hex }}
-              />
-            ))}
-            {colors.length > 5 && (
-              <span className="text-[9px] text-muted-foreground">+{colors.length - 5}</span>
-            )}
-          </div>
-        )}
 
         {/* --- MOBILE ACTION BAR (outside any Link, always visible) --- */}
         {isMobile && !isOutOfStock && !isAdmin && !hideActions && (

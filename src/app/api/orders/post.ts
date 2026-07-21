@@ -73,8 +73,7 @@ export default async function handler(req: NextRequest & { userId?: string }) {
         });
       }
 
-      // 4. Update stock — per selected color when that color tracks its own
-      //    stock, otherwise the product's base stock.
+      // 4. Update product stock (shared across colors).
       for (const item of items) {
         if (item.color) {
           const p = await tx.product.findUnique({ where: { id: item.id } });

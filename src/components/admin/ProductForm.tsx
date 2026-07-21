@@ -26,6 +26,7 @@ import { useCategoryStore } from "@/store/categoryStore";
 import { CommonLoader } from "../common/Loader";
 import { ImageUpload } from "./ImageUpload";
 import { ColorVariant } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface ProductFormProps {
   productId?: string;
@@ -39,6 +40,8 @@ export function ProductForm({ productId }: ProductFormProps) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(isEdit);
+  const [activeColorIdx, setActiveColorIdx] = useState(0);
+  const [enableColors, setEnableColors] = useState(false);
 
 
 
@@ -109,6 +112,7 @@ export function ProductForm({ productId }: ProductFormProps) {
           isLimitedDrop: prod.isLimitedDrop || false,
           colors: (prod.colors as ColorVariant[]) || [],
         });
+        setEnableColors((((prod.colors as ColorVariant[]) || []).length) > 0);
       }
     } catch (error) {
       toast.error(isEdit ? "Failed to load masterpiece details" : "Failed to load categories");
@@ -122,10 +126,11 @@ export function ProductForm({ productId }: ProductFormProps) {
     setIsLoading(true);
 
     try {
+      const payload = { ...formData, colors: enableColors ? formData.colors : [] };
       if (isEdit) {
-        await updateProductById(productId!, formData);
+        await updateProductById(productId!, payload);
       } else {
-        await createProduct(formData);
+        await createProduct(payload);
       }
 
       toast.success(isEdit ? "Masterpiece updated successfully" : "Masterpiece added to collection successfully");
@@ -189,125 +194,135 @@ export function ProductForm({ productId }: ProductFormProps) {
             </div>
           </div>
 
-          <div className="bg-background border border-border/50 p-8 rounded-lg space-y-6">
-            <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold border-b border-border/30 pb-4">Media Assets</h3>
+          <div className="bg-background border border-border/50 p-6 rounded-lg">
             <ImageUpload
               value={formData.images}
               onChange={(urls) => setFormData({ ...formData, images: urls })}
               maxFiles={4}
+              compact
             />
           </div>
 
           {/* Color Variants */}
           <div className="bg-background border border-border/50 p-8 rounded-lg space-y-6">
             <div className="flex items-center justify-between border-b border-border/30 pb-4">
-              <h3 className="text-[10px] uppercase tracking-[0.2em] font-bold">Color Variants</h3>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <Switch checked={enableColors} onCheckedChange={setEnableColors} />
+                <span className="text-[10px] uppercase tracking-[0.2em] font-bold">Add color variants</span>
+              </label>
+              {enableColors && (
+                <span className="text-[10px] text-muted-foreground">
+                  {formData.colors.length} {formData.colors.length === 1 ? "color" : "colors"}
+                </span>
+              )}
+            </div>
+
+            {!enableColors ? (
+              <p className="text-xs text-muted-foreground italic">Turn on to add color variants, each with its own images.</p>
+            ) : (
+            <>
+            {/* Tabs — one per color, plus an add button */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {formData.colors.map((color, i) => {
+                const isActive = i === Math.min(activeColorIdx, formData.colors.length - 1);
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setActiveColorIdx(i)}
+                    className={cn(
+                      "flex items-center gap-2 h-9 px-3 rounded-full border text-[11px] font-medium transition-all",
+                      isActive
+                        ? "border-primary bg-primary/5 text-foreground"
+                        : "border-border/50 text-muted-foreground hover:border-foreground/40"
+                    )}
+                  >
+                    <span
+                      className="w-3.5 h-3.5 rounded-full border border-border/50"
+                      style={{ backgroundColor: color.hex }}
+                    />
+                    {color.name?.trim() || `Color ${i + 1}`}
+                  </button>
+                );
+              })}
               <button
                 type="button"
-                onClick={() => setFormData((prev) => ({
-                  ...prev,
-                  colors: [...prev.colors, { name: "", hex: "#000000", images: [], price: undefined, stock: undefined }],
-                }))}
-                className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-primary hover:text-primary/70 transition-colors"
+                onClick={() => {
+                  setActiveColorIdx(formData.colors.length);
+                  setFormData((prev) => ({
+                    ...prev,
+                    colors: [...prev.colors, { name: "", hex: "#000000", images: [] }],
+                  }));
+                }}
+                className="flex items-center gap-1.5 h-9 px-3 rounded-full border border-dashed border-primary/50 text-[11px] uppercase tracking-widest font-bold text-primary hover:bg-primary/5 transition-colors"
               >
-                <Plus className="w-3.5 h-3.5" /> Add Color
+                <Plus className="w-3.5 h-3.5" /> Add
               </button>
             </div>
 
             {formData.colors.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic">No color variants added. Click "Add Color" to add variants with images.</p>
-            ) : (
-              <div className="space-y-8">
-                {formData.colors.map((color, idx) => (
-                  <div key={idx} className="space-y-4 border border-border/30 rounded-lg p-5">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 flex-1">
-                        <input
-                          type="color"
-                          value={color.hex}
-                          onChange={(e) => {
-                            const updated = [...formData.colors];
-                            updated[idx] = { ...updated[idx], hex: e.target.value };
-                            setFormData((prev) => ({ ...prev, colors: updated }));
-                          }}
-                          className="w-10 h-10 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
-                          title="Pick color"
-                        />
-                        <Input
-                          placeholder="Color name (e.g. Midnight Black)"
-                          value={color.name}
-                          onChange={(e) => {
-                            const updated = [...formData.colors];
-                            updated[idx] = { ...updated[idx], name: e.target.value };
-                            setFormData((prev) => ({ ...prev, colors: updated }));
-                          }}
-                          className="h-10 border-border/50 flex-1"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            colors: prev.colors.filter((_, i) => i !== idx),
-                          }));
-                        }}
-                        className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Price (optional)</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          step="0.01"
-                          placeholder="Uses base price"
-                          value={color.price ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value === "" ? undefined : Number(e.target.value);
-                            const updated = [...formData.colors];
-                            updated[idx] = { ...updated[idx], price: val };
-                            setFormData((prev) => ({ ...prev, colors: updated }));
-                          }}
-                          className="h-10 border-border/50"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Stock (optional)</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          step="1"
-                          placeholder="Uses base stock"
-                          value={color.stock ?? ""}
-                          onChange={(e) => {
-                            const val = e.target.value === "" ? undefined : Number(e.target.value);
-                            const updated = [...formData.colors];
-                            updated[idx] = { ...updated[idx], stock: val };
-                            setFormData((prev) => ({ ...prev, colors: updated }));
-                          }}
-                          className="h-10 border-border/50"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>
-                      <ImageUpload
-                        value={color.images}
-                        onChange={(urls) => {
+              <p className="text-xs text-muted-foreground italic">No color variants added. Click "Add" to create one with its own price, stock, and images.</p>
+            ) : (() => {
+              const idx = Math.min(activeColorIdx, formData.colors.length - 1);
+              const color = formData.colors[idx];
+              return (
+                <div className="space-y-4 border border-border/30 rounded-lg p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 flex-1">
+                      <input
+                        type="color"
+                        value={color.hex}
+                        onChange={(e) => {
                           const updated = [...formData.colors];
-                          updated[idx] = { ...updated[idx], images: urls };
+                          updated[idx] = { ...updated[idx], hex: e.target.value };
                           setFormData((prev) => ({ ...prev, colors: updated }));
                         }}
-                        maxFiles={4}
+                        className="w-10 h-10 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
+                        title="Pick color"
+                      />
+                      <Input
+                        placeholder="Color name (e.g. Midnight Black)"
+                        value={color.name}
+                        onChange={(e) => {
+                          const updated = [...formData.colors];
+                          updated[idx] = { ...updated[idx], name: e.target.value };
+                          setFormData((prev) => ({ ...prev, colors: updated }));
+                        }}
+                        className="h-10 border-border/50 flex-1"
                       />
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveColorIdx((cur) => Math.max(0, Math.min(cur, formData.colors.length - 2)));
+                        setFormData((prev) => ({
+                          ...prev,
+                          colors: prev.colors.filter((_, i) => i !== idx),
+                        }));
+                      }}
+                      className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                      title="Remove this color"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-2">
+                    <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>
+                    <ImageUpload
+                      value={color.images}
+                      onChange={(urls) => {
+                        const updated = [...formData.colors];
+                        updated[idx] = { ...updated[idx], images: urls };
+                        setFormData((prev) => ({ ...prev, colors: updated }));
+                      }}
+                      maxFiles={4}
+                      compact
+                    />
+                  </div>
+                </div>
+              );
+            })()}
+            </>
             )}
           </div>
         </div>

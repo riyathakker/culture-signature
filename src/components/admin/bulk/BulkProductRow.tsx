@@ -44,6 +44,7 @@ export function BulkProductRow({
 }: BulkProductRowProps) {
   const { t } = useTranslation();
   const [imageTab, setImageTab] = useState<"pool" | "direct">("pool");
+  const [activeColorIdx, setActiveColorIdx] = useState(0);
 
   const statusColor: Record<RowStatus, string> = {
     idle: "border-border/50",
@@ -167,55 +168,101 @@ export function BulkProductRow({
                 className="min-h-[72px] resize-none border-border/50 text-sm" />
             </div>
 
-            {/* Colors section */}
-            <div className="px-4 pb-4 space-y-2 border-t border-inherit pt-4">
-              <div className="flex items-center justify-between">
-                <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Colors (optional)</Label>
+            {/* Colors section — tabs, one editor visible at a time */}
+            <div className="px-4 pb-4 space-y-3 border-t border-inherit pt-4">
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <Switch
+                  checked={row.enableColors}
+                  onCheckedChange={(v) => onUpdate({ enableColors: v })}
+                  disabled={disabled || row.status === "success"}
+                />
+                <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">Add color variants</span>
+              </label>
+
+              {row.enableColors && (
+              <>
+              <div className="flex items-center gap-2 flex-wrap">
+                {row.colors.map((c, ci) => {
+                  const isActive = ci === Math.min(activeColorIdx, row.colors.length - 1);
+                  return (
+                    <button
+                      key={ci}
+                      type="button"
+                      onClick={() => setActiveColorIdx(ci)}
+                      className={cn(
+                        "flex items-center gap-1.5 h-8 px-2.5 rounded-full border text-[10px] font-medium transition-all",
+                        isActive
+                          ? "border-primary bg-primary/5 text-foreground"
+                          : "border-border/50 text-muted-foreground hover:border-foreground/40"
+                      )}
+                    >
+                      <span className="w-3 h-3 rounded-full border border-border/50" style={{ backgroundColor: c.hex }} />
+                      {c.name?.trim() || `Color ${ci + 1}`}
+                    </button>
+                  );
+                })}
                 <button
                   type="button"
                   disabled={disabled || row.status === "success"}
-                  onClick={() => onUpdate({ colors: [...row.colors, { name: "", hex: "#000000" }] })}
-                  className="flex items-center gap-1 text-[9px] uppercase tracking-widest font-bold text-primary hover:text-primary/70 transition-colors disabled:opacity-40"
+                  onClick={() => {
+                    setActiveColorIdx(row.colors.length);
+                    onUpdate({ colors: [...row.colors, { name: "", hex: "#000000", images: [] }] });
+                  }}
+                  className="flex items-center gap-1 h-8 px-2.5 rounded-full border border-dashed border-primary/50 text-[10px] uppercase tracking-widest font-bold text-primary hover:bg-primary/5 transition-colors disabled:opacity-40"
                 >
                   <Plus className="w-3 h-3" /> Add
                 </button>
               </div>
-              {row.colors.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {row.colors.map((c, ci) => (
-                    <div key={ci} className="flex items-center gap-1.5 border border-border/40 rounded px-2 py-1">
+
+              {row.colors.length > 0 && (() => {
+                const ci = Math.min(activeColorIdx, row.colors.length - 1);
+                const c = row.colors[ci];
+                const update = (patch: Partial<BulkColorEntry>) =>
+                  onUpdate({ colors: row.colors.map((x, xi) => (xi === ci ? { ...x, ...patch } : x)) });
+                return (
+                  <div className="space-y-3 border border-border/30 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
                       <input
                         type="color"
                         value={c.hex}
                         disabled={disabled || row.status === "success"}
-                        onChange={(e) => {
-                          const updated: BulkColorEntry[] = row.colors.map((x, xi) => xi === ci ? { ...x, hex: e.target.value } : x);
-                          onUpdate({ colors: updated });
-                        }}
-                        className="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent"
+                        onChange={(e) => update({ hex: e.target.value })}
+                        className="w-9 h-9 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
+                        title="Pick color"
                       />
-                      <input
-                        type="text"
+                      <Input
+                        placeholder="Color name (e.g. Midnight Black)"
                         value={c.name}
-                        placeholder="Name"
                         disabled={disabled || row.status === "success"}
-                        onChange={(e) => {
-                          const updated: BulkColorEntry[] = row.colors.map((x, xi) => xi === ci ? { ...x, name: e.target.value } : x);
-                          onUpdate({ colors: updated });
-                        }}
-                        className="text-[10px] w-24 border-0 bg-transparent outline-none placeholder:text-muted-foreground/50"
+                        onChange={(e) => update({ name: e.target.value })}
+                        className="h-9 border-border/50 flex-1"
                       />
                       <button
                         type="button"
                         disabled={disabled || row.status === "success"}
-                        onClick={() => onUpdate({ colors: row.colors.filter((_, xi) => xi !== ci) })}
-                        className="text-muted-foreground hover:text-destructive disabled:opacity-40"
+                        onClick={() => {
+                          setActiveColorIdx((cur) => Math.max(0, Math.min(cur, row.colors.length - 2)));
+                          onUpdate({ colors: row.colors.filter((_, xi) => xi !== ci) });
+                        }}
+                        className="text-muted-foreground hover:text-destructive disabled:opacity-40 p-1"
+                        title="Remove this color"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
-                  ))}
-                </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>
+                      <ImageUpload
+                        value={c.images}
+                        onChange={(urls) => update({ images: urls })}
+                        maxFiles={4}
+                        compact
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
+              </>
               )}
             </div>
 
@@ -295,6 +342,7 @@ export function BulkProductRow({
                       onUpdate({ images: [...poolUrls, ...urls] });
                     }}
                     maxFiles={Math.max(0, 4 - row.images.filter((u) => imagePool.some((p) => p.url === u)).length)}
+                    compact
                   />
                 )}
               </div>
