@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+import { sendContactInquiry } from "@/lib/email";
 
 export default async function handler(req: NextRequest) {
   try {
@@ -17,6 +18,8 @@ export default async function handler(req: NextRequest) {
         message: message.trim(),
       },
     });
+
+    await sendContactInquiry(inquiry);
 
     return NextResponse.json({ id: inquiry.id }, { status: 201 });
   } catch (e) {

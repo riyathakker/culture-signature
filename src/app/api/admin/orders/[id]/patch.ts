@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { sendOrderStatusUpdate } from "@/lib/email";
 
 export default async function handler(req: NextRequest & { userEmail?: string; userId?: string }, context: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -36,6 +37,8 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
         },
       },
     });
+
+    await sendOrderStatusUpdate(order, order.user?.email);
 
     return NextResponse.json(order);
   } catch (error) {

@@ -1,8 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
+import { sendOrderConfirmation } from "@/lib/email";
 
-export default async function handler(req: NextRequest & { userId?: string }) {
+export default async function handler(req: NextRequest & { userId?: string; userEmail?: string }) {
   const userId = req.userId ?? null;
+  const userEmail = req.userEmail ?? null;
 
   try {
     const { items, totalPrice, discountAmount, promoCode, shippingAddress, paymentId, cf_order_id } = await req.json();
@@ -87,6 +89,11 @@ export default async function handler(req: NextRequest & { userId?: string }) {
         include: { items: { include: { product: true } } },
       });
     });
+
+    // Fire order-confirmation emails to the customer + admin (best-effort).
+    if (order) {
+      await sendOrderConfirmation(order, userEmail);
+    }
 
     return NextResponse.json(order);
   } catch (error: any) {
