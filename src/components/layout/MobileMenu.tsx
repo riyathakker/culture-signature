@@ -51,7 +51,7 @@ export function MobileMenu() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
           render={
-            <IconButton icon={Menu} className="lg:hidden" aria-label="Menu" />
+            <IconButton icon={Menu} variant="secondary" className="lg:hidden" aria-label="Menu" />
           }
         />
         <SheetContent side="left" className="w-full sm:max-w-sm flex flex-col p-0" showCloseButton={false}>

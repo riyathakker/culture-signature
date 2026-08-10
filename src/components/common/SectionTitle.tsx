@@ -18,7 +18,7 @@ export function SectionTitle({
   return (
     <div
       className={cn(
-        "flex flex-col space-y-2 mb-6 md:mb-10",
+        "flex flex-col space-y-2 mb-6",
         {
           "items-start text-left": align === "left",
           "items-center text-center": align === "center",
@@ -29,14 +29,14 @@ export function SectionTitle({
       {...props}
     >
       {subtitle && (
-        <span className="text-luxury italic opacity-80">{subtitle}</span>
+        <span className="text-luxury text-xs! italic opacity-80">{subtitle}</span>
       )}
       <h2
         className={cn(
           "font-heading tracking-tight text-foreground",
           {
             "text-2xl md:text-4xl lg:text-5xl": size === "large",
-            "text-lg md:text-3xl lg:text-4xl": size === "default",
+            "text-lg md:text-2xl lg:text-3xl": size === "default",
           }
         )}
       >

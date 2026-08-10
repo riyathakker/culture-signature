@@ -4,23 +4,21 @@ import { Container } from "@/components/layout/Container";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Truck, ShieldCheck, Globe } from "lucide-react";
 import { useTranslation } from "@/context/TranslationContext";
+import { TitleAndDescription } from "@/components/common/HomePageContainer";
 
 export default function ShippingPage() {
   const { t } = useTranslation();
 
   return (
     <div className="bg-background min-h-screen pb-20">
-      <Container className="pt-10 pb-4">
+      <Container className="pt-4 pb-4 mb-4">
         <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.shipping.breadcrumb") }]} />
-        <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2 text-primary">{t("legal.shipping.title")}</h1>
-        <p className="muted-italic text-lg max-w-2xl">
-          {t("legal.shipping.subtitle")}
-        </p>
+        <TitleAndDescription heading={t("legal.shipping.title")} description={t("legal.shipping.subtitle")} />
       </Container>
 
       <Container>
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 mb-20">
             <div className="text-center space-y-4">
               <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto">
                 <Truck className="w-8 h-8 text-primary" />

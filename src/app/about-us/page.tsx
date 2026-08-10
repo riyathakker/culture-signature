@@ -34,7 +34,7 @@ export default function AboutPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
             <SectionHeader>{t("about.visionary.header")}</SectionHeader>
 
-            <h3 className="text-4xl md:text-5xl font-heading text-primary leading-tight">
+            <h3 className="text-4xl font-heading text-primary leading-tight">
               {t("about.visionary.name")}
             </h3>
 

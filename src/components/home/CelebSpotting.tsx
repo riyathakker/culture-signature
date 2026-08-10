@@ -28,7 +28,7 @@ function DesktopMarquee({ images, onSelect }: { images: string[]; onSelect: (s: 
           <div
             key={idx}
             onClick={() => onSelect(src)}
-            className="relative w-64 md:w-80 h-[400px] flex-shrink-0 rounded-sm overflow-hidden group cursor-pointer"
+            className="relative w-64 h-[320px] flex-shrink-0 rounded-sm overflow-hidden group cursor-pointer"
           >
             <img
               src={src}

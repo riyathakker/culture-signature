@@ -40,7 +40,7 @@ export function Footer() {
   return (
     <footer className="bg-secondary/30 pt-10 md:pt-15 border-t">
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr] gap-8 mb-10 md:mb-15">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr] gap-8 mb-10">
           {/* Brand Column */}
           <div className="space-y-6">
             <img
@@ -108,7 +108,7 @@ export function Footer() {
         </div>
       </Container>
       {/* Bottom Bar */}
-      <Container className="bg-primary/20 py-4 mx-0!">
+      <Container className="bg-primary/20 py-4 mx-0!" size="full">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-[10px] uppercase tracking-[0.2em] text-primary text-center md:text-left">
             © {new Date().getFullYear()} Culture Signature. {t("shop.footer.brand.rights")}

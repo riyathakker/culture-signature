@@ -48,33 +48,20 @@ export function FeaturedProducts() {
           </div>
         ) : (
           <>
-            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar" style={{ WebkitOverflowScrolling: "touch" }}>
+            <div className="flex gap-4 overflow-x-auto pb-4" style={{ WebkitOverflowScrolling: "touch" }}>
               {featuredProducts.map((product: Product) => (
                 <div
                   key={product.id}
-                  className="min-w-[160px] max-w-[160px] lg:min-w-[240px] lg:max-w-[240px] flex-shrink-0"
+                  className="min-w-[160px] max-w-[160px] flex-shrink-0"
                 >
                   <ProductCard product={product} hideActions />
                 </div>
               ))}
             </div>
-            <div className="flex justify-center mt-2 md:mt-6">
+            <div className="flex justify-center mt-2">
               <Link
                 href={ROUTES.COLLECTIONS}
-                className="
-                  px-8
-                  py-3
-                  border
-                  border-primary
-                  text-primary
-                  uppercase
-                  tracking-[0.2em]
-                  text-sm
-                  transition-all
-                  duration-300
-                  hover:bg-primary
-                  hover:text-white
-                "
+                className="btn-luxury-outline"
               >
                 {t("home.featured.viewCollection")}
               </Link>
