@@ -75,6 +75,7 @@ export interface Product {
 export interface ColorVariant {
   name: string;
   hex: string;
+  hex2?: string | null;
   images: string[];
   /** Optional per-color price. Falls back to the product's base price when unset. */
   price?: number | null;

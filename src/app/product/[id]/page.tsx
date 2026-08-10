@@ -119,7 +119,7 @@ export default function ProductPage() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 mt-4">
-          <ProductGallery images={galleryImages.length > 0 ? galleryImages : (product.images || [product.image])} />
+          <ProductGallery images={galleryImages} />
           <ProductInfo product={product} onColorChange={setGalleryImages} />
         </div>
 

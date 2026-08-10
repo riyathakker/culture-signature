@@ -127,6 +127,10 @@ export default function BulkProductUpload() {
     }
     updateRow(row.uid, { status: "loading" });
     try {
+      const colors = row.enableColors && row.colors.length > 0
+        ? row.colors.map((c) => ({ name: c.name, hex: c.hex, hex2: c.hex2 || null, images: c.images || [] }))
+        : undefined;
+      const images = row.images.length > 0 ? row.images : (colors?.[0]?.images ?? []);
       await ProductService.create({
         title: row.title,
         description: row.description,
@@ -134,11 +138,9 @@ export default function BulkProductUpload() {
         discount: Number(row.discount || 0),
         stock: Number(row.stock || 1),
         categoryId: row.categoryId,
-        images: row.images,
+        images,
         isFeatured: row.isFeatured,
-        colors: row.enableColors && row.colors.length > 0
-          ? row.colors.map((c) => ({ name: c.name, hex: c.hex, images: c.images || [] }))
-          : undefined,
+        colors,
       });
       updateRow(row.uid, { status: "success", errorMsg: undefined });
       return true;

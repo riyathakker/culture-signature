@@ -1,4 +1,12 @@
+import type { CSSProperties } from "react";
 import type { ColorVariant } from "@/types";
+
+export function swatchStyle(hex: string, hex2?: string | null): CSSProperties {
+  if (hex2) {
+    return { background: `linear-gradient(135deg, ${hex} 0 50%, ${hex2} 50% 100%)` };
+  }
+  return { backgroundColor: hex };
+}
 
 type PricingProduct = {
   price: number;

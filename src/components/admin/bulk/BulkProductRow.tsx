@@ -17,6 +17,8 @@ import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useTranslation } from "@/context/TranslationContext";
 import { BulkColorEntry, BulkRow, PoolImage, RowStatus } from "@/types/bulk";
 import { hexToColorName } from "@/lib/colorName";
+import { swatchStyle } from "@/lib/colorVariant";
+import { NoImage } from "@/components/common/NoImage";
 
 interface BulkProductRowProps {
   row: BulkRow;
@@ -197,7 +199,7 @@ export function BulkProductRow({
                           : "border-border/50 text-muted-foreground hover:border-foreground/40"
                       )}
                     >
-                      <span className="w-3 h-3 rounded-full border border-border/50" style={{ backgroundColor: c.hex }} />
+                      <span className="w-3 h-3 rounded-full border border-border/50" style={swatchStyle(c.hex, c.hex2)} />
                       {c.name?.trim() || `Color ${ci + 1}`}
                     </button>
                   );
@@ -220,32 +222,68 @@ export function BulkProductRow({
                 const c = row.colors[ci];
                 const update = (patch: Partial<BulkColorEntry>) =>
                   onUpdate({ colors: row.colors.map((x, xi) => (xi === ci ? { ...x, ...patch } : x)) });
+                const locked = disabled || row.status === "success";
+                const autoName = (hex: string, hex2?: string) =>
+                  hex2 ? `${hexToColorName(hex)} & ${hexToColorName(hex2)}` : hexToColorName(hex);
+                const isAutoNamed = !c.name || c.name === autoName(c.hex, c.hex2);
                 return (
                   <div className="space-y-3 border border-border/30 rounded-lg p-3">
                     <div className="flex items-center gap-2">
                       <input
                         type="color"
                         value={c.hex}
-                        disabled={disabled || row.status === "success"}
+                        disabled={locked}
                         onChange={(e) => {
                           const newHex = e.target.value;
-                          // Auto-fill the name from the hex unless the user typed a custom one.
-                          const wasAutoNamed = !c.name || c.name === hexToColorName(c.hex);
-                          update({ hex: newHex, ...(wasAutoNamed ? { name: hexToColorName(newHex) } : {}) });
+                          update({ hex: newHex, ...(isAutoNamed ? { name: autoName(newHex, c.hex2) } : {}) });
                         }}
                         className="w-9 h-9 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
                         title="Pick color — name auto-fills"
                       />
+                      {c.hex2 ? (
+                        <div className="relative">
+                          <input
+                            type="color"
+                            value={c.hex2}
+                            disabled={locked}
+                            onChange={(e) => {
+                              const newHex2 = e.target.value;
+                              update({ hex2: newHex2, ...(isAutoNamed ? { name: autoName(c.hex, newHex2) } : {}) });
+                            }}
+                            className="w-9 h-9 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
+                            title="Second color"
+                          />
+                          <button
+                            type="button"
+                            disabled={locked}
+                            onClick={() => update({ hex2: undefined, ...(isAutoNamed ? { name: autoName(c.hex) } : {}) })}
+                            className="absolute -top-1.5 -right-1.5 bg-background border border-border rounded-full p-0.5 text-muted-foreground hover:text-destructive disabled:opacity-40"
+                            title="Remove second color"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={locked}
+                          onClick={() => update({ hex2: "#ffffff", ...(isAutoNamed ? { name: autoName(c.hex, "#ffffff") } : {}) })}
+                          className="w-9 h-9 rounded border border-dashed border-primary/50 text-primary hover:bg-primary/5 flex items-center justify-center disabled:opacity-40"
+                          title="Add a second color (two-tone)"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                       <Input
                         placeholder="Color name (e.g. Midnight Black)"
                         value={c.name}
-                        disabled={disabled || row.status === "success"}
+                        disabled={locked}
                         onChange={(e) => update({ name: e.target.value })}
                         className="h-9 border-border/50 flex-1"
                       />
                       <button
                         type="button"
-                        disabled={disabled || row.status === "success"}
+                        disabled={locked}
                         onClick={() => {
                           setActiveColorIdx((cur) => Math.max(0, Math.min(cur, row.colors.length - 2)));
                           onUpdate({ colors: row.colors.filter((_, xi) => xi !== ci) });
@@ -253,11 +291,14 @@ export function BulkProductRow({
                         className="text-muted-foreground hover:text-destructive disabled:opacity-40 p-1"
                         title="Remove this color"
                       >
-                        <X className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>
+                      {c.images.length === 0 && (
+                        <NoImage className="h-20 rounded-lg border border-dashed border-border/50" />
+                      )}
                       <ImageUpload
                         value={c.images}
                         onChange={(urls) => update({ images: urls })}

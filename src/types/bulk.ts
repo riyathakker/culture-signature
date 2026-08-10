@@ -3,6 +3,7 @@ export type RowStatus = "idle" | "loading" | "success" | "error";
 export interface BulkColorEntry {
   name: string;
   hex: string;
+  hex2?: string;
   images: string[];
 }
 

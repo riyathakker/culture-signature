@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Heart, Share2, Truck, ShieldCheck, Bell, BellRing } from "lucide-react";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { cn } from "@/lib/utils";
+import { swatchStyle } from "@/lib/colorVariant";
 import { Button } from "@/components/ui/button";
 import { useCartStore, CartItem } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
@@ -144,6 +145,7 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
           <div className="flex items-center gap-2 flex-wrap">
             {colors.map((c, i) => {
               const soldOut = c.stock != null && Number(c.stock) === 0;
+              const isActive = activeColor === c;
               return (
                 <button
                   key={i}
@@ -151,16 +153,16 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
                   title={soldOut ? `${c.name} — sold out` : c.name}
                   onClick={() => {
                     setActiveColor(c);
-                    if (c.images?.length > 0) onColorChange?.(c.images);
+                    onColorChange?.(c.images ?? []);
                   }}
                   className={cn(
                     "relative w-7 h-7 rounded-full border-2 transition-all",
-                    activeColor?.hex === c.hex
+                    isActive
                       ? "border-foreground scale-110 shadow-md"
                       : "border-transparent hover:border-foreground/40",
                     soldOut && "opacity-40"
                   )}
-                  style={{ backgroundColor: c.hex }}
+                  style={swatchStyle(c.hex, c.hex2)}
                 >
                   {soldOut && (
                     <span className="absolute inset-0 flex items-center justify-center">
