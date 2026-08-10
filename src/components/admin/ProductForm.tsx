@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { hexToColorName } from "@/lib/colorName";
 import {
   Select,
   SelectContent,
@@ -251,7 +252,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                   setActiveColorIdx(formData.colors.length);
                   setFormData((prev) => ({
                     ...prev,
-                    colors: [...prev.colors, { name: "", hex: "#000000", images: [] }],
+                    colors: [...prev.colors, { name: hexToColorName("#000000"), hex: "#000000", images: [] }],
                   }));
                 }}
                 className="flex items-center gap-1.5 h-9 px-3 rounded-full border border-dashed border-primary/50 text-[11px] uppercase tracking-widest font-bold text-primary hover:bg-primary/5 transition-colors"
@@ -273,12 +274,23 @@ export function ProductForm({ productId }: ProductFormProps) {
                         type="color"
                         value={color.hex}
                         onChange={(e) => {
+                          const newHex = e.target.value;
+                          const current = formData.colors[idx];
+                          // Auto-fill the name from the hex, unless the user has
+                          // typed a custom name (i.e. it no longer matches the
+                          // auto-name of the previous hex).
+                          const wasAutoNamed =
+                            !current.name || current.name === hexToColorName(current.hex);
                           const updated = [...formData.colors];
-                          updated[idx] = { ...updated[idx], hex: e.target.value };
+                          updated[idx] = {
+                            ...current,
+                            hex: newHex,
+                            name: wasAutoNamed ? hexToColorName(newHex) : current.name,
+                          };
                           setFormData((prev) => ({ ...prev, colors: updated }));
                         }}
                         className="w-10 h-10 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
-                        title="Pick color"
+                        title="Pick color — name auto-fills"
                       />
                       <Input
                         placeholder="Color name (e.g. Midnight Black)"

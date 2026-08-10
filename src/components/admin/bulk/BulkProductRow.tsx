@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { useTranslation } from "@/context/TranslationContext";
 import { BulkColorEntry, BulkRow, PoolImage, RowStatus } from "@/types/bulk";
+import { hexToColorName } from "@/lib/colorName";
 
 interface BulkProductRowProps {
   row: BulkRow;
@@ -206,7 +207,7 @@ export function BulkProductRow({
                   disabled={disabled || row.status === "success"}
                   onClick={() => {
                     setActiveColorIdx(row.colors.length);
-                    onUpdate({ colors: [...row.colors, { name: "", hex: "#000000", images: [] }] });
+                    onUpdate({ colors: [...row.colors, { name: hexToColorName("#000000"), hex: "#000000", images: [] }] });
                   }}
                   className="flex items-center gap-1 h-8 px-2.5 rounded-full border border-dashed border-primary/50 text-[10px] uppercase tracking-widest font-bold text-primary hover:bg-primary/5 transition-colors disabled:opacity-40"
                 >
@@ -226,9 +227,14 @@ export function BulkProductRow({
                         type="color"
                         value={c.hex}
                         disabled={disabled || row.status === "success"}
-                        onChange={(e) => update({ hex: e.target.value })}
+                        onChange={(e) => {
+                          const newHex = e.target.value;
+                          // Auto-fill the name from the hex unless the user typed a custom one.
+                          const wasAutoNamed = !c.name || c.name === hexToColorName(c.hex);
+                          update({ hex: newHex, ...(wasAutoNamed ? { name: hexToColorName(newHex) } : {}) });
+                        }}
                         className="w-9 h-9 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
-                        title="Pick color"
+                        title="Pick color — name auto-fills"
                       />
                       <Input
                         placeholder="Color name (e.g. Midnight Black)"
