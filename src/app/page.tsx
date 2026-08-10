@@ -21,7 +21,6 @@ export default function HomePage() {
       <CelebSpotting />
       {/* hidden in PWA */}
       <div className="pwa-hide">
-        <Testimonials />
         <FAQ />
       </div>
     </div>

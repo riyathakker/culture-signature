@@ -3,6 +3,7 @@
 import { Container } from "@/components/layout/Container";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { useTranslation } from "@/context/TranslationContext";
+import { TitleAndDescription } from "@/components/common/HomePageContainer";
 
 export default function PrivacyPage() {
   const { t } = useTranslation();
@@ -11,16 +12,13 @@ export default function PrivacyPage() {
 
   return (
     <div className="bg-background min-h-screen pb-20">
-      <Container className="pt-10 pb-4">
+      <Container className="pt-4 pb-4 mb-4">
         <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.privacy.breadcrumb") }]} />
-        <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2 text-primary">{t("legal.privacy.title")}</h1>
-        <p className="muted-italic text-lg max-w-2xl">
-          {t("legal.privacy.subtitle")}
-        </p>
+        <TitleAndDescription heading={t("legal.privacy.title")} description={t("legal.privacy.subtitle")} />
       </Container>
 
       <Container>
-        <div className="max-w-4xl mx-auto prose prose-luxury">
+        <div className="max-w-4xl mx-6 prose prose-luxury">
           <section className="mb-12">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.privacy.sections.collect.title")}</h2>
             <p className="text-muted-foreground leading-relaxed font-serif italic mb-4">

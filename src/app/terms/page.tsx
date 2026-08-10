@@ -3,23 +3,20 @@
 import { Container } from "@/components/layout/Container";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { useTranslation } from "@/context/TranslationContext";
+import { TitleAndDescription } from "@/components/common/HomePageContainer";
 
 export default function TermsPage() {
   const { t } = useTranslation();
 
   return (
     <div className="bg-background min-h-screen pb-20">
-      <Container className="pt-10 pb-4">
+      <Container className="pt-4 pb-4 mb-4">
         <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.terms.breadcrumb") }]} />
-        <h1 className="text-5xl md:text-6xl font-heading mt-6 mb-2 text-primary">{t("legal.terms.title")}</h1>
-        <p className="muted-italic text-lg max-w-2xl">
-          {t("legal.terms.subtitle")}
-        </p>
+        <TitleAndDescription heading={t("legal.terms.title")} description={t("legal.terms.subtitle")} />
       </Container>
 
       <Container>
-        <div className="max-w-4xl mx-auto prose prose-luxury">
-          <p className="text-sm text-muted-foreground mb-12">{t("legal.terms.lastUpdated")}</p>
+        <div className="max-w-4xl mx-6 prose prose-luxury">
 
           <section className="mb-12">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.terms.sections.agreement.title")}</h2>
@@ -62,11 +59,6 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="pt-10 border-t">
-            <p className="text-xs text-muted-foreground text-center italic">
-              {t("legal.terms.sections.jurisdiction")}
-            </p>
-          </section>
         </div>
       </Container>
     </div>

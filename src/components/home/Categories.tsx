@@ -17,7 +17,7 @@ function CategoryCards() {
           <Link
             key={cat.id}
             href={`/categories/${cat.id}`}
-            className="group flex flex-col items-center p-8 bg-secondary/60 hover:bg-primary transition-all duration-700 relative overflow-hidden flex-shrink-0 w-[42vw] max-w-[200px] min-w-[140px] md:w-[200px]"
+            className="group flex flex-col items-center py-12 bg-secondary/60 hover:bg-primary transition-all duration-700 relative overflow-hidden flex-shrink-0 w-[42vw] max-w-[200px] min-w-[140px] md:w-[200px]"
           >
             {cat.image && (
               <img
@@ -27,8 +27,8 @@ function CategoryCards() {
               />
             )}
             <div className="absolute inset-0 bg-luxury-gradient opacity-0 group-hover:opacity-20 transition-opacity" />
-            <div className="w-10 h-10 mb-4 relative z-10 flex items-center justify-center">
-              <span className="text-2xl font-heading uppercase group-hover:text-white transition-colors">
+            <div className="w-10 h-10 mb-2 relative z-10 flex items-center justify-center">
+              <span className="text-xl font-heading uppercase group-hover:text-white transition-colors">
                 {cat.name ? cat.name[0] : "?"}
               </span>
             </div>

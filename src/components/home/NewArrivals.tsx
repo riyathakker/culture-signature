@@ -63,23 +63,10 @@ export function NewArrivals() {
                 ))}
             </div>
             {newArrivals.length > displayLimit && (
-              <div className="flex justify-center mt-2 md:mt-6">
+              <div className="flex justify-center mt-2">
                 <Link
                   href={ROUTES.NEW_ARRIVALS}
-                  className="
-                  px-8
-                  py-3
-                  border
-                  border-primary
-                  text-primary
-                  uppercase
-                  tracking-[0.2em]
-                  text-sm
-                  transition-all
-                  duration-300
-                  hover:bg-primary
-                  hover:text-white
-                "
+                  className="btn-luxury-outline"
                 >
                   {t("home.newArrivals.viewMore")}
                 </Link>
