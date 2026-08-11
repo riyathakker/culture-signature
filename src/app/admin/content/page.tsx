@@ -21,13 +21,9 @@ import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { ImageLightbox } from "@/components/common/ImageLightbox";
 import { useContentStore } from "@/store/contentStore";
 import { Exhibition } from "@/types";
-import { getExhibitionStatus } from "@/lib/exhibition";
+import { getExhibitionStatus, exhibitionMapsUrl, parsePlace } from "@/lib/exhibition";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/context/TranslationContext";
-
-function mapsUrl(location: string) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
-}
 
 const inputCls = "h-12 border-border/50";
 
@@ -247,13 +243,14 @@ export default function ContentPage() {
                 <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                   {ex.location && (
                     <a
-                      href={mapsUrl(ex.location)}
+                      href={exhibitionMapsUrl(ex.location)}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={e => e.stopPropagation()}
                       className="flex items-center gap-1 text-[10px] text-primary uppercase tracking-wider hover:underline"
                     >
-                      <MapPin className="w-3 h-3" />{ex.location}
+                      <MapPin className="w-3 h-3" />
+                      {[parsePlace(ex.location).name, ex.city || parsePlace(ex.location).city].filter(Boolean).join(", ") || "View on map"}
                     </a>
                   )}
                   <span className="text-[10px] text-muted-foreground uppercase tracking-wider">

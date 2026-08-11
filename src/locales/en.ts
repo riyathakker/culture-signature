@@ -144,8 +144,8 @@ export const en = {
         labels: {
           title: "Title",
           description: "Description",
-          location: "Location",
-          locationHint: "(opens in Google Maps)",
+          location: "Google Maps Link",
+          locationHint: "(name & city are read from the link)",
           startDate: "Start Date",
           endDate: "End Date",
           startTime: "Start Time",
@@ -156,7 +156,7 @@ export const en = {
         placeholders: {
           title: "e.g., Summer Lookbook Shoot — Jaipur",
           description: "Tell people about this event...",
-          location: "e.g., Jaipur, Rajasthan or full address",
+          location: "Paste a Google Maps link",
         },
         status: {
           upcoming: "Upcoming",

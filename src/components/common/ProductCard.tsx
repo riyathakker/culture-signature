@@ -20,7 +20,6 @@ import { ColorVariant, Product } from "@/types";
 interface ProductCardProps {
   product: Product;
   variant?: "default" | "wishlist";
-  /** Force the card to be a plain link to the product page (no inline cart/wishlist actions) */
   hideActions?: boolean;
 }
 

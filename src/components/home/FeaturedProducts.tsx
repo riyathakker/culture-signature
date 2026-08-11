@@ -48,7 +48,7 @@ export function FeaturedProducts() {
           </div>
         ) : (
           <>
-            <div className="flex gap-4 overflow-x-auto pb-4" style={{ WebkitOverflowScrolling: "touch" }}>
+            <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar" style={{ WebkitOverflowScrolling: "touch" }}>
               {featuredProducts.map((product: Product) => (
                 <div
                   key={product.id}

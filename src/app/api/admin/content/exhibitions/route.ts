@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { reverseGeocodeCity } from "@/lib/geocode";
 
 export async function GET() {
   const session = await auth();
@@ -25,9 +26,11 @@ export async function POST(req: NextRequest) {
   }
   try {
     const body = await req.json();
-    const exhibition = await prisma.exhibition.create({ data: body });
+    const city = await reverseGeocodeCity(body.location);
+    const exhibition = await prisma.exhibition.create({ data: { ...body, city } });
     return NextResponse.json(exhibition);
-  } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (e) {
+    console.error("[EXHIBITION_POST]", e);
+    return NextResponse.json({ error: (e as Error)?.message || "Internal server error" }, { status: 500 });
   }
 }

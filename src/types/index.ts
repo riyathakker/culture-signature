@@ -176,6 +176,7 @@ export interface Exhibition {
   description: string | null;
   images: string[];
   location: string | null;
+  city: string | null;
   date: string | Date;
   endDate: string | Date | null;
   startTime: string | null;

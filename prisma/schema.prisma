@@ -181,6 +181,7 @@ model Exhibition {
   description String?
   images      String[]
   location    String?
+  city        String?
   date        DateTime
   endDate     DateTime?
   status      ExhibitionStatus @default(UPCOMING)
