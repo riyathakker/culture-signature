@@ -480,6 +480,10 @@ export const en = {
       empty: "New items coming soon.",
       viewMore: "View More"
     },
+    limitedDrops: {
+      title: "Limited Drops",
+      subtitle: "Only a Few Left"
+    },
     celebSpotting: {
       title: "Celeb Spotting",
       subtitle: "Spotted in Culture Signature"

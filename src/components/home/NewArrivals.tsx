@@ -44,26 +44,30 @@ export function NewArrivals() {
         />
 
         {isLoading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pwa-grid-to-scroll">
-            {[...Array(4)].map((_, i) => (
-              <ProductSkeleton key={i} />
+          <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="min-w-[220px] max-w-[220px] flex-shrink-0">
+                <ProductSkeleton />
+              </div>
             ))}
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pwa-grid-to-scroll">
+            {/* Single horizontal row (smaller cards, like Limited Drops) */}
+            <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
               {newArrivals
                 .slice(0, displayLimit)
                 .map((product) => (
-                  <ProductCard
+                  <div
                     key={product.id}
-                    product={product}
-                    hideActions
-                  />
+                    className="min-w-[220px] max-w-[220px] flex-shrink-0"
+                  >
+                    <ProductCard product={product} hideActions />
+                  </div>
                 ))}
             </div>
             {newArrivals.length > displayLimit && (
-              <div className="flex justify-center mt-2">
+              <div className="flex justify-center mt-4">
                 <Link
                   href={ROUTES.NEW_ARRIVALS}
                   className="btn-luxury-outline"

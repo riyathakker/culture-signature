@@ -42,7 +42,7 @@ function LimitedDropsStrip({ drops }: { drops: Product[] }) {
   return (
     <section className="py-10 border-t border-border/30">
       <Container>
-        <SectionTitle title={"Limited Drops"} subtitle={"Only a Few Left"} align="center" />
+        <SectionTitle title={t("home.limitedDrops.title")} subtitle={t("home.limitedDrops.subtitle")} align="center" />
 
         <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
           {drops.map((product, i) => (
@@ -61,7 +61,7 @@ function LimitedDropsStrip({ drops }: { drops: Product[] }) {
                   </span>
                 </div>
               )}
-              <ProductCard product={product} hideActions={true}/>
+              <ProductCard product={product} hideActions={true} />
             </motion.div>
           ))}
         </div>
@@ -93,10 +93,10 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: i * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="flex-shrink-0 group relative flex flex-col w-[280px] h-[500px] rounded-xl overflow-hidden border border-primary-foreground/10 bg-primary-foreground/[0.04] transition-all duration-500 hover:border-primary-foreground/30 hover:-translate-y-1"
+      className="flex-shrink-0 group relative flex flex-col w-[280px] h-[500px] rounded-xl overflow-hidden border border-border/60 bg-card shadow-sm transition-all duration-500 hover:border-border hover:shadow-md hover:-translate-y-1"
     >
       {/* Image carousel — square (height matches the card width) */}
-      <div className="relative shrink-0 overflow-hidden bg-black/20 aspect-square">
+      <div className="relative shrink-0 overflow-hidden bg-secondary aspect-square">
         {images.length > 0 ? (
           <ImageLightbox
             src={images[idx]}
@@ -118,8 +118,8 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
             ))}
           </ImageLightbox>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-foreground/[0.08] to-transparent">
-            <Camera className="w-9 h-9 text-primary-foreground/20" />
+          <div className="w-full h-full flex items-center justify-center bg-secondary">
+            <Camera className="w-9 h-9 text-muted-foreground/30" />
           </div>
         )}
 
@@ -157,15 +157,15 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
           </div>
         )}
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 space-y-0.5">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 space-y-0.5 text-white">
           <p className="font-heading text-xl tracking-tight leading-none">
             {formatDateRange(ex.date, ex.endDate)}
           </p>
           {place.name && (
-            <p className="text-sm font-medium text-primary-foreground/90 leading-tight">{place.name}</p>
+            <p className="text-sm font-medium text-white/90 leading-tight">{place.name}</p>
           )}
           {(city || timeRange) && (
-            <p className="text-[11px] text-primary-foreground/70">
+            <p className="text-[11px] text-white/70">
               {[city, timeRange].filter(Boolean).join(" · ")}
             </p>
           )}
@@ -175,26 +175,26 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
       {/* Card content — fills the remaining fixed height; text is clamped so
           description length can't change the card size */}
       <div className="p-4 space-y-2.5 flex-1 min-h-0 overflow-hidden">
-        <h3 className="font-heading text-base tracking-tight leading-tight line-clamp-2">
+        <h3 className="font-heading text-base tracking-tight leading-tight line-clamp-2 text-foreground">
           {ex.title}
         </h3>
 
         {ex.description && (
-          <p className="text-[11px] text-primary-foreground/55 leading-relaxed line-clamp-2">
+          <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
             {ex.description}
           </p>
         )}
 
-        <div className="h-px bg-primary-foreground/10" />
+        <div className="h-px bg-border" />
 
         {timeRange && (
-          <span className="flex items-center gap-2 text-[10px] text-primary-foreground/55">
+          <span className="flex items-center gap-2 text-[10px] text-muted-foreground">
             <Clock className="w-3 h-3 flex-shrink-0" />
             {timeRange}
           </span>
         )}
 
-        <span className="flex items-center gap-2 text-[10px] text-primary-foreground/55">
+        <span className="flex items-center gap-2 text-[10px] text-muted-foreground">
           <CalendarDays className="w-3 h-3 flex-shrink-0" />
           {formatDateRange(ex.date, ex.endDate)}
         </span>
@@ -204,10 +204,10 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
             href={exhibitionMapsUrl(ex.location)}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-primary-foreground/80 hover:text-primary-foreground transition-colors pt-1 group/loc"
+            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-primary hover:text-primary/80 transition-colors pt-1 group/loc"
           >
             <MapPin className="w-3.5 h-3.5 flex-shrink-0 group-hover/loc:-translate-y-0.5 transition-transform" />
-            <span className="underline underline-offset-4 decoration-primary-foreground/30 group-hover/loc:decoration-primary-foreground">
+            <span className="underline underline-offset-4 decoration-primary/40 group-hover/loc:decoration-primary">
               View location on map
             </span>
           </a>
@@ -221,45 +221,9 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
   if (!exhibitions.length) return null;
 
   return (
-    <section className="relative py-10 md:py-16 bg-primary text-primary-foreground overflow-hidden">
-      {/* Subtle grid texture */}
-      <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg,transparent,transparent 39px,currentColor 39px,currentColor 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,currentColor 39px,currentColor 40px)",
-        }}
-      />
-
+    <section className="relative py-10 md:py-16 bg-secondary/40 border-y border-border/40 overflow-hidden">
       <Container className="relative">
-        {/* Header */}
-        <motion.div
-          className="mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.4em] text-primary-foreground/40 font-bold mb-2">
-                Where to Find Us
-              </p>
-              <h2 className="font-heading text-2xl md:text-4xl tracking-tight">Exhibitions & Shoots</h2>
-            </div>
-            <span className="text-[9px] uppercase tracking-widest font-bold text-primary-foreground/30 pb-1 hidden sm:inline">
-              {exhibitions.length} {exhibitions.length === 1 ? "event" : "events"}
-            </span>
-          </div>
-          <motion.div
-            className="h-px bg-primary-foreground/20 mt-4"
-            initial={{ scaleX: 0, originX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.3, ease: "easeOut" }}
-          />
-        </motion.div>
-
+          <SectionTitle title="Exhibitions & Shoots" subtitle="Where to Find Us" align="center" />
         <div className="flex items-start gap-5 overflow-x-auto pb-3 no-scrollbar">
           {exhibitions.map((ex, i) => (
             <ExhibitionCard key={ex.id} ex={ex} i={i} />
