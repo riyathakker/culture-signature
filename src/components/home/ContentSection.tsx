@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/common/ProductCard";
 import { Product, Exhibition } from "@/types";
 import { cn } from "@/lib/utils";
+import { getExhibitionStatus } from "@/lib/exhibition";
 
 function mapsUrl(location: string) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
@@ -105,6 +106,7 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
         <div className="flex gap-5 overflow-x-auto pb-3 no-scrollbar">
           {exhibitions.map((ex, i) => {
             const isFeatured = i === 0;
+            const derivedStatus = getExhibitionStatus(ex.date, ex.endDate);
             return (
               <motion.div
                 key={ex.id}
@@ -138,14 +140,14 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
                   <div className="absolute top-3 right-3">
                     <span className={cn(
                       "flex items-center gap-1.5 text-[8px] uppercase tracking-widest font-bold px-2 py-1 border backdrop-blur-sm",
-                      ex.status === "ONGOING"  ? "border-green-300/50 text-green-200 bg-green-950/60" :
-                      ex.status === "UPCOMING" ? "border-blue-300/50 text-blue-200 bg-blue-950/60" :
+                      derivedStatus === "ONGOING"  ? "border-green-300/50 text-green-200 bg-green-950/60" :
+                      derivedStatus === "UPCOMING" ? "border-blue-300/50 text-blue-200 bg-blue-950/60" :
                                                  "border-white/15 text-white/40 bg-black/30"
                     )}>
-                      {ex.status === "ONGOING" && (
+                      {derivedStatus === "ONGOING" && (
                         <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
                       )}
-                      {ex.status}
+                      {derivedStatus}
                     </span>
                   </div>
 

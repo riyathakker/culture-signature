@@ -3,6 +3,9 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
     const [limitedDrops, exhibitions] = await Promise.all([
       prisma.product.findMany({
         where: { isDeleted: false, isLimitedDrop: true },
@@ -13,11 +16,12 @@ export async function GET() {
       prisma.exhibition.findMany({
         where: {
           isDeleted: false,
-          status: { in: ["UPCOMING", "ONGOING"] },
-          // Hide exhibitions whose end date has already passed
+          // Show only exhibitions that are not yet past (status is derived from
+          // dates): those still running (end date today or later) or single-day
+          // events (no end date) whose date is today or later.
           OR: [
-            { endDate: null },
-            { endDate: { gte: new Date() } },
+            { endDate: { gte: startOfToday } },
+            { AND: [{ endDate: null }, { date: { gte: startOfToday } }] },
           ],
         },
         orderBy: { date: "asc" },
