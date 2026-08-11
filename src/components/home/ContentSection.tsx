@@ -238,17 +238,26 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
 import { useContentStore } from "@/store/contentStore";
 import { SectionTitle } from "../common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
+import { ExhibitionsSkeleton, LimitedDropsSkeleton } from "@/components/home/HomeSkeletons";
 
 export function ContentSection() {
-  const { limitedDrops, exhibitions, fetchContent } = useContentStore();
+  const { limitedDrops, exhibitions, isLoading, fetchContent } = useContentStore();
 
   useEffect(() => { fetchContent(); }, []);
+
+  if (isLoading && !limitedDrops.length && !exhibitions.length) {
+    return (
+      <>
+        <ExhibitionsSkeleton />
+        <LimitedDropsSkeleton />
+      </>
+    );
+  }
 
   if (!limitedDrops.length && !exhibitions.length) return null;
 
   return (
     <>
-
       <ExhibitionsStrip exhibitions={exhibitions} />
       <LimitedDropsStrip drops={limitedDrops} />
     </>

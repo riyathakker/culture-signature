@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useCategoryStore } from "@/store/categoryStore";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
+import { CategoriesSkeleton } from "@/components/home/HomeSkeletons";
 
 function CategoryCards() {
   const { categories } = useCategoryStore();
@@ -50,6 +51,10 @@ export function Categories() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  if (isLoading && (!categories || categories.length === 0)) {
+    return <CategoriesSkeleton />;
+  }
 
   if (!isLoading && (!categories || categories.length === 0)) {
     return null;

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { ProductCard } from "@/components/common/ProductCard";
-import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
+import { ProductRowSkeleton } from "@/components/home/HomeSkeletons";
 
 import { useProductStore } from "@/store/productStore";
 import { useTranslation } from "@/context/TranslationContext";
@@ -44,13 +44,7 @@ export function NewArrivals() {
         />
 
         {isLoading ? (
-          <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="min-w-[220px] max-w-[220px] flex-shrink-0">
-                <ProductSkeleton />
-              </div>
-            ))}
-          </div>
+          <ProductRowSkeleton width={220} count={6} />
         ) : (
           <>
             {/* Single horizontal row (smaller cards, like Limited Drops) */}

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { ProductCard } from "@/components/common/ProductCard";
-import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
+import { ProductRowSkeleton } from "@/components/home/HomeSkeletons";
 
 import { useProductStore } from "@/store/productStore";
 
@@ -41,11 +41,7 @@ export function FeaturedProducts() {
         />
 
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {[...Array(4)].map((_, i) => (
-              <ProductSkeleton key={i} />
-            ))}
-          </div>
+          <ProductRowSkeleton width={160} count={6} />
         ) : (
           <>
             <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar" style={{ WebkitOverflowScrolling: "touch" }}>
