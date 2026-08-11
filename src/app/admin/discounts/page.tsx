@@ -145,38 +145,20 @@ export default function DiscountsPage() {
       header: "",
       className: "text-right",
       render: (discount) => (
-        <div className="flex justify-end gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 bg-background border border-border/50 shadow-xl z-[100]">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleEdit(discount);
-                }}
-                className="gap-2 cursor-pointer focus:bg-primary focus:text-primary-foreground"
-              >
-                <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleDeleteClick(discount);
-                }}
-                className="gap-2 text-destructive cursor-pointer focus:bg-destructive focus:text-destructive-foreground"
-              >
-                <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            title={t("admin.products.actions.remove")}
+            onClick={() => handleDeleteClick(discount)}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
       ),
     },
-  ], [handleEdit, handleDeleteClick, t]);
+  ], [handleDeleteClick, t]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
@@ -210,6 +192,7 @@ export default function DiscountsPage() {
         isLoading={isLoading}
         emptyMessage={t("admin.discounts.empty")}
         rowKey={(d) => d.id}
+        onRowClick={(d) => handleEdit(d)}
         mobileCard={(discount) => (
           <div className="bg-background border border-border/50 rounded-sm p-4 space-y-3">
             <div className="flex items-center justify-between">

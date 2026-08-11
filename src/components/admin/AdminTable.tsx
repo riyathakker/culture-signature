@@ -54,7 +54,7 @@ export function AdminTable<T>({
 }: AdminTableProps<T>) {
   const handleRowClick = (item: T) => (e: React.MouseEvent) => {
     if (!onRowClick) return;
-    if ((e.target as HTMLElement).closest("button, a, input, label, [role='switch'], [data-no-row-click]")) {
+    if ((e.target as HTMLElement).closest("button, a, input, label, [role='button'], [role='switch'], [data-no-row-click]")) {
       return;
     }
     onRowClick(item);
