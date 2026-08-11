@@ -40,7 +40,7 @@ function LimitedDropsStrip({ drops }: { drops: Product[] }) {
   if (!drops.length) return null;
   const { t } = useTranslation();
   return (
-    <section className="py-10 border-t border-border/30">
+    <section className="py-10 border-y border-border/40">
       <Container>
         <SectionTitle title={t("home.limitedDrops.title")} subtitle={t("home.limitedDrops.subtitle")} align="center" />
 
@@ -221,7 +221,7 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
   if (!exhibitions.length) return null;
 
   return (
-    <section className="relative py-10 md:py-16 bg-secondary/40 border-y border-border/40 overflow-hidden">
+    <section className="relative py-10 md:py-16 bg-secondary/50 border-y border-border/40 overflow-hidden">
       <Container className="relative">
           <SectionTitle title="Exhibitions & Shoots" subtitle="Where to Find Us" align="center" />
         <div className="flex items-start gap-5 overflow-x-auto pb-3 no-scrollbar">

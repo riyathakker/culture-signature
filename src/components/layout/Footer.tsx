@@ -38,7 +38,7 @@ export function Footer() {
 
   if (isAdminPage) return null;
   return (
-    <footer className="bg-secondary/30 pt-10 md:pt-15 border-t">
+    <footer className="bg-secondary/20 pt-10 md:pt-15 border-t">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr] gap-8 mb-10">
           {/* Brand Column */}
