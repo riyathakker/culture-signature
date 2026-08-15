@@ -90,7 +90,7 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
 
   return (
     <div className="py-10 border-t">
-      <h3 className="font-heading text-3xl mb-8">Customer Reviews</h3>
+      <h3 className="font-heading text-3xl mb-8">{t("shop.product.details.reviews.title")}</h3>
 
       {reviews.length === 0 ? (
         /* ── Empty state ── */
@@ -99,9 +99,9 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
             <PenLine className="w-6 h-6 text-primary/40" />
           </div>
           <div className="space-y-2">
-            <p className="font-heading text-2xl">Be the First to Review</p>
+            <p className="font-heading text-2xl">{t("shop.product.details.reviews.beFirst")}</p>
             <p className="muted-italic text-muted-foreground max-w-xs">
-              Share your experience with this piece and help others discover its beauty.
+              {t("shop.product.details.reviews.beFirstDesc")}
             </p>
           </div>
           {eligibleOrder ? (
@@ -131,7 +131,10 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
               <div className="space-y-1">
                 <StarDisplay rating={avgRating} size="md" />
                 <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
-                  Based on {reviews.length} {reviews.length === 1 ? "Review" : "Reviews"}
+                  {t("shop.product.details.reviews.basedOn", { count: reviews.length })}{" "}
+                  {reviews.length === 1
+                    ? t("shop.product.details.reviews.reviewSingular")
+                    : t("shop.product.details.reviews.reviewPlural")}
                 </p>
               </div>
             </div>
@@ -150,7 +153,7 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
             {eligibleOrder && !alreadyReviewed && (
               <div className="pt-4 border-t border-muted-foreground/10">
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-                  Share your experience
+                  {t("shop.product.details.reviews.shareExperience")}
                 </p>
                 <ReviewModal
                   productId={productId as string}
@@ -172,7 +175,7 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
                     <StarDisplay rating={review.rating} />
-                    <h4 className="font-heading text-xl">{review.user?.name || "Customer"}</h4>
+                    <h4 className="font-heading text-xl">{review.user?.name || t("shop.product.details.reviews.customer")}</h4>
                   </div>
                   <span className="text-spaced-bold text-muted-foreground">
                     {new Date(review.createdAt).toLocaleDateString("en-US", {

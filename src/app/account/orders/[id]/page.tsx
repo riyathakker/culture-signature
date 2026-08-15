@@ -68,9 +68,9 @@ export default function OrderDetailPage() {
   if (!order) {
     return (
       <div className="py-16 text-center space-y-4">
-        <p className="font-heading text-2xl">Order not found</p>
+        <p className="font-heading text-2xl">{t("account.orders.notFound")}</p>
         <Link href={ROUTES.ACCOUNT.ORDERS} className="text-primary text-sm uppercase tracking-widest underline">
-          Back to Orders
+          {t("account.orders.backToOrders")}
         </Link>
       </div>
     );
@@ -99,7 +99,7 @@ export default function OrderDetailPage() {
             <p className="muted-italic">{t("account.orders.orderDetailsSubtitle")}</p>
           </div>
           <Badge variant="outline" className={cn("text-sm font-bold uppercase tracking-widest px-4 py-2 w-fit", statusClass(order.status))}>
-            {order.status}
+            {t(`account.orders.status.${order.status.toLowerCase()}`)}
           </Badge>
         </div>
       </div>
@@ -113,13 +113,13 @@ export default function OrderDetailPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="bg-secondary/20 rounded-sm p-4 space-y-1 border border-border/30">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-            <Hash className="w-3 h-3" /> Order ID
+            <Hash className="w-3 h-3" /> {t("account.orders.orderId")}
           </div>
           <p className="font-mono text-sm font-bold">#{(order.id as string).slice(-8).toUpperCase()}</p>
         </div>
         <div className="bg-secondary/20 rounded-sm p-4 space-y-1 border border-border/30">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-            <Calendar className="w-3 h-3" /> Placed On
+            <Calendar className="w-3 h-3" /> {t("account.orders.placedOn")}
           </div>
           <p className="text-sm font-medium">
             {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
@@ -127,9 +127,9 @@ export default function OrderDetailPage() {
         </div>
         <div className="bg-secondary/20 rounded-sm p-4 space-y-1 border border-border/30">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-            <Package className="w-3 h-3" /> Items
+            <Package className="w-3 h-3" /> {t("account.orders.itemsLabel")}
           </div>
-          <p className="text-sm font-medium">{order.items?.length || 0} {order.items?.length === 1 ? "item" : "items"}</p>
+          <p className="text-sm font-medium">{order.items?.length || 0} {order.items?.length === 1 ? t("account.orders.itemSingular") : t("account.orders.itemPlural")}</p>
         </div>
       </div>
 
@@ -152,12 +152,12 @@ export default function OrderDetailPage() {
                   <p className="text-[11px] uppercase tracking-widest text-muted-foreground">{item.color}</p>
                 )}
                 <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
-                  Qty {item.quantity} × ₹{item.price.toLocaleString("en-IN")}
+                  {t("account.orders.qty")} {item.quantity} × ₹{item.price.toLocaleString("en-IN")}
                 </p>
                 {review && (
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Your review</span>
+                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("account.orders.yourReview")}</span>
                       <StarRow rating={review.rating} />
                     </div>
                     {review.comment && (
@@ -189,23 +189,23 @@ export default function OrderDetailPage() {
           <h3 className="text-lg font-heading">{t("account.orders.priceBreakdown")}</h3>
           <div className="bg-secondary/20 rounded-sm p-6 border border-border/30 space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">Subtotal</span>
+              <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">{t("account.orders.subtotal")}</span>
               <span>₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
             </div>
             {discount > 0 && (
               <div className="flex justify-between text-sm text-primary">
                 <span className="uppercase tracking-widest text-[11px] font-bold">
-                  Discount {(order as any).promoCode ? `(${(order as any).promoCode})` : ""}
+                  {t("account.orders.discount")} {(order as any).promoCode ? `(${(order as any).promoCode})` : ""}
                 </span>
                 <span className="font-bold">-₹{discount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
               </div>
             )}
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">GST (18%)</span>
+              <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">{t("account.orders.gst")}</span>
               <span>₹{gst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">Shipping</span>
+              <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">{t("account.orders.shipping")}</span>
               {shipping === 0 ? (
                 <span className="text-primary font-bold text-[11px] uppercase tracking-widest">{t("account.orders.shippingFree")}</span>
               ) : (
@@ -214,7 +214,7 @@ export default function OrderDetailPage() {
             </div>
             <Separator className="bg-border/40" />
             <div className="flex justify-between font-heading text-lg text-primary">
-              <span>Total</span>
+              <span>{t("account.orders.total")}</span>
               <span>₹{order.totalPrice.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
             </div>
           </div>

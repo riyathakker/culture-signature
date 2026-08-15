@@ -3,11 +3,11 @@
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { useTranslation } from "@/context/TranslationContext";
+import type { PillarItem } from "@/locales/en";
 
 export default function AboutPage() {
   const { t } = useTranslation();
-  const ourValues = t("about.pillars.list") as unknown as any[];
-  console.log("ourValues", ourValues);  
+  const ourValues = t("about.pillars.list") as PillarItem[];
   const aboutCards = [
     {
       title: t("about.cards.vision.title"),
@@ -40,7 +40,7 @@ export default function AboutPage() {
 
             <div className="prose prose-luxury space-y-6">
               <p className="text-lg text-muted-foreground leading-relaxed font-serif italic">
-                "{t("about.visionary.quote")}"
+                &ldquo;{t("about.visionary.quote")}&rdquo;
               </p>
 
               <p className="text-muted-foreground leading-relaxed">

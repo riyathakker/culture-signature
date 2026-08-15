@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useReviewStore } from "@/store/reviewStore";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface ReviewModalProps {
   productId: string;
@@ -68,6 +69,7 @@ function StarPicker({ value, onChange }: { value: number; onChange: (v: number) 
 
 export function ReviewModal({ productId, productName, orderId, onSuccess }: ReviewModalProps) {
   const { submitReview } = useReviewStore();
+  const { t } = useTranslation();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,11 +79,11 @@ export function ReviewModal({ productId, productName, orderId, onSuccess }: Revi
     setIsSubmitting(true);
     try {
       await submitReview({ productId, orderId, rating, comment });
-      toast.success("Review submitted successfully");
+      toast.success(t("account.review.success"));
       setOpen(false);
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error.message || "Failed to submit review");
+      toast.error(error.message || t("account.review.error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -91,25 +93,25 @@ export function ReviewModal({ productId, productName, orderId, onSuccess }: Revi
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant="outline" size="sm" className="text-spaced-bold gap-2">
-          <Star className="w-3 h-3" /> Review
+          <Star className="w-3 h-3" /> {t("account.review.button")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-background border-none">
         <DialogHeader>
-          <DialogTitle className="font-heading text-2xl tracking-tight">Write a Review</DialogTitle>
-          <p className="muted-italic text-sm">Sharing your experience with the {productName}.</p>
+          <DialogTitle className="font-heading text-2xl tracking-tight">{t("account.review.title")}</DialogTitle>
+          <p className="muted-italic text-sm">{t("account.review.subtitle", { name: productName })}</p>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           <div className="space-y-3">
-            <label className="text-xs uppercase tracking-widest font-bold opacity-60">Your Rating</label>
+            <label className="text-xs uppercase tracking-widest font-bold opacity-60">{t("account.review.rating")}</label>
             <StarPicker value={rating} onChange={setRating} />
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs uppercase tracking-widest font-bold opacity-60">Your Thoughts</label>
+            <label className="text-xs uppercase tracking-widest font-bold opacity-60">{t("account.review.thoughts")}</label>
             <Textarea
-              placeholder="What did you love about this piece?"
+              placeholder={t("account.review.placeholder")}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               className="min-h-[120px] bg-secondary/20 border-none focus:ring-1 focus:ring-primary font-serif italic"
@@ -121,7 +123,7 @@ export function ReviewModal({ productId, productName, orderId, onSuccess }: Revi
             disabled={isSubmitting}
             className="w-full py-6 uppercase tracking-[0.2em] text-xs h-auto"
           >
-            {isSubmitting ? "Submitting..." : "Submit Review"}
+            {isSubmitting ? t("account.review.submitting") : t("account.review.submit")}
           </Button>
         </div>
       </DialogContent>

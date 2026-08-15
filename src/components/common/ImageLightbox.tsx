@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface ImageLightboxProps {
   src: string;
@@ -26,6 +27,7 @@ export function ImageLightbox({
   initialIndex,
   children,
 }: ImageLightboxProps) {
+  const { t } = useTranslation();
   const gallery = images && images.length > 0 ? images : [src];
   const startIndex = initialIndex ?? gallery.indexOf(src) ?? 0;
 
@@ -73,7 +75,7 @@ export function ImageLightbox({
     <div
       role="button"
       tabIndex={0}
-      aria-label={`View ${alt} fullscreen`}
+      aria-label={t("common.viewFullscreen", { alt })}
       onClick={handleOpen}
       onKeyDown={(e) => e.key === "Enter" && handleOpen(e as any)}
       className={cn("relative group cursor-zoom-in", className)}
@@ -105,7 +107,7 @@ export function ImageLightbox({
             <button
               className="absolute top-4 right-4 z-10 p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
               onClick={() => setOpen(false)}
-              aria-label="Close"
+              aria-label={t("common.close")}
             >
               <X className="w-6 h-6" />
             </button>
@@ -131,14 +133,14 @@ export function ImageLightbox({
                 <button
                   className="absolute left-3 top-1/2 -translate-y-1/2 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
                   onClick={(e) => { e.stopPropagation(); prev(); }}
-                  aria-label="Previous"
+                  aria-label={t("common.previous")}
                 >
                   <ChevronLeft className="w-7 h-7" />
                 </button>
                 <button
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
                   onClick={(e) => { e.stopPropagation(); next(); }}
-                  aria-label="Next"
+                  aria-label={t("common.next")}
                 >
                   <ChevronRight className="w-7 h-7" />
                 </button>

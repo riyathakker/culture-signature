@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { ProductCard } from "@/components/common/ProductCard";
-import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
+import { ProductRowSkeleton } from "@/components/home/HomeSkeletons";
 
 import { useProductStore } from "@/store/productStore";
 import { useTranslation } from "@/context/TranslationContext";
@@ -35,7 +35,7 @@ export function NewArrivals() {
   }
 
   return (
-    <section className="py-10 pwa-section border-t border-border/50">
+    <section className="py-10 pwa-section border-t border-border/50 bg-secondary/50">
       <Container>
         <SectionTitle
           title={t("home.newArrivals.title")}
@@ -44,26 +44,18 @@ export function NewArrivals() {
         />
 
         {isLoading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pwa-grid-to-scroll">
-            {[...Array(4)].map((_, i) => (
-              <ProductSkeleton key={i} />
-            ))}
-          </div>
+          <ProductRowSkeleton width={220} count={6} />
         ) : (
           <>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pwa-grid-to-scroll">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 md:max-w-6xl md:mx-auto pwa-grid-to-scroll">
               {newArrivals
                 .slice(0, displayLimit)
                 .map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    hideActions
-                  />
+                  <ProductCard key={product.id} product={product} hideActions />
                 ))}
             </div>
             {newArrivals.length > displayLimit && (
-              <div className="flex justify-center mt-2">
+              <div className="flex justify-center mt-4">
                 <Link
                   href={ROUTES.NEW_ARRIVALS}
                   className="btn-luxury-outline"

@@ -26,11 +26,11 @@ export function Testimonials() {
     if (featuredReviews.length > 0) {
       return featuredReviews.map((r) => ({
         quote: r.comment ?? "",
-        author: r.user?.name || "Anonymous",
+        author: r.user?.name || t("home.testimonials.anonymous"),
       }));
     }
     return [];
-  }, [featuredReviews]);
+  }, [featuredReviews, t]);
 
   const count = testimonials.length;
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -63,52 +63,68 @@ export function Testimonials() {
     startSlider();
   };
 
-  // Nothing to show until real reviews exist — hide the section entirely.
   if (count === 0) return null;
 
+  const current = testimonials[safeIndex];
+
   return (
-    <section className="py-10 border-t border-border/50">
+    <section className="py-14 border-t border-border/50 bg-background">
       <Container>
-        <SectionTitle title={t("home.testimonials.title")} subtitle={t("home.testimonials.subtitle")} align="center" className="mb-8" />
-        <div className="max-w-4xl mx-auto text-center space-y-12">
-          <Quote className="w-12 h-12 text-primary mx-auto mb-1 opacity-30" />
+        <SectionTitle title={t("home.testimonials.title")} subtitle={t("home.testimonials.subtitle")} />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="max-w-3xl mx-auto"
+        >
+          <div className="relative rounded-2xl border border-border/60 bg-card px-4 py-6 md:px-10 md:py-10 shadow-sm">
+            {/* Oversized decorative quote mark */}
+            <Quote className="absolute -top-5 left-8 w-12 h-12 text-primary/20 fill-primary/10" aria-hidden />
 
-          <div className="relative min-h-42 flex items-center justify-center overflow-hidden mb-0">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={safeIndex}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                className="w-full"
-              >
-                <p className="text-2xl font-serif italic leading-relaxed mb-4">
-                  &ldquo;{testimonials[safeIndex] ? testimonials[safeIndex].quote : ""}&rdquo;
-                </p>
+            <div className="relative min-h-[140px] flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={safeIndex}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.4 }}
+                  className="w-full text-center"
+                >
+                  <p className="text-lg md:text-2xl font-serif italic leading-relaxed text-foreground/90">
+                    {current ? current.quote : ""}
+                  </p>
 
-                <div className="space-y-1">
-                  <h4 className="text-luxury font-bold tracking-[0.3em]">
-                    {testimonials[safeIndex] ? testimonials[safeIndex].author : ""}
-                  </h4>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                  <div className="mt-6 md:mt-10 flex flex-col items-center gap-2">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-heading text-base uppercase">
+                      {current?.author ? current.author[0] : ""}
+                    </span>
+                    <h4 className="text-luxury text-xs font-bold tracking-[0.3em]">
+                      {current ? current.author : ""}
+                    </h4>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
 
-          <div className="flex justify-center gap-4">
-            {testimonials.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleManualChange(idx)}
-                className={`w-12 h-0.5 transition-all duration-300 ${idx === safeIndex
-                  ? "bg-primary scale-x-110"
-                  : "bg-muted"
-                  }`}
-              />
-            ))}
-          </div>
-        </div>
+          {count > 1 && (
+            <div className="mt-8 flex justify-center gap-3">
+              {testimonials.map((_, idx) => (
+                <button
+                  key={idx}
+                  aria-label={`Testimonial ${idx + 1}`}
+                  onClick={() => handleManualChange(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${idx === safeIndex
+                    ? "w-8 bg-primary"
+                    : "w-1.5 bg-muted hover:bg-muted-foreground/40"
+                    }`}
+                />
+              ))}
+            </div>
+          )}
+        </motion.div>
       </Container>
     </section>
   );

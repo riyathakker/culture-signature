@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useCartStore, CartItem as CartItemType } from "@/store/cartStore";
 import { QuantitySelector } from "@/components/common/QuantitySelector";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface CartItemProps {
   item: CartItemType;
@@ -13,6 +14,7 @@ interface CartItemProps {
 
 
 export function CartItem({ item, variant = "drawer" }: CartItemProps) {
+  const { t } = useTranslation();
   const { removeItem, updateQuantity } = useCartStore();
 
   return (
@@ -35,7 +37,7 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">
-            <span className="text-muted-foreground font-serif text-xs">No Image</span>
+            <span className="text-muted-foreground font-serif text-xs">{t("cart.item.noImage")}</span>
           </div>
         )}
       </div>
@@ -92,7 +94,7 @@ export function CartItem({ item, variant = "drawer" }: CartItemProps) {
             </p>
             {item.quantity > 1 && (
               <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
-                ₹{item.price.toLocaleString()} each
+                ₹{item.price.toLocaleString()} {t("cart.item.each")}
               </p>
             )}
           </div>

@@ -1,35 +1,48 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
-import { MapPin, Clock, Camera } from "lucide-react";
+import { MapPin, Clock, Camera, CalendarDays } from "lucide-react";
 import { Container } from "@/components/layout/Container";
 import { ProductCard } from "@/components/common/ProductCard";
+import { ImageLightbox } from "@/components/common/ImageLightbox";
 import { Product, Exhibition } from "@/types";
 import { cn } from "@/lib/utils";
+import { getExhibitionStatus, exhibitionMapsUrl, parsePlace } from "@/lib/exhibition";
 
-function mapsUrl(location: string) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+function formatTime(t: string) {
+  const [hStr, mStr] = t.split(":");
+  const h = Number(hStr);
+  if (Number.isNaN(h)) return t;
+  const m = Number(mStr) || 0;
+  const period = h >= 12 ? "PM" : "AM";
+  const hr = h % 12 || 12;
+  return `${hr}:${String(m).padStart(2, "0")} ${period}`;
+}
+
+function formatTimeRange(start?: string | null, end?: string | null) {
+  if (start && end) return `${formatTime(start)} – ${formatTime(end)}`;
+  return start ? formatTime(start) : end ? formatTime(end) : "";
+}
+
+function formatDateRange(date: string | Date, endDate?: string | Date | null) {
+  const d = new Date(date);
+  if (!endDate) return format(d, "d MMM yyyy");
+  const e = new Date(endDate);
+  const sameMonth = d.getMonth() === e.getMonth() && d.getFullYear() === e.getFullYear();
+  return sameMonth ? `${format(d, "d")} – ${format(e, "d MMM")}` : `${format(d, "d MMM")} – ${format(e, "d MMM")}`;
 }
 
 // ─── Limited drops ────────────────────────────────────────────────────────────
 
 function LimitedDropsStrip({ drops }: { drops: Product[] }) {
+  const { t } = useTranslation();
   if (!drops.length) return null;
-
   return (
-    <section className="py-14 border-t border-border/30">
+    <section className="py-10 bg-muted/50 border-y border-border/40">
       <Container>
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground font-bold mb-1">Limited Pieces</p>
-            <h2 className="font-heading text-2xl md:text-3xl tracking-tight">Only a Few Left</h2>
-          </div>
-          <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground/50 pb-1 hidden sm:inline">
-            {drops.length} {drops.length === 1 ? "piece" : "pieces"} available
-          </span>
-        </div>
+        <SectionTitle title={t("home.limitedDrops.title")} subtitle={t("home.limitedDrops.subtitle")} />
 
         <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
           {drops.map((product, i) => (
@@ -39,16 +52,16 @@ function LimitedDropsStrip({ drops }: { drops: Product[] }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="relative min-w-[220px] max-w-[220px] flex-shrink-0"
+              className="relative min-w-[160px] max-w-[160px] md:min-w-[220px] md:max-w-[220px] flex-shrink-0"
             >
               {product.stock > 0 && product.stock <= 5 && (
                 <div className="absolute top-3 left-3 z-10 pointer-events-none">
                   <span className="text-[8px] uppercase tracking-widest font-bold bg-primary text-primary-foreground px-2 py-1">
-                    {product.stock} left
+                    {t("home.limitedDrops.stockLeft", { count: product.stock })}
                   </span>
                 </div>
               )}
-              <ProductCard product={product} />
+              <ProductCard product={product} hideActions={true} />
             </motion.div>
           ))}
         </div>
@@ -59,151 +72,162 @@ function LimitedDropsStrip({ drops }: { drops: Product[] }) {
 
 // ─── Exhibitions ──────────────────────────────────────────────────────────────
 
+function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
+  const { t } = useTranslation();
+  const images = ex.images ?? [];
+  const [idx, setIdx] = useState(0);
+  const derivedStatus = getExhibitionStatus(ex.date, ex.endDate);
+  const place = parsePlace(ex.location);
+  const city = ex.city || place.city;
+  const timeRange = formatTimeRange(ex.startTime, ex.endTime);
+
+  // Auto-advance the image carousel when the card has more than one image.
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const id = setInterval(() => setIdx((p) => (p + 1) % images.length), 3000);
+    return () => clearInterval(id);
+  }, [images.length]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: i * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="flex-shrink-0 group relative flex flex-col w-[280px] h-[500px] rounded-xl overflow-hidden border border-border/60 bg-card shadow-sm transition-all duration-500 hover:border-border hover:shadow-md hover:-translate-y-1"
+    >
+      {/* Image carousel — square (height matches the card width) */}
+      <div className="relative shrink-0 overflow-hidden bg-secondary aspect-square">
+        {images.length > 0 ? (
+          <ImageLightbox
+            src={images[idx]}
+            alt={ex.title}
+            images={images}
+            initialIndex={idx}
+            className="absolute inset-0 h-full w-full"
+          >
+            {images.map((src, k) => (
+              <img
+                key={k}
+                src={src}
+                alt={ex.title}
+                className={cn(
+                  "absolute inset-0 w-full h-full object-cover transition-opacity duration-700",
+                  k === idx ? "opacity-100" : "opacity-0"
+                )}
+              />
+            ))}
+          </ImageLightbox>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-secondary">
+            <Camera className="w-9 h-9 text-muted-foreground/30" />
+          </div>
+        )}
+
+        {/* Overlays sit above the image but let clicks fall through to open the lightbox */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
+
+        {/* Status badge */}
+        <span className={cn(
+          "pointer-events-none absolute top-3 left-3 flex items-center gap-1.5 text-[8px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-full border backdrop-blur-md",
+          derivedStatus === "ONGOING" ? "border-green-300/40 text-green-100 bg-green-500/20" :
+            derivedStatus === "UPCOMING" ? "border-blue-300/40 text-blue-100 bg-blue-500/20" :
+              "border-white/15 text-white/50 bg-black/30"
+        )}>
+          {derivedStatus === "ONGOING" && (
+            <span className="w-1.5 h-1.5 rounded-full bg-green-300 animate-pulse flex-shrink-0" />
+          )}
+          {t(`home.exhibitions.status.${derivedStatus.toLowerCase()}`)}
+        </span>
+
+        {/* Carousel dots */}
+        {images.length > 1 && (
+          <div className="absolute top-3 right-3 flex items-center gap-1.5">
+            {images.map((_, k) => (
+              <button
+                key={k}
+                type="button"
+                aria-label={t("home.exhibitions.imageAria", { n: k + 1 })}
+                onClick={() => setIdx(k)}
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-300 bg-white",
+                  k === idx ? "w-4 opacity-90" : "w-1.5 opacity-40 hover:opacity-70"
+                )}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 space-y-0.5 text-white">
+          <p className="font-heading text-xl tracking-tight leading-none">
+            {formatDateRange(ex.date, ex.endDate)}
+          </p>
+          {place.name && (
+            <p className="text-sm font-medium text-white/90 leading-tight">{place.name}</p>
+          )}
+          {(city || timeRange) && (
+            <p className="text-[11px] text-white/70">
+              {[city, timeRange].filter(Boolean).join(" · ")}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="p-4 space-y-2.5 flex-1 min-h-0 overflow-hidden">
+        <h3 className="font-heading text-base tracking-tight leading-tight line-clamp-2 text-foreground">
+          {ex.title}
+        </h3>
+
+        {ex.description && (
+          <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
+            {ex.description}
+          </p>
+        )}
+
+        <div className="h-px bg-border" />
+
+        {timeRange && (
+          <span className="flex items-center gap-2 text-[10px] text-muted-foreground">
+            <Clock className="w-3 h-3 flex-shrink-0" />
+            {timeRange}
+          </span>
+        )}
+
+        <span className="flex items-center gap-2 text-[10px] text-muted-foreground">
+          <CalendarDays className="w-3 h-3 flex-shrink-0" />
+          {formatDateRange(ex.date, ex.endDate)}
+        </span>
+
+        {ex.location && (
+          <a
+            href={exhibitionMapsUrl(ex.location)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-primary hover:text-primary/80 transition-colors pt-1 group/loc"
+          >
+            <MapPin className="w-3.5 h-3.5 flex-shrink-0 group-hover/loc:-translate-y-0.5 transition-transform" />
+            <span className="underline underline-offset-4 decoration-primary/40 group-hover/loc:decoration-primary">
+              {t("home.exhibitions.viewLocation")}
+            </span>
+          </a>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
+  const { t } = useTranslation();
   if (!exhibitions.length) return null;
 
   return (
-    <section className="relative py-10 md:py-16 bg-primary text-primary-foreground overflow-hidden">
-      {/* Subtle grid texture */}
-      <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg,transparent,transparent 39px,currentColor 39px,currentColor 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,currentColor 39px,currentColor 40px)",
-        }}
-      />
-
+    <section className="relative py-10 md:py-16 bg-background border-y border-border/40 overflow-hidden">
       <Container className="relative">
-        {/* Header */}
-        <motion.div
-          className="mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.4em] text-primary-foreground/40 font-bold mb-2">
-                Where to Find Us
-              </p>
-              <h2 className="font-heading text-2xl md:text-4xl tracking-tight">Exhibitions & Shoots</h2>
-            </div>
-            <span className="text-[9px] uppercase tracking-widest font-bold text-primary-foreground/30 pb-1 hidden sm:inline">
-              {exhibitions.length} {exhibitions.length === 1 ? "event" : "events"}
-            </span>
-          </div>
-          <motion.div
-            className="h-px bg-primary-foreground/20 mt-4"
-            initial={{ scaleX: 0, originX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.3, ease: "easeOut" }}
-          />
-        </motion.div>
-
-        <div className="flex gap-5 overflow-x-auto pb-3 no-scrollbar">
-          {exhibitions.map((ex, i) => {
-            const isFeatured = i === 0;
-            return (
-              <motion.div
-                key={ex.id}
-                initial={{ opacity: 0, x: 40, filter: "blur(6px)" }}
-                whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: i * 0.13, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className={cn(
-                  "flex-shrink-0 border border-primary-foreground/15 bg-primary-foreground/5 overflow-hidden group relative",
-                  isFeatured ? "w-80" : "w-64"
-                )}
-              >
-                {/* Image area */}
-                <div className={cn("overflow-hidden relative", isFeatured ? "h-56" : "h-40")}>
-                  {ex.images[0] ? (
-                    <>
-                      <img
-                        src={ex.images[0]}
-                        alt={ex.title}
-                        className="w-full h-full object-cover opacity-60 group-hover:opacity-80 group-hover:scale-105 transition-all duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent" />
-                    </>
-                  ) : (
-                    <div className="w-full h-full bg-primary-foreground/5 flex items-center justify-center">
-                      <Camera className="w-8 h-8 text-primary-foreground/15" />
-                    </div>
-                  )}
-
-                  {/* Status badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className={cn(
-                      "flex items-center gap-1.5 text-[8px] uppercase tracking-widest font-bold px-2 py-1 border backdrop-blur-sm",
-                      ex.status === "ONGOING"  ? "border-green-300/50 text-green-200 bg-green-950/60" :
-                      ex.status === "UPCOMING" ? "border-blue-300/50 text-blue-200 bg-blue-950/60" :
-                                                 "border-white/15 text-white/40 bg-black/30"
-                    )}>
-                      {ex.status === "ONGOING" && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
-                      )}
-                      {ex.status}
-                    </span>
-                  </div>
-
-                  {/* Title overlaid on image for featured card */}
-                  {isFeatured && (
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="font-heading text-lg tracking-tight leading-tight">{ex.title}</h3>
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-4 space-y-2">
-                  {!isFeatured && (
-                    <h3 className="font-heading text-base tracking-tight leading-tight">{ex.title}</h3>
-                  )}
-
-                  {isFeatured && ex.description && (
-                    <p className="text-[11px] text-primary-foreground/50 leading-relaxed line-clamp-2">
-                      {ex.description}
-                    </p>
-                  )}
-
-                  <p className="text-[10px] text-primary-foreground/60 uppercase tracking-wider">
-                    {format(new Date(ex.date), "dd MMM yyyy")}
-                    {ex.endDate && ` — ${format(new Date(ex.endDate), "dd MMM")}`}
-                  </p>
-
-                  {(ex.startTime || ex.endTime) && (
-                    <p className="text-[10px] text-primary-foreground/50 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {ex.startTime}{ex.endTime && ` — ${ex.endTime}`}
-                    </p>
-                  )}
-
-                  {ex.location && (
-                    <a
-                      href={mapsUrl(ex.location)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-[10px] text-primary-foreground/50 hover:text-primary-foreground transition-colors"
-                    >
-                      <MapPin className="w-3 h-3 flex-shrink-0 group-hover:translate-y-[-2px] transition-transform duration-300" />
-                      <span className="truncate underline-offset-2 hover:underline">{ex.location}</span>
-                    </a>
-                  )}
-                </div>
-
-                {/* Animated bottom accent line */}
-                <motion.div
-                  className="absolute bottom-0 left-0 h-px bg-primary-foreground/30"
-                  initial={{ width: "0%" }}
-                  whileInView={{ width: "65%" }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1, delay: i * 0.13 + 0.5, ease: "easeOut" }}
-                />
-              </motion.div>
-            );
-          })}
+          <SectionTitle title={t("home.exhibitions.title")} subtitle={t("home.exhibitions.subtitle")} />
+        <div className="flex items-start gap-5 overflow-x-auto pb-3 no-scrollbar">
+          {exhibitions.map((ex, i) => (
+            <ExhibitionCard key={ex.id} ex={ex} i={i} />
+          ))}
         </div>
       </Container>
     </section>
@@ -212,18 +236,29 @@ function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
 
 
 import { useContentStore } from "@/store/contentStore";
+import { SectionTitle } from "../common/SectionTitle";
+import { useTranslation } from "@/context/TranslationContext";
+import { ExhibitionsSkeleton, LimitedDropsSkeleton } from "@/components/home/HomeSkeletons";
 
-export function ContentSection() {
-  const { limitedDrops, exhibitions, fetchContent } = useContentStore();
+export function ExhibitionsSection() {
+  const { exhibitions, isLoading, fetchContent } = useContentStore();
 
   useEffect(() => { fetchContent(); }, []);
 
-  if (!limitedDrops.length && !exhibitions.length) return null;
+  if (isLoading && !exhibitions.length) return <ExhibitionsSkeleton />;
+  // No exhibitions this week — hide the section entirely.
+  if (!exhibitions.length) return null;
 
-  return (
-    <>
-      <LimitedDropsStrip drops={limitedDrops} />
-      <ExhibitionsStrip exhibitions={exhibitions} />
-    </>
-  );
+  return <ExhibitionsStrip exhibitions={exhibitions} />;
+}
+
+export function LimitedDropsSection() {
+  const { limitedDrops, isLoading, fetchContent } = useContentStore();
+
+  useEffect(() => { fetchContent(); }, []);
+
+  if (isLoading && !limitedDrops.length) return <LimitedDropsSkeleton />;
+  if (!limitedDrops.length) return null;
+
+  return <LimitedDropsStrip drops={limitedDrops} />;
 }

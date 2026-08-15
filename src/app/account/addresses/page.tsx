@@ -43,7 +43,7 @@ export default function AddressesPage() {
       {addresses.length === 0 ? (
         <EmptyState
           icon={MapPin}
-          title="No saved addresses"
+          title={t("account.addresses.emptyTitle")}
           description={t("account.addresses.emptyDescription")}
           className="py-16"
         />

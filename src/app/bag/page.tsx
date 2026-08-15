@@ -41,7 +41,7 @@ export default function BagPage() {
       }
     }
     await clearCart();
-    toast.success("All items moved to wishlist");
+    toast.success(t("cart.page.movedToWishlist"));
   };
 
   return (

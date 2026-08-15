@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ImageLightbox } from "@/components/common/ImageLightbox";
+import { NoImage } from "@/components/common/NoImage";
 
 interface ProductGalleryProps {
   images: string[];
@@ -13,6 +14,14 @@ interface ProductGalleryProps {
 
 export function ProductGallery({ images }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+
+  if (images.length === 0) {
+    return (
+      <div className="flex-1 relative aspect-square rounded-sm overflow-hidden">
+        <NoImage />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col-reverse md:flex-row gap-4">

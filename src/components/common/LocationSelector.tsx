@@ -5,6 +5,7 @@ import { Country, State, City } from "country-state-city";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface LocationValues {
   country: string;
@@ -43,6 +44,7 @@ export function LocationSelector({
   errors,
   labelClassName = "text-xs font-bold uppercase tracking-widest",
 }: LocationSelectorProps) {
+  const { t } = useTranslation();
   const allCountries = Country.getAllCountries();
 
   const countryIso = nameToIsoCode(allCountries, values.country);
@@ -91,14 +93,14 @@ export function LocationSelector({
     <div className="space-y-4">
       {/* Country */}
       <div className="space-y-2">
-        <Label className={labelClassName}>Country</Label>
+        <Label className={labelClassName}>{t("common.location.country")}</Label>
         <div className="relative">
           <select
             className={SELECT_CLASS}
             value={values.country}
             onChange={handleCountryChange}
           >
-            <option value="">Select country</option>
+            <option value="">{t("common.location.selectCountry")}</option>
             {allCountries.map((c) => (
               <option key={c.isoCode} value={c.name}>{c.name}</option>
             ))}
@@ -111,7 +113,7 @@ export function LocationSelector({
       {/* State */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label className={labelClassName}>State</Label>
+          <Label className={labelClassName}>{t("common.location.state")}</Label>
           <div className="relative">
             {allStates.length > 0 ? (
               <>
@@ -121,7 +123,7 @@ export function LocationSelector({
                   onChange={handleStateChange}
                   disabled={!countryIso}
                 >
-                  <option value="">Select state</option>
+                  <option value="">{t("common.location.selectState")}</option>
                   {allStates.map((s) => (
                     <option key={s.isoCode} value={s.name}>{s.name}</option>
                   ))}
@@ -130,7 +132,7 @@ export function LocationSelector({
               </>
             ) : (
               <Input
-                placeholder="Enter state"
+                placeholder={t("common.location.enterState")}
                 value={values.state}
                 onChange={(e) => onChange("state", e.target.value)}
                 className="border-muted-foreground/20"
@@ -142,7 +144,7 @@ export function LocationSelector({
 
         {/* City */}
         <div className="space-y-2">
-          <Label className={labelClassName}>City</Label>
+          <Label className={labelClassName}>{t("common.location.city")}</Label>
           <div className="relative">
             {allCities.length > 0 ? (
               <>
@@ -152,7 +154,7 @@ export function LocationSelector({
                   onChange={handleCityChange}
                   disabled={!stateIso}
                 >
-                  <option value="">Select city</option>
+                  <option value="">{t("common.location.selectCity")}</option>
                   {allCities.map((c, i) => (
                     <option key={`${c.name}-${i}`} value={c.name}>{c.name}</option>
                   ))}
@@ -161,7 +163,7 @@ export function LocationSelector({
               </>
             ) : (
               <Input
-                placeholder="Enter city"
+                placeholder={t("common.location.enterCity")}
                 value={values.city}
                 onChange={(e) => {
                   onChange("city", e.target.value);
@@ -178,11 +180,11 @@ export function LocationSelector({
       {/* Pin code */}
       <div className="space-y-2">
         <Label className={labelClassName}>
-          Pin Code / Zip Code
+          {t("common.location.zipCode")}
           {fetchingPin && <Loader2 className="inline w-3 h-3 ml-1 animate-spin text-muted-foreground" />}
         </Label>
         <Input
-          placeholder={values.country === "India" ? "Auto-filled from city" : "Enter zip code"}
+          placeholder={values.country === "India" ? t("common.location.autoFilled") : t("common.location.enterZip")}
           value={values.zipCode}
           onChange={(e) => onChange("zipCode", e.target.value)}
           className="border-muted-foreground/20"

@@ -163,7 +163,7 @@
   }
   /* give the home page room for the fixed pwa header */
   .pwa-page-home {
-    padding-top: 94px;
+    padding-top: calc(94px + env(safe-area-inset-top));
   }
 
   /* push page content below the fixed PWA page header (py-4 + 36px row) */
@@ -239,7 +239,7 @@
   }
 
   .btn-luxury-outline {
-    @apply px-8 py-3 border border-primary text-primary uppercase tracking-[0.2em] text-sm transition-all duration-300 hover:bg-primary hover:text-white;
+    @apply px-8 py-3 border border-primary text-primary uppercase tracking-[0.2em] text-sm transition-all duration-300 hover:bg-primary hover:text-white active:scale-[0.98];
   }
 
   .input-luxury {

@@ -50,14 +50,14 @@ export default function SettingsPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Something went wrong");
+        throw new Error(data.message || t("account.settings.messages.updateError"));
       }
 
       await update({
         name: formData.name,
         mobileNo: formData.mobileNo,
       }); // Update the session with new data
-      toast.success("Profile updated successfully");
+      toast.success(t("account.settings.messages.updateSuccess"));
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -73,10 +73,10 @@ export default function SettingsPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete account");
+        throw new Error(t("account.settings.messages.deleteError"));
       }
 
-      toast.success("Account deleted successfully. Farewell.");
+      toast.success(t("account.settings.messages.deleteSuccess"));
 
       window.location.href = "/api/auth/signout";
     } catch (error: any) {
@@ -96,11 +96,11 @@ export default function SettingsPage() {
 
       {/* Security Section */}
       <section className="space-y-6">
-        <SectionHeader>Personal Information</SectionHeader>
+        <SectionHeader>{t("account.settings.personalInfo")}</SectionHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid-split">
             <div className="space-y-2">
-              <Label className="text-spaced-bold">Full Name</Label>
+              <Label className="text-spaced-bold">{t("account.settings.fullName")}</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -108,15 +108,15 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-spaced-bold">Email Address</Label>
+              <Label className="text-spaced-bold">{t("account.settings.email")}</Label>
               <Input value={formData.email} disabled className=" bg-secondary/20 h-10" />
             </div>
             <div className="space-y-2">
-              <Label className="text-spaced-bold">Mobile Number</Label>
+              <Label className="text-spaced-bold">{t("account.settings.mobileNumber")}</Label>
               <Input
                 value={formData.mobileNo}
                 onChange={(e) => setFormData({ ...formData, mobileNo: e.target.value })}
-                placeholder="+91 99999 99999"
+                placeholder={t("account.settings.mobilePlaceholder")}
                 className="border-border/50 h-10"
               />
             </div>
@@ -127,7 +127,7 @@ export default function SettingsPage() {
             className="text-spaced h-10 px-8"
           >
             {isLoading && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
-            Save Changes
+            {t("account.common.saveChanges")}
           </Button>
         </form>
       </section>
@@ -136,10 +136,10 @@ export default function SettingsPage() {
 
       {/* Danger Zone */}
       <section className="space-y-6 pt-4">
-        <SectionHeader className="text-destructive">Danger Zone</SectionHeader>
+        <SectionHeader className="text-destructive">{t("account.settings.dangerZone")}</SectionHeader>
         <div className="p-6 border border-destructive/20 rounded-sm bg-destructive/5 space-y-4">
           <div className="space-y-1">
-            <p className="text-sm font-bold uppercase tracking-widest text-destructive">Deactivate Account</p>
+            <p className="text-sm font-bold uppercase tracking-widest text-destructive">{t("account.settings.deactivateAccount")}</p>
             <p className="text-xs muted-italic">{t("account.settings.deleteWarning")}</p>
           </div>
           <Button
@@ -149,7 +149,7 @@ export default function SettingsPage() {
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="mr-2 h-3 w-3 animate-spin" />}
-            Permanently Delete Account
+            {t("account.settings.permanentlyDelete")}
           </Button>
         </div>
       </section>
@@ -158,9 +158,9 @@ export default function SettingsPage() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={handleDeleteAccount}
-        title="Farewell, Member?"
-        description="Are you absolutely sure? This action is permanent and will delete your entire account"
-        confirmText="Delete Account"
+        title={t("account.settings.deleteDialogTitle")}
+        description={t("account.settings.deleteDialogDescription")}
+        confirmText={t("account.settings.deleteConfirm")}
         variant="destructive"
         isLoading={isLoading}
       />

@@ -2,12 +2,13 @@
 
 import { ClipboardList, CreditCard, Truck, PackageCheck, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/context/TranslationContext";
 
 const STEPS = [
-  { status: "PENDING",   label: "Order Placed",        icon: ClipboardList },
-  { status: "PAID",      label: "Payment Confirmed",   icon: CreditCard },
-  { status: "SHIPPED",   label: "Shipped",             icon: Truck },
-  { status: "DELIVERED", label: "Delivered",           icon: PackageCheck },
+  { status: "PENDING",   labelKey: "account.orders.tracker.placed",    icon: ClipboardList },
+  { status: "PAID",      labelKey: "account.orders.tracker.paid",      icon: CreditCard },
+  { status: "SHIPPED",   labelKey: "account.orders.tracker.shipped",   icon: Truck },
+  { status: "DELIVERED", labelKey: "account.orders.tracker.delivered", icon: PackageCheck },
 ];
 
 const ORDER = ["PENDING", "PAID", "SHIPPED", "DELIVERED"];
@@ -18,14 +19,15 @@ interface Props {
 }
 
 export function OrderTracker({ status, createdAt }: Props) {
+  const { t } = useTranslation();
   if (status === "CANCELLED") {
     return (
       <div className="flex items-center gap-3 px-5 py-4 rounded-sm border border-destructive/30 bg-destructive/5">
         <XCircle className="w-5 h-5 text-destructive shrink-0" />
         <div>
-          <p className="text-sm font-bold text-destructive uppercase tracking-widest">Order Cancelled</p>
+          <p className="text-sm font-bold text-destructive uppercase tracking-widest">{t("account.orders.tracker.cancelled")}</p>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            This order has been cancelled. If you have any questions, please contact support.
+            {t("account.orders.tracker.cancelledDesc")}
           </p>
         </div>
       </div>
@@ -67,11 +69,11 @@ export function OrderTracker({ status, createdAt }: Props) {
                   "text-[10px] font-bold uppercase tracking-widest leading-tight",
                   (done || active) ? "text-foreground" : "text-muted-foreground/50"
                 )}>
-                  {step.label}
+                  {t(step.labelKey)}
                 </p>
                 {active && (
                   <p className="text-[9px] text-primary font-bold uppercase tracking-widest mt-0.5">
-                    Current
+                    {t("account.orders.tracker.current")}
                   </p>
                 )}
                 {done && i === 0 && createdAt && (

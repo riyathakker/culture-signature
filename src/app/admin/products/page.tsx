@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -135,6 +136,7 @@ const EditableCell = ({
 
   return (
     <div
+      data-no-row-click
       onDoubleClick={() => setIsEditing(true)}
       className={cn(
         "cursor-pointer relative",
@@ -151,6 +153,7 @@ const EditableCell = ({
 
 export default function AdminProducts() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { products, totalProducts, isLoading, fetchProducts, updateProductById, deleteProductById } = useProductStore();
   const { categories, fetchCategories } = useCategoryStore();
   const [searchQuery, setSearchQuery] = useState("");
@@ -348,26 +351,15 @@ export default function AdminProducts() {
       header: "",
       className: "text-right",
       render: (product) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary/50">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <Link href={ROUTES.ADMIN.PRODUCTS_EDIT(product.id)}>
-              <DropdownMenuItem className="gap-2 cursor-pointer">
-                <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
-              </DropdownMenuItem>
-            </Link>
-            <DropdownMenuItem
-              className="gap-2 text-destructive focus:text-destructive cursor-pointer"
-              onClick={() => handleDeleteClick(product.id)}
-            >
-              <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          title={t("admin.products.actions.remove")}
+          onClick={() => handleDeleteClick(product.id)}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
       ),
     },
   ];
@@ -425,6 +417,7 @@ export default function AdminProducts() {
         isLoading={isLoading}
         emptyMessage={t("admin.products.noResults")}
         rowKey={(p) => p.id}
+        onRowClick={(p) => router.push(ROUTES.ADMIN.PRODUCTS_EDIT(p.id))}
         mobileCard={(product) => {
           const outOfStock = product.stock === 0;
           const lowStock = product.stock > 0 && product.stock <= 5;

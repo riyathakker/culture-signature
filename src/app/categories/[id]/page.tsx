@@ -11,9 +11,11 @@ import { toast } from "sonner";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { ROUTES } from "@/constants/routes";
 import { useCategoryStore } from "@/store/categoryStore";
+import { useTranslation } from "@/context/TranslationContext";
 
 export default function CategoryPage() {
   const { id } = useParams();
+  const { t } = useTranslation();
   const { categories, fetchCategories } = useCategoryStore();
   const [products, setProducts] = useState<any[]>([]);
   const [category, setCategory] = useState<any>(null);
@@ -33,7 +35,7 @@ export default function CategoryPage() {
         const data = await prodRes.json();
         setProducts(data);
       } catch (error) {
-        toast.error("Could not load the collection.");
+        toast.error(t("shop.loadCollectionError"));
       } finally {
         setLoading(false);
       }
@@ -58,7 +60,7 @@ export default function CategoryPage() {
 
   return (
     <HomePageContainer
-      label={[{ label: "Categories", href: ROUTES.CATEGORIES }, { label: category?.name }]}
+      label={[{ label: t("nav.links.categories"), href: ROUTES.CATEGORIES }, { label: category?.name }]}
     >
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Desktop Sidebar */}
@@ -72,7 +74,7 @@ export default function CategoryPage() {
             <div className="flex items-center gap-4 flex-row">
               <FilterDrawer />
               <p className="hidden sm:inline-block text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">
-                Showing {products.length} {products.length === 1 ? 'piece' : 'pieces'}
+                {t("shop.showing").replace("{count}", products.length.toString())}
               </p>
             </div>
             <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
@@ -89,12 +91,12 @@ export default function CategoryPage() {
               <div className="w-16 h-16 bg-secondary/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-serif italic text-muted-foreground">?</span>
               </div>
-              <p className="muted-italic text-xl">No products found in this category yet.</p>
+              <p className="muted-italic text-xl">{t("shop.categoryEmpty")}</p>
               <button
                 onClick={() => window.location.href = "/collections"}
                 className="text-primary hover:text-primary/70 transition-colors text-sm uppercase tracking-[0.2em] font-bold border-b border-primary/30 pb-1 cursor-pointer"
               >
-                Explore All Collections
+                {t("shop.exploreAll")}
               </button>
             </div>
           ) : (

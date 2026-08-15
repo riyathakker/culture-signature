@@ -75,6 +75,7 @@ export interface Product {
 export interface ColorVariant {
   name: string;
   hex: string;
+  hex2?: string | null;
   images: string[];
   /** Optional per-color price. Falls back to the product's base price when unset. */
   price?: number | null;
@@ -175,6 +176,7 @@ export interface Exhibition {
   description: string | null;
   images: string[];
   location: string | null;
+  city: string | null;
   date: string | Date;
   endDate: string | Date | null;
   startTime: string | null;

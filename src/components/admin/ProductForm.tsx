@@ -6,12 +6,16 @@ import {
   ArrowLeft,
   Plus,
   Trash2,
+  X,
 } from "lucide-react";
+import { swatchStyle } from "@/lib/colorVariant";
+import { NoImage } from "@/components/common/NoImage";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { hexToColorName } from "@/lib/colorName";
 import {
   Select,
   SelectContent,
@@ -126,7 +130,12 @@ export function ProductForm({ productId }: ProductFormProps) {
     setIsLoading(true);
 
     try {
-      const payload = { ...formData, colors: enableColors ? formData.colors : [] };
+      const colors = enableColors ? formData.colors : [];
+      const images =
+        formData.images.length > 0
+          ? formData.images
+          : colors[0]?.images ?? [];
+      const payload = { ...formData, images, colors };
       if (isEdit) {
         await updateProductById(productId!, payload);
       } else {
@@ -239,7 +248,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                   >
                     <span
                       className="w-3.5 h-3.5 rounded-full border border-border/50"
-                      style={{ backgroundColor: color.hex }}
+                      style={swatchStyle(color.hex, color.hex2)}
                     />
                     {color.name?.trim() || `Color ${i + 1}`}
                   </button>
@@ -251,7 +260,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                   setActiveColorIdx(formData.colors.length);
                   setFormData((prev) => ({
                     ...prev,
-                    colors: [...prev.colors, { name: "", hex: "#000000", images: [] }],
+                    colors: [...prev.colors, { name: hexToColorName("#000000"), hex: "#000000", images: [] }],
                   }));
                 }}
                 className="flex items-center gap-1.5 h-9 px-3 rounded-full border border-dashed border-primary/50 text-[11px] uppercase tracking-widest font-bold text-primary hover:bg-primary/5 transition-colors"
@@ -265,6 +274,14 @@ export function ProductForm({ productId }: ProductFormProps) {
             ) : (() => {
               const idx = Math.min(activeColorIdx, formData.colors.length - 1);
               const color = formData.colors[idx];
+              const autoName = (hex: string, hex2?: string | null) =>
+                hex2 ? `${hexToColorName(hex)} & ${hexToColorName(hex2)}` : hexToColorName(hex);
+              const isAutoNamed = !color.name || color.name === autoName(color.hex, color.hex2);
+              const updateColor = (patch: Partial<ColorVariant>) => {
+                const updated = [...formData.colors];
+                updated[idx] = { ...updated[idx], ...patch };
+                setFormData((prev) => ({ ...prev, colors: updated }));
+              };
               return (
                 <div className="space-y-4 border border-border/30 rounded-lg p-5">
                   <div className="flex items-center gap-3">
@@ -273,21 +290,64 @@ export function ProductForm({ productId }: ProductFormProps) {
                         type="color"
                         value={color.hex}
                         onChange={(e) => {
-                          const updated = [...formData.colors];
-                          updated[idx] = { ...updated[idx], hex: e.target.value };
-                          setFormData((prev) => ({ ...prev, colors: updated }));
+                          const newHex = e.target.value;
+                          // Auto-fill the name from the hex(es), unless a custom name was typed.
+                          updateColor({
+                            hex: newHex,
+                            name: isAutoNamed ? autoName(newHex, color.hex2) : color.name,
+                          });
                         }}
                         className="w-10 h-10 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
-                        title="Pick color"
+                        title="Pick color — name auto-fills"
                       />
+                      {color.hex2 ? (
+                        <div className="relative">
+                          <input
+                            type="color"
+                            value={color.hex2}
+                            onChange={(e) => {
+                              const newHex2 = e.target.value;
+                              updateColor({
+                                hex2: newHex2,
+                                name: isAutoNamed ? autoName(color.hex, newHex2) : color.name,
+                              });
+                            }}
+                            className="w-10 h-10 rounded cursor-pointer border border-border/50 p-0.5 bg-transparent"
+                            title="Second color"
+                          />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateColor({
+                                hex2: null,
+                                name: isAutoNamed ? autoName(color.hex) : color.name,
+                              })
+                            }
+                            className="absolute -top-1.5 -right-1.5 bg-background border border-border rounded-full p-0.5 text-muted-foreground hover:text-destructive"
+                            title="Remove second color"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateColor({
+                              hex2: "#ffffff",
+                              name: isAutoNamed ? autoName(color.hex, "#ffffff") : color.name,
+                            })
+                          }
+                          className="w-10 h-10 rounded border border-dashed border-primary/50 text-primary hover:bg-primary/5 flex items-center justify-center"
+                          title="Add a second color (two-tone)"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      )}
                       <Input
                         placeholder="Color name (e.g. Midnight Black)"
                         value={color.name}
-                        onChange={(e) => {
-                          const updated = [...formData.colors];
-                          updated[idx] = { ...updated[idx], name: e.target.value };
-                          setFormData((prev) => ({ ...prev, colors: updated }));
-                        }}
+                        onChange={(e) => updateColor({ name: e.target.value })}
                         className="h-10 border-border/50 flex-1"
                       />
                     </div>
@@ -308,13 +368,12 @@ export function ProductForm({ productId }: ProductFormProps) {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>
+                    {color.images.length === 0 && (
+                      <NoImage className="h-24 rounded-lg border border-dashed border-border/50" />
+                    )}
                     <ImageUpload
                       value={color.images}
-                      onChange={(urls) => {
-                        const updated = [...formData.colors];
-                        updated[idx] = { ...updated[idx], images: urls };
-                        setFormData((prev) => ({ ...prev, colors: updated }));
-                      }}
+                      onChange={(urls) => updateColor({ images: urls })}
                       maxFiles={4}
                       compact
                     />

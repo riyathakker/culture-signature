@@ -148,52 +148,25 @@ export default function CategoriesPage() {
       render: (cat) => {
         const isArchived = cat.status === "ARCHIVED";
         return (
-          <div className="flex justify-end gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-secondary">
-                  <MoreVertical className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40 bg-background border border-border/50 shadow-xl z-[100]">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleEdit(cat);
-                  }}
-                  className="gap-2 cursor-pointer"
-                >
-                  <Edit2 className="w-4 h-4" /> {t("admin.products.actions.edit")}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleArchive(cat);
-                  }}
-                  className="gap-2 cursor-pointer"
-                >
-                  {isArchived ? (
-                    <>
-                      <ArchiveRestore className="w-4 h-4" /> {t("admin.categories.actions.activate")}
-                    </>
-                  ) : (
-                    <>
-                      <Archive className="w-4 h-4" /> {t("admin.categories.actions.archive")}
-                    </>
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDeleteClick(cat);
-                  }}
-                  className="gap-2 cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4" /> {t("admin.products.actions.remove")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex justify-end gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary"
+              title={isArchived ? t("admin.categories.actions.activate") : t("admin.categories.actions.archive")}
+              onClick={() => toggleArchive(cat)}
+            >
+              {isArchived ? <ArchiveRestore className="w-4 h-4" /> : <Archive className="w-4 h-4" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              title={t("admin.products.actions.remove")}
+              onClick={() => handleDeleteClick(cat)}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
           </div>
         );
       },
@@ -222,6 +195,7 @@ export default function CategoriesPage() {
         isLoading={isLoading}
         emptyMessage={t("admin.categories.empty")}
         rowKey={(cat) => cat.id}
+        onRowClick={(cat) => handleEdit(cat)}
         mobileCard={(cat) => {
           const isArchived = cat.status === "ARCHIVED";
           return (

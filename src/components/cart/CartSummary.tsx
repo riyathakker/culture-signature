@@ -91,7 +91,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
       if (!orderResponse.ok) {
         const err = await orderResponse.json();
-        throw new Error(err.error || "Failed to create payment order");
+        throw new Error(err.error || t("cart.summary.messages.paymentOrderError"));
       }
 
       const { payment_session_id, cf_order_id } = await orderResponse.json();
@@ -107,7 +107,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       });
 
       if (result.error) {
-        throw new Error(result.error.message || "Payment failed or was cancelled.");
+        throw new Error(result.error.message || t("cart.summary.messages.paymentFailed"));
       }
 
       setProcessingStage("verifying");
@@ -125,7 +125,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       }
 
       if (!verifyData?.success) {
-        throw new Error("Payment verification failed. Please contact support.");
+        throw new Error(t("cart.summary.messages.verificationFailed"));
       }
 
       setProcessingStage("recording");
@@ -148,7 +148,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
       if (!finalizeResponse.ok) {
         const errData = await finalizeResponse.json().catch(() => ({}));
-        throw new Error(errData.error || "Failed to record your order. Please contact support.");
+        throw new Error(errData.error || t("cart.summary.messages.recordOrderError"));
       }
 
       const order = await finalizeResponse.json();
@@ -269,7 +269,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
                 variant="outline"
                 className="h-11 px-6 uppercase tracking-widest text-[10px] border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all duration-500"
               >
-                Remove
+                {t("cart.summary.remove")}
               </Button>
             ) : (
               <Button
@@ -299,7 +299,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
                 onClick={() => openModal("/bag/checkout")}
                 className="w-full h-12 uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20"
               >
-                Sign In to Checkout <ArrowRight className="ml-2 w-4 h-4" />
+                {t("cart.summary.signInToCheckout")} <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             )
           ) : (
@@ -356,12 +356,12 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
             <div className="space-y-3">
               <h3 className="text-xl font-heading tracking-widest uppercase">
-                {processingStage === "verifying" ? "Confirming Payment" : "Securing Your Order"}
+                {processingStage === "verifying" ? t("cart.summary.processing.verifyingTitle") : t("cart.summary.processing.recordingTitle")}
               </h3>
               <p className="text-xs text-muted-foreground uppercase tracking-[0.2em] leading-relaxed">
                 {processingStage === "verifying"
-                  ? "Verifying your payment with our secure gateway. Please do not close this window."
-                  : "Recording your order and preparing confirmation. Almost there."}
+                  ? t("cart.summary.processing.verifyingDesc")
+                  : t("cart.summary.processing.recordingDesc")}
               </p>
             </div>
 

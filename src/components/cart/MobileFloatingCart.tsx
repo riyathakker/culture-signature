@@ -7,9 +7,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
 
 export function MobileFloatingCart() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { items } = useCartStore();
   const { status } = useSession();
@@ -46,7 +48,7 @@ export function MobileFloatingCart() {
         <Link href={ROUTES.SHOPPING_BAG}>
           <button 
             className="p-4 rounded-full bg-primary text-primary-foreground shadow-2xl transition-transform hover:scale-110 active:scale-95 group overflow-hidden relative"
-            aria-label="Go to shopping bag"
+            aria-label={t("cart.goToBag")}
           >
             <div className="absolute inset-0 bg-luxury-gradient opacity-20 group-hover:opacity-40 transition-opacity" />
             <ShoppingBag className="w-5 h-5 relative z-10" />

@@ -158,6 +158,21 @@ export default function AdminReviews() {
         </span>
       ),
     },
+    {
+      header: "",
+      className: "text-right",
+      render: (r) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          title="Remove review"
+          onClick={() => setDeleteTarget(r.id)}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      ),
+    },
   ];
 
   const avgRating = reviews.length

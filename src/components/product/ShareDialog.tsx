@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/context/TranslationContext";
 import { toast } from "sonner";
 
 interface ShareDialogProps {
@@ -44,18 +45,19 @@ const PinterestIcon = () => (
 
 export function ShareDialog({ open, onOpenChange, productName, productImage }: ShareDialogProps) {
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation();
 
   const url = typeof window !== "undefined" ? window.location.href : "";
-  const text = `Check out ${productName} on Culture Signature`;
+  const text = t("shop.product.details.share.text", { name: productName });
 
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success("Link copied to clipboard");
+      toast.success(t("shop.product.details.share.linkCopied"));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Failed to copy link");
+      toast.error(t("shop.product.details.share.copyFailed"));
     }
   };
 
@@ -90,7 +92,7 @@ export function ShareDialog({ open, onOpenChange, productName, productImage }: S
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-base font-heading tracking-tight">Share this piece</DialogTitle>
+          <DialogTitle className="text-base font-heading tracking-tight">{t("shop.product.details.share.title")}</DialogTitle>
         </DialogHeader>
 
         <p className="text-xs text-muted-foreground muted-italic truncate">{productName}</p>
@@ -102,7 +104,7 @@ export function ShareDialog({ open, onOpenChange, productName, productImage }: S
           <button
             onClick={copyLink}
             className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Copy link"
+            aria-label={t("shop.product.details.share.copyAria")}
           >
             {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
@@ -128,7 +130,7 @@ export function ShareDialog({ open, onOpenChange, productName, productImage }: S
           onClick={copyLink}
           className="w-full h-11 uppercase tracking-[0.2em] text-xs mt-1"
         >
-          {copied ? "Copied!" : "Copy Link"}
+          {copied ? t("shop.product.details.share.copied") : t("shop.product.details.share.copyLink")}
         </Button>
       </DialogContent>
     </Dialog>

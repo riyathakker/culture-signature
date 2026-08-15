@@ -25,8 +25,8 @@ export function NavLinks() {
   };
 
   return (
-    <nav className="hidden lg:block mt-4">
-      <ul className="flex items-center justify-center px-4 sm:px-6 lg:px-8 space-x-10">
+    <nav className="w-full">
+      <ul className="flex items-center justify-center space-x-10">
         {navigationLinks.map((item) => {
           let isActive = pathname === item.href;
           
@@ -43,7 +43,7 @@ export function NavLinks() {
               <Link
                 href={item.href}
                 className={`
-                  relative pb-2 text-[10px] uppercase tracking-[0.3em] font-medium transition-all duration-300
+                  relative pb-2 whitespace-nowrap text-[10px] uppercase tracking-[0.3em] font-medium transition-all duration-300
                   ${isActive
                     ? "text-primary"
                     : "text-foreground hover:text-primary"

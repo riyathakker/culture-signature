@@ -23,6 +23,7 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
     }
 
     await prisma.$transaction([
+      prisma.cartItem.deleteMany({ where: { productId: id } }),
       prisma.wishlistItem.deleteMany({ where: { productId: id } }),
       prisma.review.deleteMany({ where: { productId: id } }),
       prisma.product.delete({ where: { id } }),

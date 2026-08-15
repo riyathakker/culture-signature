@@ -9,6 +9,7 @@ import { ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ImageLightbox } from "@/components/common/ImageLightbox";
 import Link from "next/link";
+import { useTranslation } from "@/context/TranslationContext";
 
 function statusClass(status: string) {
   if (status === "DELIVERED") return "border-green-500 text-green-500";
@@ -18,9 +19,10 @@ function statusClass(status: string) {
 }
 
 function OrderItems({ order }: { order: any }) {
+  const { t } = useTranslation();
   return (
     <div className="p-4 space-y-3 animate-in slide-in-from-top-2 duration-300 border-t border-border/50 bg-secondary/5">
-      <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">Order Items</h4>
+      <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">{t("account.orders.orderItems")}</h4>
       <div className="space-y-3">
         {order.items?.map((item: any) => (
           <div key={item.id} className="flex items-center justify-between bg-background p-3 rounded-sm border border-border/50">
@@ -33,7 +35,7 @@ function OrderItems({ order }: { order: any }) {
               />
               <div>
                 <p className="text-xs font-medium">{item.product.name}</p>
-                <p className="text-[10px] text-muted-foreground">Qty: {item.quantity} × ₹{item.price.toLocaleString()}</p>
+                <p className="text-[10px] text-muted-foreground">{t("account.orders.qty")}: {item.quantity} × ₹{item.price.toLocaleString()}</p>
               </div>
             </div>
             {order.status === "DELIVERED" && (
@@ -52,6 +54,7 @@ interface OrderRowProps {
 }
 
 export function OrderRow({ order, variant = "table" }: OrderRowProps) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const href = `/account/orders/${order.id}`;
 
@@ -65,7 +68,7 @@ export function OrderRow({ order, variant = "table" }: OrderRowProps) {
               #{order.id.slice(-8).toUpperCase()}
             </Link>
             <Badge variant="outline" className={cn("text-[9px] font-bold uppercase tracking-widest h-5", statusClass(order.status))}>
-              {order.status}
+              {t(`account.orders.status.${order.status.toLowerCase()}`)}
             </Badge>
           </div>
 
@@ -87,7 +90,7 @@ export function OrderRow({ order, variant = "table" }: OrderRowProps) {
                 )}
               </div>
               <span className="text-[10px] text-muted-foreground">
-                {order.items.length} {order.items.length === 1 ? "item" : "items"}
+                {order.items.length} {order.items.length === 1 ? t("account.orders.itemSingular") : t("account.orders.itemPlural")}
               </span>
             </div>
           )}
@@ -109,13 +112,13 @@ export function OrderRow({ order, variant = "table" }: OrderRowProps) {
               className="flex-1 text-spaced-bold gap-2 border border-border/50 h-8"
             >
               {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              {isExpanded ? "Hide" : "Items"}
+              {isExpanded ? t("account.orders.hide") : t("account.orders.itemsLabel")}
             </Button>
             <Link
               href={href}
               className="flex-1 inline-flex items-center justify-center gap-1.5 h-8 text-[10px] uppercase tracking-widest font-bold border border-border/50 rounded-md hover:border-primary/50 hover:text-primary transition-colors px-3"
             >
-              Details <ArrowRight className="w-3 h-3" />
+              {t("account.orders.details")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
         </div>
@@ -136,20 +139,20 @@ export function OrderRow({ order, variant = "table" }: OrderRowProps) {
           {new Date(order.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
         </TableCell>
         <TableCell>
-          <Badge variant="outline" className={statusClass(order.status)}>{order.status}</Badge>
+          <Badge variant="outline" className={statusClass(order.status)}>{t(`account.orders.status.${order.status.toLowerCase()}`)}</Badge>
         </TableCell>
         <TableCell className="text-right font-medium">₹{order.totalPrice.toLocaleString()}</TableCell>
         <TableCell className="text-right">
           <div className="flex items-center justify-end gap-3">
             <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="text-spaced-bold gap-1.5 h-8">
               {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              {isExpanded ? "Hide" : "Items"}
+              {isExpanded ? t("account.orders.hide") : t("account.orders.itemsLabel")}
             </Button>
             <Link
               href={href}
               className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-colors"
             >
-              View <ArrowRight className="w-3 h-3" />
+              {t("account.orders.view")} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
         </TableCell>

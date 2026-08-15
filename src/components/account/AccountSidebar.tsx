@@ -17,24 +17,26 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { ROUTES } from "@/constants/routes";
+import { useTranslation } from "@/context/TranslationContext";
 
 const navItems = [
-  { label: "Profile Overview", href: "/account", icon: User },
-  { label: "Order History", href: "/account/orders", icon: ShoppingBag },
-  { label: "My Wishlist", href: "/account/wishlist", icon: Heart },
-  { label: "Saved Addresses", href: "/account/addresses", icon: MapPin },
-  { label: "Account Settings", href: "/account/settings", icon: Settings },
+  { id: "overview", labelKey: "account.sidebar.overview", href: "/account", icon: User },
+  { id: "orders", labelKey: "account.orders.heading", href: "/account/orders", icon: ShoppingBag },
+  { id: "wishlist", labelKey: "account.sidebar.wishlist", href: "/account/wishlist", icon: Heart },
+  { id: "addresses", labelKey: "account.addresses.heading", href: "/account/addresses", icon: MapPin },
+  { id: "settings", labelKey: "account.settings.heading", href: "/account/settings", icon: Settings },
 ];
 
 export function AccountSidebar() {
   const { data: session } = useSession();
+  const { t } = useTranslation();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
   const pathname = usePathname();
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
 
   const filteredNavItems = navItems.filter(item => {
     if (isAdmin) {
-      return !["Order History", "My Wishlist", "Saved Addresses"].includes(item.label);
+      return !["orders", "wishlist", "addresses"].includes(item.id);
     }
     return true;
   });
@@ -57,7 +59,7 @@ export function AccountSidebar() {
             >
               <div className="flex items-center gap-3">
                 <item.icon className={cn("w-4 h-4", isActive ? "" : "text-primary opacity-60 group-hover:opacity-100")} />
-                <span className="text-spaced-bold">{item.label}</span>
+                <span className="text-spaced-bold">{t(item.labelKey)}</span>
               </div>
               {isActive && <ChevronRight className="w-3 h-3" />}
             </Link>
@@ -70,7 +72,7 @@ export function AccountSidebar() {
             className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-destructive transition-colors w-full group"
           >
             <LogOut className="w-4 h-4 opacity-60 group-hover:opacity-100" />
-            <span className="text-spaced-bold">Sign Out</span>
+            <span className="text-spaced-bold">{t("nav.account.signOut")}</span>
           </button>
         </div>
       </div>
@@ -80,11 +82,11 @@ export function AccountSidebar() {
         onOpenChange={setIsSignOutDialogOpen}
         onConfirm={() => {
           signOut({ callbackUrl: ROUTES.HOME });
-          toast.success("Successfully signed out");
+          toast.success(t("nav.account.signOutSuccess"));
         }}
-        title="Sign Out"
-        description="Are you sure you want to end your current session?"
-        confirmText="Sign Out"
+        title={t("nav.account.signOut")}
+        description={t("nav.account.signOutConfirm")}
+        confirmText={t("nav.account.signOut")}
         variant="destructive"
       />
 
@@ -105,7 +107,7 @@ export function AccountSidebar() {
                 )}
               >
                 <item.icon className="w-4 h-4" />
-                <span className="text-spaced-bold font-bold">{item.label}</span>
+                <span className="text-spaced-bold font-bold">{t(item.labelKey)}</span>
               </Link>
             );
           })}

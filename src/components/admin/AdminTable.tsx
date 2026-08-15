@@ -29,6 +29,7 @@ interface AdminTableProps<T> {
     renderExpanded: (item: T) => ReactNode;
   };
   mobileCard?: (item: T) => ReactNode;
+  onRowClick?: (item: T) => void;
 }
 
 function LoadingOverlay() {
@@ -49,7 +50,15 @@ export function AdminTable<T>({
   rowKey,
   expandable,
   mobileCard,
+  onRowClick,
 }: AdminTableProps<T>) {
+  const handleRowClick = (item: T) => (e: React.MouseEvent) => {
+    if (!onRowClick) return;
+    if ((e.target as HTMLElement).closest("button, a, input, label, [role='button'], [role='switch'], [data-no-row-click]")) {
+      return;
+    }
+    onRowClick(item);
+  };
   return (
     <>
       {mobileCard && (
@@ -101,7 +110,10 @@ export function AdminTable<T>({
 
                   return (
                     <React.Fragment key={key}>
-                      <TableRow className={`hover:bg-secondary/5 transition-colors ${isExpanded ? "bg-secondary/10" : ""}`}>
+                      <TableRow
+                        onClick={handleRowClick(item)}
+                        className={`hover:bg-secondary/5 transition-colors ${isExpanded ? "bg-secondary/10" : ""} ${onRowClick ? "cursor-pointer" : ""}`}
+                      >
                         {columns.map((column, idx) => (
                           <TableCell key={idx} className={column.className}>
                             {column.render
