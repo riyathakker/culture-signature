@@ -293,6 +293,8 @@ export const en = {
       createAccount: "Create an Account",
       success: "Welcome back to Culture Signature!",
       error: "Invalid email or password",
+      eyebrow: "Welcome back",
+      editorial: "Welcome back to\nthe world of fine luxury.",
     },
     signup: {
       title: "Join Our Community",
@@ -303,18 +305,25 @@ export const en = {
       autoLoginError: "Account created, but there was an error signing you in. Please login manually.",
       fullName: "Full Name",
       fullNamePlaceholder: "Enter your name",
+      eyebrow: "New member",
+      editorial: "Begin your journey\ninto timeless elegance.",
+      hasAccount: "Already have an account?",
     },
     forgotPassword: {
       title: "Reset Password",
       description: "Enter your email to receive a reset link.",
       submit: "Send Reset Link",
       backToLogin: "Back to Sign In",
+      eyebrow: "Account recovery",
     },
     common: {
       email: "Email",
       emailPlaceholder: "name@example.com",
       password: "Password",
       processing: "Processing...",
+      back: "Back",
+      or: "or",
+      brandTagline: "Culture Signature by Jalpa Thakkar",
     }
   },
   account: {
@@ -333,21 +342,158 @@ export const en = {
       priceBreakdown: "Price Breakdown",
       shippingAddress: "Shipping Address",
       shippingFree: "Free",
+      emptyTitle: "No orders yet",
+      notFound: "Order not found",
+      backToOrders: "Back to Orders",
+      orderId: "Order ID",
+      placedOn: "Placed On",
+      itemsLabel: "Items",
+      itemSingular: "item",
+      itemPlural: "items",
+      qty: "Qty",
+      yourReview: "Your review",
+      subtotal: "Subtotal",
+      discount: "Discount",
+      gst: "GST (18%)",
+      shipping: "Shipping",
+      total: "Total",
+      orderItems: "Order Items",
+      hide: "Hide",
+      details: "Details",
+      view: "View",
+      table: {
+        id: "Order ID",
+        date: "Date",
+        status: "Status",
+        total: "Total",
+      },
+      status: {
+        pending: "Pending",
+        paid: "Paid",
+        shipped: "Shipped",
+        delivered: "Delivered",
+        cancelled: "Cancelled",
+      },
+      tracker: {
+        placed: "Order Placed",
+        paid: "Payment Confirmed",
+        shipped: "Shipped",
+        delivered: "Delivered",
+        cancelled: "Order Cancelled",
+        cancelledDesc: "This order has been cancelled. If you have any questions, please contact support.",
+        current: "Current",
+      },
     },
     wishlist: {
       heading: "Wishlist",
       subtitle: "Items you have saved.",
       emptyDescription: "Your saved items will appear here.",
+      emptyTitle: "Your wishlist is empty",
+      exploreCollection: "Explore Collection",
     },
     addresses: {
       heading: "Saved Addresses",
       subtitle: "Manage your delivery and billing addresses.",
       emptyDescription: "Add and manage your delivery addresses.",
+      emptyTitle: "No saved addresses",
+      addNew: "Add New",
+      addTitle: "Add New Address",
+      editTitle: "Edit Address",
+      defaultShipping: "Default Shipping",
+      setDefault: "Set as Default",
+      removeTitle: "Remove Address",
+      removeDescription: "Are you sure you want to remove \"{street}\" from your shipping collection?",
+      removeConfirm: "Yes, Remove",
+      messages: {
+        deleted: "Address deleted",
+        defaultUpdated: "Default address updated",
+        updated: "Address updated",
+        added: "Address added",
+      },
+      form: {
+        firstName: "First Name",
+        lastName: "Last Name",
+        street: "Street Address",
+        phone: "Phone Number",
+        setDefaultLabel: "Set as default address",
+        save: "Save Address",
+        update: "Update Address",
+        placeholders: {
+          firstName: "John",
+          lastName: "Doe",
+          street: "123 Luxury Lane",
+          phone: "+91 9876543210",
+        },
+        validation: {
+          firstName: "First name is required",
+          lastName: "Last name is required",
+          street: "Street is required",
+          country: "Country is required",
+          state: "State is required",
+          city: "City is required",
+          zipCode: "Zip code is required",
+          phone: "Phone number is required",
+        },
+      },
     },
     settings: {
       heading: "Account Settings",
       subtitle: "Manage your preferences and account security.",
       deleteWarning: "This will permanently delete your account and order history.",
+      personalInfo: "Personal Information",
+      fullName: "Full Name",
+      email: "Email Address",
+      mobileNumber: "Mobile Number",
+      mobilePlaceholder: "+91 99999 99999",
+      dangerZone: "Danger Zone",
+      deactivateAccount: "Deactivate Account",
+      permanentlyDelete: "Permanently Delete Account",
+      deleteDialogTitle: "Farewell, Member?",
+      deleteDialogDescription: "Are you absolutely sure? This action is permanent and will delete your entire account",
+      deleteConfirm: "Delete Account",
+      messages: {
+        updateSuccess: "Profile updated successfully",
+        updateError: "Something went wrong",
+        deleteSuccess: "Account deleted successfully. Farewell.",
+        deleteError: "Failed to delete account",
+      },
+    },
+    common: {
+      error: "Something went wrong",
+      viewAll: "View All",
+      discoverCollection: "Discover Collection",
+      saveChanges: "Save Changes",
+    },
+    sidebar: {
+      overview: "Profile Overview",
+      wishlist: "My Wishlist",
+    },
+    overview: {
+      totalOrders: "Total Orders",
+      wishlistItems: "Wishlist Items",
+      recentSelection: "Recent Selection",
+      seeAllOrders: "See All Orders",
+      order: "Order",
+      placed: "Placed",
+      ordersInCollectionOne: "You have {count} order in your collection.",
+      ordersInCollectionMany: "You have {count} orders in your collection.",
+      startShopping: "Start shopping to place your first order.",
+    },
+    mobileHeader: {
+      admin: "Admin",
+      userAlt: "User",
+    },
+    review: {
+      button: "Review",
+      title: "Write a Review",
+      subtitle: "Sharing your experience with the {name}.",
+      rating: "Your Rating",
+      thoughts: "Your Thoughts",
+      placeholder: "What did you love about this piece?",
+      submit: "Submit Review",
+      submitting: "Submitting...",
+      success: "Review submitted successfully",
+      error: "Failed to submit review",
     },
   },
   nav: {
@@ -373,6 +519,11 @@ export const en = {
     }
   },
   cart: {
+    goToBag: "Go to shopping bag",
+    item: {
+      noImage: "No Image",
+      each: "each",
+    },
     page: {
       title: "Shopping Bag",
       description: "Review your items before checkout.",
@@ -383,8 +534,17 @@ export const en = {
       selection: "Product Selection ({count})",
       continueShopping: "Continue Shopping",
       moveToWishlist: "Move all to Wishlist",
+      movedToWishlist: "All items moved to wishlist",
     },
     summary: {
+      remove: "Remove",
+      signInToCheckout: "Sign In to Checkout",
+      processing: {
+        verifyingTitle: "Confirming Payment",
+        recordingTitle: "Securing Your Order",
+        verifyingDesc: "Verifying your payment with our secure gateway. Please do not close this window.",
+        recordingDesc: "Recording your order and preparing confirmation. Almost there.",
+      },
       title: "Order Summary",
       reviewTitle: "Order Review",
       qty: "Qty: {count}",
@@ -414,7 +574,11 @@ export const en = {
         codeApplied: "Promotional code {code} applied!",
         invalidOrExpiredCode: "Invalid or expired promotional code.",
         completeShipping: "Please complete your shipping information.",
-        orderError: "Something went wrong while finalizing your order."
+        orderError: "Something went wrong while finalizing your order.",
+        paymentOrderError: "Failed to create payment order",
+        paymentFailed: "Payment failed or was cancelled.",
+        verificationFailed: "Payment verification failed. Please contact support.",
+        recordOrderError: "Failed to record your order. Please contact support."
       }
     },
     checkout: {
@@ -461,7 +625,9 @@ export const en = {
       title1: "Artisanal",
       title2: "Heritage",
       description: "Celebrating the soul of Indian craftsmanship through handcrafted jewelry and artisanal bags. Founded by Jalpa Thakkar to empower through mastery.",
-      imageAlt: "Luxury Jewelry"
+      imageAlt: "Luxury Jewelry",
+      cta: "Explore the Collection",
+      ctaSecondary: "Our Story"
     },
     categories: {
       title: "The Categories",
@@ -480,21 +646,55 @@ export const en = {
       empty: "New items coming soon.",
       viewMore: "View More"
     },
+    exhibitions: {
+      title: "Exhibitions & Shoots",
+      subtitle: "Where to Find Us",
+      viewLocation: "View location on map",
+      imageAria: "Image {n}",
+      status: {
+        ongoing: "Ongoing",
+        upcoming: "Upcoming",
+        past: "Past"
+      }
+    },
     limitedDrops: {
       title: "Limited Drops",
-      subtitle: "Only a Few Left"
+      subtitle: "Only a Few Left",
+      stockLeft: "{count} left"
+    },
+    trust: {
+      delivery: {
+        title: "Fast Delivery",
+        desc: "Free shipping over ₹5,000"
+      },
+      quality: {
+        title: "Quality Assured",
+        desc: "Handcrafted, authentic pieces"
+      },
+      secure: {
+        title: "Secure Payments",
+        desc: "Encrypted, protected checkout"
+      },
+      support: {
+        title: "Here to Help",
+        desc: "Dedicated customer care"
+      }
     },
     celebSpotting: {
       title: "Celeb Spotting",
-      subtitle: "Spotted in Culture Signature"
+      subtitle: "Spotted in Culture Signature",
+      imageAlt: "Spotted in Culture Signature",
+      fullscreenAlt: "Fullscreen view"
     },
     testimonials: {
       title: "Voices of Elegance",
-      subtitle: "From Our Patrons"
+      subtitle: "From Our Patrons",
+      anonymous: "Anonymous"
     },
     faq: {
       title: "Common Inquiries",
       subtitle: "Your Questions Answered",
+      breadcrumb: "FAQ",
       questions: [
         {
           question: "How do I care for my jewelry?",
@@ -522,6 +722,33 @@ export const en = {
     showing: "Showing {count} items",
     noMatches: "No matches found in the current collection.",
     clearFilters: "Clear all filters",
+    resultsFor: 'Results for "{query}"',
+    itemsFound: "{count} items found",
+    loadCollectionError: "Could not load the collection.",
+    categoryEmpty: "No products found in this category yet.",
+    exploreAll: "Explore All Collections",
+    filter: {
+      title: "Filter By",
+      availability: "Availability",
+      inStock: "In Stock Only",
+      onSale: "On Sale",
+      categories: "Categories",
+      noCategories: "No categories found",
+      priceRange: "Price Range",
+      product: "Product",
+      products: "Products",
+      apply: "Apply Filters",
+      clearAll: "Clear All Filters",
+      filter: "Filter",
+      selection: "Filter Selection",
+    },
+    sort: {
+      label: "Sort By",
+      newest: "Newest Arrivals",
+      priceLow: "Price: Low to High",
+      priceHigh: "Price: High to Low",
+      popular: "Most Popular",
+    },
     product: {
       outOfStock: "Out of Stock",
       off: "OFF",
@@ -531,6 +758,7 @@ export const en = {
       removedFromWishlist: "removed from wishlist",
       defaultCollection: "Collection",
       viewCollection: "View Collection",
+      recentlyViewed: "Recently Viewed",
       details: {
         loadError: "Could not load product details.",
         notFound: "Product not found.",
@@ -544,11 +772,49 @@ export const en = {
         },
         shippingNote: "Free worldwide shipping on all orders over ₹10,000.",
         addToCollection: "Add to Cart",
+        color: "Color",
+        onlyLeft: "Only {count} left",
+        soldOut: "Sold out",
+        shareAria: "Share product",
+        addToWishlist: "Add to wishlist",
+        removeFromWishlist: "Remove from wishlist",
+        notify: {
+          success: "We'll notify you when this piece is back in stock.",
+          notified: "You'll be notified",
+          notifyMe: "Notify me when available",
+        },
+        pincode: {
+          check: "Check delivery",
+          summary: "{pin}: by {date}",
+          placeholder: "Enter 6-digit pincode",
+          checkBtn: "Check",
+          available: "Delivery available",
+          estimatedBy: "estimated by",
+          businessDays: "({count} business days)",
+          invalid: "Enter a valid 6-digit Indian pincode",
+        },
+        share: {
+          text: "Check out {name} on Culture Signature",
+          linkCopied: "Link copied to clipboard",
+          copyFailed: "Failed to copy link",
+          title: "Share this piece",
+          copyAria: "Copy link",
+          copied: "Copied!",
+          copyLink: "Copy Link",
+        },
         reviews: {
           verifiedBuyer: "Verified Buyer",
           purchaseToReview: "Purchase this product to leave a review",
           signInToReview: "Sign in and purchase to leave a review",
           shareThoughts: "Share your thoughts on this product and help other buyers.",
+          title: "Customer Reviews",
+          beFirst: "Be the First to Review",
+          beFirstDesc: "Share your experience with this piece and help others discover its beauty.",
+          basedOn: "Based on {count}",
+          reviewSingular: "Review",
+          reviewPlural: "Reviews",
+          shareExperience: "Share your experience",
+          customer: "Customer",
         },
         buyNow: "Buy Now",
         premiumShipping: "Premium Shipping",
@@ -589,6 +855,39 @@ export const en = {
         }
       }
     }
+  },
+  common: {
+    backToTop: "Back to top",
+    close: "Close",
+    previous: "Previous",
+    next: "Next",
+    viewFullscreen: "View {alt} fullscreen",
+    addToWishlist: "Add to wishlist",
+    decreaseQuantity: "Decrease quantity",
+    increaseQuantity: "Increase quantity",
+    cancel: "Cancel",
+    continue: "Continue",
+    location: {
+      country: "Country",
+      selectCountry: "Select country",
+      state: "State",
+      selectState: "Select state",
+      enterState: "Enter state",
+      city: "City",
+      selectCity: "Select city",
+      enterCity: "Enter city",
+      zipCode: "Pin Code / Zip Code",
+      autoFilled: "Auto-filled from city",
+      enterZip: "Enter zip code",
+    },
+  },
+  wishlist: {
+    breadcrumb: "Your Wishlist",
+    heading: "Wishlist",
+    description: "Items you have saved to buy later.",
+    emptyTitle: "Your wishlist is empty",
+    emptyDescription: "Browse our collection and save your favorites here.",
+    explore: "Explore Collection",
   },
   collections: {
     title: "Categories clusters",
@@ -728,3 +1027,9 @@ export const en = {
 };
 
 export type Translations = typeof en;
+
+/** A single FAQ entry, derived from the translations so the shape stays in sync. */
+export type FaqItem = (typeof en)["home"]["faq"]["questions"][number];
+
+/** A single "core pillar" entry on the About page, derived from the translations. */
+export type PillarItem = (typeof en)["about"]["pillars"]["list"][number];

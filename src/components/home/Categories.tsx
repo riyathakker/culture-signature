@@ -1,7 +1,8 @@
-//"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 import { useCategoryStore } from "@/store/categoryStore";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
@@ -14,11 +15,18 @@ function CategoryCards() {
   return (
     <div className="max-w-[100vw] overflow-hidden">
       <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar px-4 sm:px-6 lg:px-8 scroll-smooth">
-        {categories.map((cat) => (
-          <Link
+        {categories.map((cat, i) => (
+          <motion.div
             key={cat.id}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, delay: (i % 5) * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="flex-shrink-0"
+          >
+          <Link
             href={`/categories/${cat.id}`}
-            className="group flex flex-col items-center py-12 bg-secondary/60 hover:bg-primary transition-all duration-700 relative overflow-hidden flex-shrink-0 w-[42vw] max-w-[200px] min-w-[140px] md:w-[200px]"
+            className="group flex flex-col items-center py-12 bg-secondary/60 hover:bg-primary transition-all duration-700 relative overflow-hidden w-[42vw] max-w-[200px] min-w-[140px] md:w-[200px]"
           >
             {cat.image && (
               <img
@@ -38,6 +46,7 @@ function CategoryCards() {
               {cat._count?.products || 0} {t("home.categories.pieces")}
             </p>
           </Link>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -61,7 +70,7 @@ export function Categories() {
   }
 
   return (
-    <div className="py-10 bg-secondary/50 border-y border-border/40">
+    <div className="py-10 bg-accent border-y border-border/40">
       <SectionTitle title={t("home.categories.title")} subtitle={t("home.categories.subtitle")} align="center" />
       <CategoryCards />
     </div>

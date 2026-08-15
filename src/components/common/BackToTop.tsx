@@ -5,9 +5,11 @@ import { ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/context/TranslationContext";
 
 export function BackToTop() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   const isAdminPage = pathname?.startsWith("/admin");
@@ -62,7 +64,7 @@ export function BackToTop() {
             "fixed right-6 z-50 p-4 rounded-full bg-primary text-primary-foreground shadow-2xl transition-transform hover:scale-110 active:scale-95 group overflow-hidden",
             "bottom-8 pwa-back-to-top"
           )}
-          aria-label="Back to top"
+          aria-label={t("common.backToTop")}
         >
           <div className="absolute inset-0 bg-luxury-gradient opacity-20 group-hover:opacity-40 transition-opacity" />
           <ArrowUp className="w-5 h-5 relative z-10" />

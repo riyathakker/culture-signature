@@ -30,7 +30,7 @@ export function AccountMobileHeader() {
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
           Culture Signature
           <span className="block text-primary-foreground/60 font-serif italic text-xs font-normal">
-            {(user as any)?.role === "ADMIN" ? "Admin" : "My Account"}
+            {(user as any)?.role === "ADMIN" ? t("account.mobileHeader.admin") : t("account.layout.heading")}
           </span>
         </Link>
 
@@ -47,7 +47,7 @@ export function AccountMobileHeader() {
             {user?.image ? (
               <img
                 src={user.image}
-                alt={user.name ?? "User"}
+                alt={user.name ?? t("account.mobileHeader.userAlt")}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (

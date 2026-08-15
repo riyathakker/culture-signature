@@ -109,19 +109,20 @@ export function Footer() {
       </Container>
       {/* Bottom Bar */}
       <Container className="bg-primary/20 py-4 mx-0!" size="full">
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-primary text-center md:text-left">
-            © {new Date().getFullYear()} Culture Signature. {t("shop.footer.brand.rights")}
-          </p>
+  <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
+    <p className="text-[10px] uppercase tracking-[0.2em] text-primary text-center sm:text-left">
+      © {new Date().getFullYear()} Culture Signature.{" "}
+      {t("shop.footer.brand.rights")}
+    </p>
 
-          <div className="flex items-center text-spaced text-primary">
-            <span className="flex items-center text-center md:text-right">
-              <Mail className="w-3 h-3 mr-2 shrink-0" />
-              jalpathakkar@culturesignature.com
-            </span>
-          </div>
-        </div>
-      </Container>
+    <div className="flex items-center text-spaced text-primary text-[10px] sm:text-xs">
+      <span className="flex items-center justify-center text-center break-all">
+        <Mail className="w-3 h-3 mr-2 shrink-0" />
+        jalpathakkar@culturesignature.com
+      </span>
+    </div>
+  </div>
+</Container>
     </footer>
   );
 }

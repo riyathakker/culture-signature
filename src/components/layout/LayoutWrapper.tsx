@@ -36,8 +36,8 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   return (
     <main className={cn(
       "flex-grow transition-all duration-500 pwa-main-content",
-      !isAdminPanel && !isAuthPage && !isAccount && "pt-[100px] md:pt-[160px]",
-      isAccount && "lg:pt-[160px]",
+      !isAdminPanel && !isAuthPage && !isAccount && " pt-[100px] md:pt-[115px]",
+      isAccount && "lg:pt-[110px]",
       showPWAHeader && "pwa-page-content",
     )}>
       {children}

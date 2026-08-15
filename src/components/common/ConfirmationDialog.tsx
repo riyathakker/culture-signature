@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface ConfirmationDialogProps {
   open: boolean;
@@ -30,11 +31,12 @@ export function ConfirmationDialog({
   onConfirm,
   title,
   description,
-  confirmText = "Continue",
-  cancelText = "Cancel",
+  confirmText,
+  cancelText,
   variant = "destructive",
   isLoading = false,
 }: ConfirmationDialogProps) {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -56,7 +58,7 @@ export function ConfirmationDialog({
             disabled={isLoading}
             className="uppercase tracking-widest text-[10px] font-bold"
           >
-            {cancelText}
+            {cancelText ?? t("common.cancel")}
           </Button>
           <Button
             variant={variant === "destructive" ? "destructive" : "default"}
@@ -67,7 +69,7 @@ export function ConfirmationDialog({
             disabled={isLoading}
             className="uppercase tracking-widest text-[10px] font-bold px-8"
           >
-            {confirmText}
+            {confirmText ?? t("common.continue")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -64,9 +64,9 @@ export default function OrdersPage() {
       {myOrders.length === 0 ? (
         <EmptyState
           icon={ShoppingBag}
-          title="No orders yet"
+          title={t("account.orders.emptyTitle")}
           description={t("account.orders.emptyDescription")}
-          action={{ label: "Discover Collection", href: ROUTES.COLLECTIONS }}
+          action={{ label: t("account.common.discoverCollection"), href: ROUTES.COLLECTIONS }}
           className="py-16"
         />
       ) : (
@@ -76,10 +76,10 @@ export default function OrdersPage() {
             <Table>
               <TableHeader className="bg-secondary/20">
                 <TableRow>
-                  <TableHead className="text-spaced-bold h-14">Order ID</TableHead>
-                  <TableHead className="text-spaced-bold h-14">Date</TableHead>
-                  <TableHead className="text-spaced-bold h-14">Status</TableHead>
-                  <TableHead className="text-spaced-bold h-14 text-right">Total</TableHead>
+                  <TableHead className="text-spaced-bold h-14">{t("account.orders.table.id")}</TableHead>
+                  <TableHead className="text-spaced-bold h-14">{t("account.orders.table.date")}</TableHead>
+                  <TableHead className="text-spaced-bold h-14">{t("account.orders.table.status")}</TableHead>
+                  <TableHead className="text-spaced-bold h-14 text-right">{t("account.orders.table.total")}</TableHead>
                   <TableHead className="h-14"></TableHead>
                 </TableRow>
               </TableHeader>

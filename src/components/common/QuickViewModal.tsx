@@ -156,7 +156,7 @@ export function QuickViewModal({ product, open, onOpenChange }: QuickViewModalPr
                       <IconButton
                         icon={Heart}
                         className="w-10 h-10 md:w-12 md:h-12 flex-shrink-0"
-                        aria-label="Add to wishlist"
+                        aria-label={t("common.addToWishlist")}
                       />
                     </div>
                   </div>

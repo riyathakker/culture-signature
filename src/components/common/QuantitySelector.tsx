@@ -1,5 +1,8 @@
+"use client";
+
 import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface QuantitySelectorProps {
   quantity: number;
@@ -18,6 +21,7 @@ export function QuantitySelector({
   min = 0,
   max = Infinity,
 }: QuantitySelectorProps) {
+  const { t } = useTranslation();
   const isSm = size === "sm";
   const isLg = size === "lg";
 
@@ -43,7 +47,7 @@ export function QuantitySelector({
           "hover:bg-secondary transition-colors flex items-center justify-center h-full disabled:opacity-30 disabled:cursor-not-allowed",
           isSm ? "w-8" : isLg ? "w-12" : "w-10"
         )}
-        aria-label="Decrease quantity"
+        aria-label={t("common.decreaseQuantity")}
       >
         <Minus className={cn(isSm ? "w-3 h-3" : "w-4 h-4")} />
       </button>
@@ -63,7 +67,7 @@ export function QuantitySelector({
           "hover:bg-secondary transition-colors flex items-center justify-center h-full disabled:opacity-30 disabled:cursor-not-allowed",
           isSm ? "w-8" : isLg ? "w-12" : "w-10"
         )}
-        aria-label="Increase quantity"
+        aria-label={t("common.increaseQuantity")}
       >
         <Plus className={cn(isSm ? "w-3 h-3" : "w-4 h-4")} />
       </button>

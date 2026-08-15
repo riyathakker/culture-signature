@@ -84,11 +84,11 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
           <div className="w-8 h-px bg-white/40" />
           <p className="font-heading italic text-white/90 text-3xl lg:text-4xl leading-snug">
             {view === "signup"
-              ? "Begin your journey\ninto timeless elegance."
-              : "Welcome back to\nthe world of fine luxury."}
+              ? t("auth.signup.editorial")
+              : t("auth.login.editorial")}
           </p>
           <p className="text-white/50 text-sm tracking-widest uppercase font-sans">
-            Culture Signature by Jalpa Thakkar
+            {t("auth.common.brandTagline")}
           </p>
         </div>
       </div>
@@ -117,7 +117,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
             className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors font-bold"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Back
+            {t("auth.common.back")}
           </Link>
         </div>
 
@@ -128,9 +128,9 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
             {/* Heading */}
             <div className="space-y-2">
               <p className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">
-                {view === "login" && "Welcome back"}
-                {view === "signup" && "New member"}
-                {view === "forgot-password" && "Account recovery"}
+                {view === "login" && t("auth.login.eyebrow")}
+                {view === "signup" && t("auth.signup.eyebrow")}
+                {view === "forgot-password" && t("auth.forgotPassword.eyebrow")}
               </p>
               <h2 className="font-heading text-3xl text-foreground leading-tight">
                 {view === "login" && t("auth.login.title")}
@@ -244,7 +244,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
             {/* Divider */}
             <div className="flex items-center gap-4">
               <div className="flex-1 h-px bg-border" />
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground/50 font-bold">or</span>
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground/50 font-bold">{t("auth.common.or")}</span>
               <div className="flex-1 h-px bg-border" />
             </div>
 
@@ -262,7 +262,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground font-serif italic">
-                  Already have an account?{" "}
+                  {t("auth.signup.hasAccount")}{" "}
                   <button
                     onClick={() => setView("login")}
                     className="not-italic font-sans font-bold text-primary hover:underline underline-offset-4"

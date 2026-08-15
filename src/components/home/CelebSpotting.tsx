@@ -20,6 +20,7 @@ const DEFAULT_IMAGES = [
 // ── Desktop: CSS marquee (unchanged) ─────────────────────────────────────────
 
 function DesktopMarquee({ images, onSelect }: { images: string[]; onSelect: (s: string) => void }) {
+  const { t } = useTranslation();
   const marqueeImgs = [...images, ...images];
   return (
     <div className="relative mt-10 w-full flex overflow-x-hidden">
@@ -32,7 +33,7 @@ function DesktopMarquee({ images, onSelect }: { images: string[]; onSelect: (s: 
           >
             <img
               src={src}
-              alt="Celebrity Spotting"
+              alt={t("home.celebSpotting.imageAlt")}
               className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -46,6 +47,7 @@ function DesktopMarquee({ images, onSelect }: { images: string[]; onSelect: (s: 
 // ── PWA: manual drag + JS auto-scroll ────────────────────────────────────────
 
 function PWAScroller({ images, onSelect }: { images: string[]; onSelect: (s: string) => void }) {
+  const { t } = useTranslation();
   const trackImages = [...images, ...images, ...images]; // triple for seamless loop
   const scrollRef = useRef<HTMLDivElement>(null);
   const autoRef = useRef<number | null>(null);
@@ -129,7 +131,7 @@ function PWAScroller({ images, onSelect }: { images: string[]; onSelect: (s: str
         >
           <img
             src={src}
-            alt="Celebrity Spotting"
+            alt={t("home.celebSpotting.imageAlt")}
             className="w-full h-full object-cover"
             draggable={false}
           />
@@ -149,7 +151,7 @@ export function CelebSpotting() {
 
   return (
     <>
-      <section className="py-10 pwa-section overflow-hidden border-t border-border/50">
+      <section className="py-10 pwa-section overflow-hidden bg-accent border-t border-border/50">
         <SectionTitle
           title={t("home.celebSpotting.title")}
           subtitle={t("home.celebSpotting.subtitle")}
@@ -170,7 +172,7 @@ export function CelebSpotting() {
         >
           <img
             src={selectedImage}
-            alt="Fullscreen"
+            alt={t("home.celebSpotting.fullscreenAlt")}
             className="max-w-full max-h-full object-contain rounded-md animate-in fade-in zoom-in-95 duration-300"
           />
           <button

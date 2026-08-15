@@ -76,8 +76,8 @@ export default function ShopPage() {
   return (
     <HomePageContainer
       label={[{ label: t("shop.subtitle") }]}
-      heading={searchQuery.trim() ? `Results for "${searchQuery}"` : t("shop.title")}
-      description={searchQuery.trim() ? `${sortedProducts.length} item${sortedProducts.length !== 1 ? "s" : ""} found` : t("shop.description")}
+      heading={searchQuery.trim() ? t("shop.resultsFor", { query: searchQuery }) : t("shop.title")}
+      description={searchQuery.trim() ? t("shop.itemsFound", { count: sortedProducts.length }) : t("shop.description")}
     >
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Desktop Sidebar */}

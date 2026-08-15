@@ -37,12 +37,12 @@ function formatDateRange(date: string | Date, endDate?: string | Date | null) {
 // ─── Limited drops ────────────────────────────────────────────────────────────
 
 function LimitedDropsStrip({ drops }: { drops: Product[] }) {
-  if (!drops.length) return null;
   const { t } = useTranslation();
+  if (!drops.length) return null;
   return (
-    <section className="py-10 border-y border-border/40">
+    <section className="py-10 bg-muted/50 border-y border-border/40">
       <Container>
-        <SectionTitle title={t("home.limitedDrops.title")} subtitle={t("home.limitedDrops.subtitle")} align="center" />
+        <SectionTitle title={t("home.limitedDrops.title")} subtitle={t("home.limitedDrops.subtitle")} />
 
         <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
           {drops.map((product, i) => (
@@ -52,12 +52,12 @@ function LimitedDropsStrip({ drops }: { drops: Product[] }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="relative min-w-[220px] max-w-[220px] flex-shrink-0"
+              className="relative min-w-[160px] max-w-[160px] md:min-w-[220px] md:max-w-[220px] flex-shrink-0"
             >
               {product.stock > 0 && product.stock <= 5 && (
                 <div className="absolute top-3 left-3 z-10 pointer-events-none">
                   <span className="text-[8px] uppercase tracking-widest font-bold bg-primary text-primary-foreground px-2 py-1">
-                    {product.stock} left
+                    {t("home.limitedDrops.stockLeft", { count: product.stock })}
                   </span>
                 </div>
               )}
@@ -73,6 +73,7 @@ function LimitedDropsStrip({ drops }: { drops: Product[] }) {
 // ─── Exhibitions ──────────────────────────────────────────────────────────────
 
 function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
+  const { t } = useTranslation();
   const images = ex.images ?? [];
   const [idx, setIdx] = useState(0);
   const derivedStatus = getExhibitionStatus(ex.date, ex.endDate);
@@ -136,7 +137,7 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
           {derivedStatus === "ONGOING" && (
             <span className="w-1.5 h-1.5 rounded-full bg-green-300 animate-pulse flex-shrink-0" />
           )}
-          {derivedStatus}
+          {t(`home.exhibitions.status.${derivedStatus.toLowerCase()}`)}
         </span>
 
         {/* Carousel dots */}
@@ -146,7 +147,7 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
               <button
                 key={k}
                 type="button"
-                aria-label={`Image ${k + 1}`}
+                aria-label={t("home.exhibitions.imageAria", { n: k + 1 })}
                 onClick={() => setIdx(k)}
                 className={cn(
                   "h-1.5 rounded-full transition-all duration-300 bg-white",
@@ -172,8 +173,6 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
         </div>
       </div>
 
-      {/* Card content — fills the remaining fixed height; text is clamped so
-          description length can't change the card size */}
       <div className="p-4 space-y-2.5 flex-1 min-h-0 overflow-hidden">
         <h3 className="font-heading text-base tracking-tight leading-tight line-clamp-2 text-foreground">
           {ex.title}
@@ -208,7 +207,7 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
           >
             <MapPin className="w-3.5 h-3.5 flex-shrink-0 group-hover/loc:-translate-y-0.5 transition-transform" />
             <span className="underline underline-offset-4 decoration-primary/40 group-hover/loc:decoration-primary">
-              View location on map
+              {t("home.exhibitions.viewLocation")}
             </span>
           </a>
         )}
@@ -218,12 +217,13 @@ function ExhibitionCard({ ex, i }: { ex: Exhibition; i: number }) {
 }
 
 function ExhibitionsStrip({ exhibitions }: { exhibitions: Exhibition[] }) {
+  const { t } = useTranslation();
   if (!exhibitions.length) return null;
 
   return (
-    <section className="relative py-10 md:py-16 bg-secondary/50 border-y border-border/40 overflow-hidden">
+    <section className="relative py-10 md:py-16 bg-background border-y border-border/40 overflow-hidden">
       <Container className="relative">
-          <SectionTitle title="Exhibitions & Shoots" subtitle="Where to Find Us" align="center" />
+          <SectionTitle title={t("home.exhibitions.title")} subtitle={t("home.exhibitions.subtitle")} />
         <div className="flex items-start gap-5 overflow-x-auto pb-3 no-scrollbar">
           {exhibitions.map((ex, i) => (
             <ExhibitionCard key={ex.id} ex={ex} i={i} />
@@ -240,26 +240,25 @@ import { SectionTitle } from "../common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
 import { ExhibitionsSkeleton, LimitedDropsSkeleton } from "@/components/home/HomeSkeletons";
 
-export function ContentSection() {
-  const { limitedDrops, exhibitions, isLoading, fetchContent } = useContentStore();
+export function ExhibitionsSection() {
+  const { exhibitions, isLoading, fetchContent } = useContentStore();
 
   useEffect(() => { fetchContent(); }, []);
 
-  if (isLoading && !limitedDrops.length && !exhibitions.length) {
-    return (
-      <>
-        <ExhibitionsSkeleton />
-        <LimitedDropsSkeleton />
-      </>
-    );
-  }
+  if (isLoading && !exhibitions.length) return <ExhibitionsSkeleton />;
+  // No exhibitions this week — hide the section entirely.
+  if (!exhibitions.length) return null;
 
-  if (!limitedDrops.length && !exhibitions.length) return null;
+  return <ExhibitionsStrip exhibitions={exhibitions} />;
+}
 
-  return (
-    <>
-      <ExhibitionsStrip exhibitions={exhibitions} />
-      <LimitedDropsStrip drops={limitedDrops} />
-    </>
-  );
+export function LimitedDropsSection() {
+  const { limitedDrops, isLoading, fetchContent } = useContentStore();
+
+  useEffect(() => { fetchContent(); }, []);
+
+  if (isLoading && !limitedDrops.length) return <LimitedDropsSkeleton />;
+  if (!limitedDrops.length) return null;
+
+  return <LimitedDropsStrip drops={limitedDrops} />;
 }

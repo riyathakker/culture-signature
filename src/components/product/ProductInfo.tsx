@@ -105,7 +105,7 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
                 size="icon"
                 className="rounded-full"
                 onClick={toggleWishlist}
-                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                aria-label={isWishlisted ? t("shop.product.details.removeFromWishlist") : t("shop.product.details.addToWishlist")}
               >
                 <Heart className={cn("w-5 h-5 transition-all", isWishlisted ? "fill-primary text-primary scale-110" : "")} />
               </Button>
@@ -115,7 +115,7 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
               size="icon"
               className="rounded-full"
               onClick={() => setShareOpen(true)}
-              aria-label="Share product"
+              aria-label={t("shop.product.details.shareAria")}
             >
               <Share2 className="w-5 h-5" />
             </Button>
@@ -134,12 +134,12 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
       {colors.length > 0 && (
         <div className="space-y-2">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-            Color: <span className="text-foreground font-bold">{activeColor?.name || ""}</span>
+            {t("shop.product.details.color")}: <span className="text-foreground font-bold">{activeColor?.name || ""}</span>
             {activeColor && effStock > 0 && effStock <= 5 && (
-              <span className="ml-2 text-primary/70 normal-case tracking-normal">Only {effStock} left</span>
+              <span className="ml-2 text-primary/70 normal-case tracking-normal">{t("shop.product.details.onlyLeft", { count: effStock })}</span>
             )}
             {activeColor && effStock === 0 && (
-              <span className="ml-2 text-destructive normal-case tracking-normal">Sold out</span>
+              <span className="ml-2 text-destructive normal-case tracking-normal">{t("shop.product.details.soldOut")}</span>
             )}
           </p>
           <div className="flex items-center gap-2 flex-wrap">
@@ -150,7 +150,7 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
                 <button
                   key={i}
                   type="button"
-                  title={soldOut ? `${c.name} — sold out` : c.name}
+                  title={soldOut ? `${c.name} — ${t("shop.product.details.soldOut")}` : c.name}
                   onClick={() => {
                     setActiveColor(c);
                     onColorChange?.(c.images ?? []);
@@ -188,14 +188,14 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
                 if (notified) return;
                 localStorage.setItem(`stock_notify_${product.id}`, "1");
                 setNotified(true);
-                toast.success("We'll notify you when this piece is back in stock.");
+                toast.success(t("shop.product.details.notify.success"));
               }}
               variant="outline"
               className="w-full h-12 uppercase tracking-[0.2em] text-xs border-primary gap-2"
               disabled={notified}
             >
               {notified ? <BellRing className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
-              {notified ? "You'll be notified" : "Notify me when available"}
+              {notified ? t("shop.product.details.notify.notified") : t("shop.product.details.notify.notifyMe")}
             </Button>
           ) : (
             <div className="flex gap-3">

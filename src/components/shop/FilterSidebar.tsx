@@ -5,6 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useCategoryStore } from "@/store/categoryStore";
+import { useTranslation } from "@/context/TranslationContext";
 
 export interface FilterDraft {
   categoryIds: string[];
@@ -45,6 +46,7 @@ export function FilterSidebar({
   getFilteredCount,
   onApply,
 }: FilterSidebarProps) {
+  const { t } = useTranslation();
   const { categories, fetchCategories } = useCategoryStore();
 
   // Draft state — user edits these; only flushed to parent on Apply
@@ -99,13 +101,13 @@ export function FilterSidebar({
   return (
     <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
       <div>
-        <h3 className="text-luxury mb-6 font-heading text-2xl">Filter By</h3>
+        <h3 className="text-luxury mb-6 font-heading text-2xl">{t("shop.filter.title")}</h3>
 
         <Accordion defaultValue={["availability", "price"]} className="w-full">
 
           <AccordionItem value="availability" className="border-b border-muted-foreground/10">
             <AccordionTrigger className="hover:no-underline uppercase tracking-widest text-sm py-3">
-              Availability
+              {t("shop.filter.availability")}
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-3 pt-4 px-1">
@@ -117,7 +119,7 @@ export function FilterSidebar({
                     className="accent-primary h-4 w-4 cursor-pointer"
                   />
                   <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground group-hover:text-foreground transition-colors">
-                    In Stock Only
+                    {t("shop.filter.inStock")}
                   </span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer group">
@@ -128,7 +130,7 @@ export function FilterSidebar({
                     className="accent-primary h-4 w-4 cursor-pointer"
                   />
                   <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground group-hover:text-foreground transition-colors">
-                    On Sale
+                    {t("shop.filter.onSale")}
                   </span>
                 </label>
               </div>
@@ -138,7 +140,7 @@ export function FilterSidebar({
           {showCategories && (
             <AccordionItem value="categories" className="border-b border-muted-foreground/10">
               <AccordionTrigger className="hover:no-underline uppercase tracking-widest text-sm py-3">
-                Categories
+                {t("shop.filter.categories")}
                 {draftCategoryIds.length > 0 && (
                   <span className="ml-2 text-[10px] bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
                     {draftCategoryIds.length}
@@ -161,7 +163,7 @@ export function FilterSidebar({
                     </label>
                   ))}
                   {categories.length === 0 && (
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-widest">No categories found</p>
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-widest">{t("shop.filter.noCategories")}</p>
                   )}
                 </div>
               </AccordionContent>
@@ -170,7 +172,7 @@ export function FilterSidebar({
 
           <AccordionItem value="price" className="border-b border-muted-foreground/10">
             <AccordionTrigger className="hover:no-underline uppercase tracking-widest text-sm py-3">
-              Price Range
+              {t("shop.filter.priceRange")}
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-6 pt-4 px-1">
@@ -195,21 +197,21 @@ export function FilterSidebar({
       <div className="space-y-3 pt-4 border-t border-muted-foreground/10">
         {previewCount !== undefined && (
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold text-center">
-            {previewCount} {previewCount === 1 ? "Product" : "Products"}
+            {previewCount} {previewCount === 1 ? t("shop.filter.product") : t("shop.filter.products")}
           </p>
         )}
         <Button
           onClick={handleApply}
           className="w-full py-5 uppercase tracking-[0.2em] text-xs h-auto"
         >
-          Apply Filters
+          {t("shop.filter.apply")}
         </Button>
         {hasActiveFilters && (
           <button
             onClick={handleClear}
             className="w-full text-[10px] uppercase tracking-[0.2em] font-bold text-primary hover:opacity-70 transition-opacity cursor-pointer text-center"
           >
-            Clear All Filters {draftFilterCount > 0 ? `(${draftFilterCount})` : ""}
+            {t("shop.filter.clearAll")} {draftFilterCount > 0 ? `(${draftFilterCount})` : ""}
           </button>
         )}
       </div>

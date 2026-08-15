@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface Props {
   excludeId?: string;
@@ -11,6 +12,7 @@ interface Props {
 
 export function RecentlyViewed({ excludeId }: Props) {
   const { products, hydrate } = useRecentlyViewedStore();
+  const { t } = useTranslation();
   useEffect(() => { hydrate(); }, [hydrate]);
   const visible = products.filter((p) => p.id !== excludeId);
 
@@ -19,7 +21,7 @@ export function RecentlyViewed({ excludeId }: Props) {
   return (
     <div className="mt-16">
       <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mb-5">
-        Recently Viewed
+        {t("shop.product.recentlyViewed")}
       </p>
       <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
         {visible.map((p) => {

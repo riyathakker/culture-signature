@@ -20,6 +20,7 @@ import { Plus, MapPin, Loader2 } from "lucide-react";
 
 import { useAddressStore } from "@/store/addressStore";
 import { LocationSelector } from "@/components/common/LocationSelector";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface AddressFormValues {
   firstName: string;
@@ -40,6 +41,7 @@ interface AddressDialogProps {
 
 export function AddressDialog({ address, trigger }: AddressDialogProps) {
   const { createAddress, updateAddress } = useAddressStore();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -76,12 +78,12 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
         await createAddress(data);
       }
 
-      toast.success(address ? "Address updated" : "Address added");
+      toast.success(address ? t("account.addresses.messages.updated") : t("account.addresses.messages.added"));
       setOpen(false);
       if (!address) reset();
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+      toast.error(error.message || t("account.common.error"));
     } finally {
       setIsLoading(false);
     }
@@ -92,14 +94,14 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
       <DialogTrigger>
         {trigger || (
           <Button className="uppercase tracking-widest text-[10px] font-bold h-10 gap-2">
-            <Plus className="w-4 h-4" /> Add New
+            <Plus className="w-4 h-4" /> {t("account.addresses.addNew")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] max-h-[90dvh] flex flex-col">
         <DialogHeader className="shrink-0">
           <DialogTitle className="font-heading text-2xl">
-            {address ? "Edit Address" : "Add New Address"}
+            {address ? t("account.addresses.editTitle") : t("account.addresses.addTitle")}
           </DialogTitle>
         </DialogHeader>
 
@@ -107,21 +109,21 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-xs font-bold uppercase tracking-widest">First Name</Label>
+                <Label htmlFor="firstName" className="text-xs font-bold uppercase tracking-widest">{t("account.addresses.form.firstName")}</Label>
                 <Input
                   id="firstName"
-                  placeholder="John"
-                  {...register("firstName", { required: "First name is required" })}
+                  placeholder={t("account.addresses.form.placeholders.firstName")}
+                  {...register("firstName", { required: t("account.addresses.form.validation.firstName") })}
                   className="border-muted-foreground/20"
                 />
                 {errors.firstName && <p className="text-xs text-destructive">{errors.firstName.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName" className="text-xs font-bold uppercase tracking-widest">Last Name</Label>
+                <Label htmlFor="lastName" className="text-xs font-bold uppercase tracking-widest">{t("account.addresses.form.lastName")}</Label>
                 <Input
                   id="lastName"
-                  placeholder="Doe"
-                  {...register("lastName", { required: "Last name is required" })}
+                  placeholder={t("account.addresses.form.placeholders.lastName")}
+                  {...register("lastName", { required: t("account.addresses.form.validation.lastName") })}
                   className="border-muted-foreground/20"
                 />
                 {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
@@ -129,21 +131,21 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="street" className="text-xs font-bold uppercase tracking-widest">Street Address</Label>
+              <Label htmlFor="street" className="text-xs font-bold uppercase tracking-widest">{t("account.addresses.form.street")}</Label>
               <Input
                 id="street"
-                placeholder="123 Luxury Lane"
-                {...register("street", { required: "Street is required" })}
+                placeholder={t("account.addresses.form.placeholders.street")}
+                {...register("street", { required: t("account.addresses.form.validation.street") })}
                 className="border-muted-foreground/20"
               />
               {errors.street && <p className="text-xs text-destructive">{errors.street.message}</p>}
             </div>
 
             {/* Hidden inputs to register validation rules */}
-            <input type="hidden" {...register("country", { required: "Country is required" })} />
-            <input type="hidden" {...register("state", { required: "State is required" })} />
-            <input type="hidden" {...register("city", { required: "City is required" })} />
-            <input type="hidden" {...register("zipCode", { required: "Zip code is required" })} />
+            <input type="hidden" {...register("country", { required: t("account.addresses.form.validation.country") })} />
+            <input type="hidden" {...register("state", { required: t("account.addresses.form.validation.state") })} />
+            <input type="hidden" {...register("city", { required: t("account.addresses.form.validation.city") })} />
+            <input type="hidden" {...register("zipCode", { required: t("account.addresses.form.validation.zipCode") })} />
 
             <LocationSelector
               values={{
@@ -162,11 +164,11 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
             />
 
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-widest">Phone Number</Label>
+              <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-widest">{t("account.addresses.form.phone")}</Label>
               <Input
                 id="phone"
-                placeholder="+91 9876543210"
-                {...register("phone", { required: "Phone number is required" })}
+                placeholder={t("account.addresses.form.placeholders.phone")}
+                {...register("phone", { required: t("account.addresses.form.validation.phone") })}
                 className="border-muted-foreground/20"
               />
               {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
@@ -180,7 +182,7 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
                 className="border-muted-foreground/30"
               />
               <Label htmlFor="isDefault" className="text-xs font-medium text-muted-foreground cursor-pointer">
-                Set as default address
+                {t("account.addresses.form.setDefaultLabel")}
               </Label>
             </div>
           </div>
@@ -195,7 +197,7 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
             className="w-full uppercase tracking-widest text-xs font-bold h-12 gap-2"
           >
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
-            {address ? "Update Address" : "Save Address"}
+            {address ? t("account.addresses.form.update") : t("account.addresses.form.save")}
           </Button>
         </DialogFooter>
       </DialogContent>

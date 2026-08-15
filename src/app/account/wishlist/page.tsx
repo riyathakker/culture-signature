@@ -40,9 +40,9 @@ export default function AccountWishlistPage() {
       {items.length === 0 ? (
         <EmptyState
           icon={Heart}
-          title="Your wishlist is empty"
+          title={t("account.wishlist.emptyTitle")}
           description={t("account.wishlist.emptyDescription")}
-          action={{ label: "Explore Collection", href: ROUTES.COLLECTIONS }}
+          action={{ label: t("account.wishlist.exploreCollection"), href: ROUTES.COLLECTIONS }}
           className="py-16"
         />
       ) : (

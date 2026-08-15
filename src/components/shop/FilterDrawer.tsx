@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { FilterSidebar, FilterSidebarProps } from "./FilterSidebar";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/context/TranslationContext";
 
 interface FilterDrawerProps extends FilterSidebarProps {
   filteredCount?: number;
@@ -19,6 +20,7 @@ interface FilterDrawerProps extends FilterSidebarProps {
 }
 
 export function FilterDrawer(props: FilterDrawerProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [mountKey, setMountKey] = useState(0);
 
@@ -41,7 +43,7 @@ export function FilterDrawer(props: FilterDrawerProps) {
             variant="outline"
             className="lg:hidden flex items-center gap-2 h-10 px-4 uppercase tracking-widest text-[10px] relative"
           >
-            <SlidersHorizontal className="w-4 h-4" /> Filter
+            <SlidersHorizontal className="w-4 h-4" /> {t("shop.filter.filter")}
             {activeCount > 0 && (
               <span className={cn(
                 "absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
@@ -54,7 +56,7 @@ export function FilterDrawer(props: FilterDrawerProps) {
       />
       <SheetContent side="left" className="w-full sm:max-w-xs flex flex-col p-0">
         <SheetHeader className="p-6 border-b">
-          <SheetTitle className="font-heading text-2xl">Filter Selection</SheetTitle>
+          <SheetTitle className="font-heading text-2xl">{t("shop.filter.selection")}</SheetTitle>
         </SheetHeader>
         <div className="p-6 flex-1 overflow-y-auto">
           <FilterSidebar

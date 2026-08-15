@@ -47,17 +47,11 @@ export function NewArrivals() {
           <ProductRowSkeleton width={220} count={6} />
         ) : (
           <>
-            {/* Single horizontal row (smaller cards, like Limited Drops) */}
-            <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 md:max-w-6xl md:mx-auto pwa-grid-to-scroll">
               {newArrivals
                 .slice(0, displayLimit)
                 .map((product) => (
-                  <div
-                    key={product.id}
-                    className="min-w-[220px] max-w-[220px] flex-shrink-0"
-                  >
-                    <ProductCard product={product} hideActions />
-                  </div>
+                  <ProductCard key={product.id} product={product} hideActions />
                 ))}
             </div>
             {newArrivals.length > displayLimit && (

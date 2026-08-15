@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AddressDialog } from "./AddressDialog";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
+import { useTranslation } from "@/context/TranslationContext";
 
 import { useAddressStore } from "@/store/addressStore";
 
@@ -15,6 +16,7 @@ interface AddressActionsProps {
 
 export function AddressActions({ address }: AddressActionsProps) {
   const { deleteAddress, setDefaultAddress } = useAddressStore();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const router = useRouter();
@@ -24,11 +26,11 @@ export function AddressActions({ address }: AddressActionsProps) {
     try {
       await deleteAddress(address.id);
 
-      toast.success("Address deleted");
+      toast.success(t("account.addresses.messages.deleted"));
       setIsDeleteDialogOpen(false);
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(t("account.common.error"));
     } finally {
       setIsLoading(false);
     }
@@ -39,10 +41,10 @@ export function AddressActions({ address }: AddressActionsProps) {
     try {
       await setDefaultAddress(address);
 
-      toast.success("Default address updated");
+      toast.success(t("account.addresses.messages.defaultUpdated"));
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(t("account.common.error"));
     } finally {
       setIsLoading(false);
     }
@@ -72,7 +74,7 @@ export function AddressActions({ address }: AddressActionsProps) {
         {address.isDefault ? (
           <div className="flex items-center gap-1.5 text-spaced-bold font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-full w-fit">
             <Check className="w-3 h-3" />
-            Default Shipping
+            {t("account.addresses.defaultShipping")}
           </div>
         ) : (
           <button
@@ -85,7 +87,7 @@ export function AddressActions({ address }: AddressActionsProps) {
             ) : (
               <MapPin className="w-3 h-3 group-hover/btn:animate-bounce" />
             )}
-            Set as Default
+            {t("account.addresses.setDefault")}
           </button>
         )}
       </div>
@@ -94,9 +96,9 @@ export function AddressActions({ address }: AddressActionsProps) {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         onConfirm={onDelete}
-        title="Remove Address"
-        description={`Are you sure you want to remove "${address.street}" from your shipping collection?`}
-        confirmText="Yes, Remove"
+        title={t("account.addresses.removeTitle")}
+        description={t("account.addresses.removeDescription", { street: address.street })}
+        confirmText={t("account.addresses.removeConfirm")}
         isLoading={isLoading}
       />
     </div>
