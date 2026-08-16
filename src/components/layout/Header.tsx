@@ -2,7 +2,7 @@
 
 import { AnnouncementBar } from "./AnnouncementBar";
 import { Navbar } from "./Navbar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,15 +10,27 @@ import { usePathname } from "next/navigation";
 
 export function Header() {
   const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   const isAdminPage = pathname?.startsWith("/admin");
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY.current;
+
+      if (currentScrollY < 80) {
+        setHidden(false);
+      } else if (delta > 5) {
+        setHidden(true);
+      } else if (delta < -5) {
+        setHidden(false);
+      }
+
+      lastScrollY.current = currentScrollY;
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -26,8 +38,8 @@ export function Header() {
 
   return (
     <header className={cn(
-      "fixed top-0 left-0 w-full z-40 transition-all duration-500",
-      isScrolled ? "-translate-y-[40px]" : "translate-y-0"
+      "fixed top-0 left-0 w-full z-40 transition-transform duration-300 ease-in-out",
+      hidden ? "-translate-y-full" : "translate-y-0"
     )}>
       <AnimatePresence>
           <motion.div 

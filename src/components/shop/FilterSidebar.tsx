@@ -194,7 +194,7 @@ export function FilterSidebar({
         </Accordion>
       </div>
 
-      <div className="space-y-3 pt-4 border-t border-muted-foreground/10">
+      <div className="space-y-3 border-muted-foreground/10">
         {previewCount !== undefined && (
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold text-center">
             {previewCount} {previewCount === 1 ? t("shop.filter.product") : t("shop.filter.products")}
@@ -202,7 +202,7 @@ export function FilterSidebar({
         )}
         <Button
           onClick={handleApply}
-          className="w-full py-5 uppercase tracking-[0.2em] text-xs h-auto"
+          className="w-full py-3 uppercase tracking-[0.2em] text-xs h-auto"
         >
           {t("shop.filter.apply")}
         </Button>

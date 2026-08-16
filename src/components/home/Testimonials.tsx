@@ -68,7 +68,7 @@ export function Testimonials() {
   const current = testimonials[safeIndex];
 
   return (
-    <section className="py-14 border-t border-border/50 bg-background">
+    <section className="pwa-hide py-14 border-t border-border/50 bg-background">
       <Container>
         <SectionTitle title={t("home.testimonials.title")} subtitle={t("home.testimonials.subtitle")} />
         <motion.div
