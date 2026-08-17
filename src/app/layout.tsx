@@ -34,7 +34,8 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Culture Signature by Jalpa Thakkar | Luxury Jewellery & Timepieces",
   description: "Culture Signature by Jalpa Thakkar — experience the pinnacle of artisanal craftsmanship and timeless elegance.",
-  manifest: "/manifest.json",
+  //  manifest: "/manifest.json", //restore when lauch
+
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
