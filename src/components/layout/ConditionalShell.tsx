@@ -10,8 +10,6 @@ import { PWAPageHeader } from "@/components/pwa/PWAPageHeader";
 
 const AUTH_PATHS = ["/login", "/signup"];
 
-// While the site is in "Coming Soon" mode, hide the storefront chrome
-// (header/footer/nav) and render only the page. Set to false to restore.
 const COMING_SOON = true;
 
 export function ConditionalShell({ children }: { children: React.ReactNode }) {

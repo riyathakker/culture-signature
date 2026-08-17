@@ -175,6 +175,15 @@ model CartItem {
   @@unique([userId, productId, color])
 }
 
+model NotifySubscriber {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  couponCode String?
+  notified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  isDeleted  Boolean  @default(false)
+}
+
 model Exhibition {
   id          String           @id @default(cuid())
   title       String

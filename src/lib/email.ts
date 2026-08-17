@@ -169,6 +169,68 @@ export async function sendOrderStatusUpdate(order: OrderLike, customerEmail?: st
   await Promise.all(tasks);
 }
 
+function couponBox(code: string, percent: number, expiryDate?: Date) {
+  const expiry = expiryDate
+    ? expiryDate.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
+    : null;
+  return `
+    <div style="margin:24px 0;padding:20px;border:1px dashed #caa04f;border-radius:8px;text-align:center;background:#fbf7ee;">
+      <p style="margin:0 0 6px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#888;">Your ${percent}% coupon</p>
+      <p style="margin:0;font-size:26px;font-weight:bold;letter-spacing:3px;color:#1a1a1a;">${code}</p>
+      <p style="margin:10px 0 0;font-size:12px;color:#888;">${expiry ? `Valid until ${expiry} · ` : ""}single use</p>
+    </div>`;
+}
+
+/** Waitlist signup → confirmation email (no coupon; the coupon comes at launch). */
+export async function sendWaitlistWelcome(args: { to: string }) {
+  await send({
+    to: args.to,
+    subject: "You're on the Culture Signature waitlist ✦",
+    html: layout(
+      "You're on the list ✦",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+         Thank you for joining the Culture Signature waitlist. You're now among the first to know
+         when we launch — and when we do, you'll receive an <strong>exclusive discount</strong> on your first order.
+       </p>
+       <p style="font-size:14px;line-height:1.6;color:#444;">
+         Something timeless is being crafted. We can't wait to share it with you.
+       </p>`
+    ),
+  });
+}
+
+/** Launch day → announcement email carrying the subscriber's personal coupon. */
+export async function sendLaunchAnnouncement(args: {
+  to: string;
+  code: string;
+  percent: number;
+  expiryDate?: Date;
+  shopUrl?: string;
+}) {
+  const { to, code, percent, expiryDate, shopUrl } = args;
+  const cta = shopUrl
+    ? `<div style="text-align:center;margin:24px 0;">
+         <a href="${shopUrl}" style="display:inline-block;padding:14px 32px;background:#1a1a1a;color:#fff;text-decoration:none;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Shop the collection</a>
+       </div>`
+    : "";
+  await send({
+    to,
+    subject: `We're live — here's ${percent}% off your first order`,
+    html: layout(
+      "We've launched ✦",
+      `<p style="font-size:14px;line-height:1.6;color:#444;">
+         The wait is over — Culture Signature is now open. As a thank you for joining early,
+         here's <strong>${percent}% off your first order</strong>.
+       </p>
+       ${couponBox(code, percent, expiryDate)}
+       <p style="font-size:14px;line-height:1.6;color:#444;">
+         Apply the code at checkout to claim your discount.
+       </p>
+       ${cta}`
+    ),
+  });
+}
+
 type InquiryLike = {
   id: string;
   name: string;
