@@ -4,11 +4,27 @@ import { authConfig } from "@/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
+// While true, the whole site is in "Coming Soon" mode: every page route is
+// redirected back to "/", which renders the Coming Soon page. Set to false to
+// restore normal routing (also flip COMING_SOON in ConditionalShell + page.tsx).
+const COMING_SOON = true;
+
 export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const role = (req.auth?.user as any)?.role;
   const { nextUrl } = req;
   const path = nextUrl.pathname;
+
+  // Coming Soon gate: route everything back to "/". Static assets (any path
+  // with a file extension, e.g. manifest.json, /icons/*.png, /sw.js) and "/"
+  // itself pass through so the page and PWA assets still load.
+  if (COMING_SOON) {
+    if (path === "/" || path.includes(".")) {
+      return NextResponse.next();
+    }
+    return NextResponse.redirect(new URL("/", nextUrl));
+  }
+
+  const isLoggedIn = !!req.auth;
+  const role = (req.auth?.user as any)?.role;
 
   const isAccountRoute = path.startsWith("/account");
   const isAdminRoute = path.startsWith("/admin");
