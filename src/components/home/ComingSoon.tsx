@@ -84,6 +84,8 @@ export function ComingSoon() {
           background:
             radial-gradient(120% 90% at 50% 8%, rgba(168, 88, 76, 0.45) 0%, rgba(168, 88, 76, 0) 55%),
             radial-gradient(90% 70% at 50% 100%, rgba(212, 175, 110, 0.18) 0%, rgba(0, 0, 0, 0) 60%),
+            linear-gradient(180deg, rgba(51, 35, 31, 0.82) 0%, rgba(36, 23, 19, 0.86) 55%, rgba(28, 18, 16, 0.9) 100%),
+            url("/ComingSoon_BG.png") center / cover no-repeat,
             linear-gradient(180deg, #33231f 0%, #241713 55%, #1c1210 100%);
           color: #f3ece0;
           isolation: isolate;
@@ -144,13 +146,30 @@ export function ComingSoon() {
           filter: blur(6px);
           animation: cs-pulse 6s ease-in-out infinite;
         }
-        /* thin static ring around the mandala */
+        /* rotating gradient ring around the mandala */
         .cs-halo::after {
           content: "";
           position: absolute;
           inset: -6%;
           border-radius: 50%;
-          border: 1px solid rgba(212,175,110,0.22);
+          padding: 1.5px;
+          background: conic-gradient(
+            from 0deg,
+            rgba(212,175,110,0) 0deg,
+            rgba(212,175,110,0.15) 60deg,
+            rgba(246,236,214,0.9) 150deg,
+            rgba(212,175,110,0.15) 240deg,
+            rgba(212,175,110,0) 360deg
+          );
+          -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+          mask-composite: exclude;
+          animation: cs-spin 8s linear infinite;
         }
         .cs-mandala {
           width: 100%;
@@ -188,6 +207,7 @@ export function ComingSoon() {
           font-family: var(--font-playfair), Georgia, serif;
           font-weight: 500;
           margin-top: 1.2rem;
+          padding-bottom: 0.5rem;
           font-size: clamp(2.1rem, 7vw, 4rem);
           line-height: 1.02;
           background: linear-gradient(100deg, #e9d3a3 0%, #f6ecd6 30%, #caa04f 55%, #f6ecd6 80%, #e9d3a3 100%);
@@ -380,6 +400,9 @@ export function ComingSoon() {
           animation: cs-twinkle var(--dur, 3.6s) ease-in-out infinite;
         }
 
+        @keyframes cs-spin {
+          to { transform: rotate(360deg); }
+        }
         @keyframes cs-pulse {
           0%, 100% { opacity: 0.75; transform: scale(1); }
           50% { opacity: 1; transform: scale(1.06); }
