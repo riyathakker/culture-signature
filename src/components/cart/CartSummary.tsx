@@ -17,6 +17,27 @@ import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
+
+const RAZORPAY_SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+
+// Inject the Razorpay checkout script once and resolve when it's ready.
+function loadRazorpayScript(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (typeof window !== "undefined" && window.Razorpay) return resolve();
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_SCRIPT_SRC}"]`);
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () => reject(new Error("Failed to load payment gateway")));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = RAZORPAY_SCRIPT_SRC;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load payment gateway"));
+    document.body.appendChild(script);
+  });
+}
+
 interface OrderSummaryProps {
   variant?: "cart" | "checkout";
 }
@@ -78,7 +99,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
     setIsFinalizing(true);
     try {
-      const orderResponse = await fetch("/api/cashfree/order", {
+      const orderResponse = await fetch("/api/razorpay/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,39 +116,37 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         throw new Error(err.error || t("cart.summary.messages.paymentOrderError"));
       }
 
-      const { payment_session_id, cf_order_id } = await orderResponse.json();
+      const { razorpay_order_id, amount, currency, key_id } = await orderResponse.json();
 
-      const { load } = await import("@cashfreepayments/cashfree-js");
-      const cashfree = await load({
-        mode: (process.env.NEXT_PUBLIC_CASHFREE_ENVIRONMENT as "sandbox" | "production") || "sandbox",
-      });
+      await loadRazorpayScript();
 
-      const result = await cashfree.checkout({
-        paymentSessionId: payment_session_id,
-        redirectTarget: "_modal",
-      });
-
-      if (result.error) {
-        throw new Error(result.error.message || t("cart.summary.messages.paymentFailed"));
-      }
-
-      setProcessingStage("verifying");
-
-      let verifyData: any = null;
-      for (let attempt = 0; attempt < 3; attempt++) {
-        if (attempt > 0) await new Promise((r) => setTimeout(r, 1500));
-        const verifyResponse = await fetch("/api/cashfree/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cf_order_id }),
+      // Razorpay checkout is callback-based; wrap it in a promise that resolves
+      // with the signed payment response on success and rejects when the user
+      // dismisses the modal or the payment fails.
+      const payment = await new Promise<any>((resolve, reject) => {
+        const rzp = new window.Razorpay({
+          key: key_id,
+          order_id: razorpay_order_id,
+          amount,
+          currency,
+          name: "Culture Signature",
+          description: t("cart.summary.title"),
+          prefill: {
+            name: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+            email: session?.user?.email || "",
+            contact: shippingAddress.phone,
+          },
+          theme: { color: "#95473D" },
+          handler: (response: any) => resolve(response),
+          modal: {
+            ondismiss: () => reject(new Error(t("cart.summary.messages.paymentFailed"))),
+          },
         });
-        verifyData = await verifyResponse.json();
-        if (verifyData.success) break;
-      }
-
-      if (!verifyData?.success) {
-        throw new Error(t("cart.summary.messages.verificationFailed"));
-      }
+        rzp.on("payment.failed", (resp: any) =>
+          reject(new Error(resp?.error?.description || t("cart.summary.messages.paymentFailed")))
+        );
+        rzp.open();
+      });
 
       setProcessingStage("recording");
 
@@ -138,7 +157,9 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
           items,
           promoCode: appliedPromo?.code,
           shippingAddress,
-          cf_order_id,
+          razorpay_order_id: payment.razorpay_order_id,
+          razorpay_payment_id: payment.razorpay_payment_id,
+          razorpay_signature: payment.razorpay_signature,
         }),
       });
 
