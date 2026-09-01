@@ -3,7 +3,11 @@ import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
   trustHost: true,
-  session: { strategy: "jwt" },
+  // Caps how long a revoked/demoted/deleted account's existing session stays
+  // valid — the API layer (nextApiHandler) re-validates role/isDeleted
+  // against the DB on every request, but this bounds the page-level
+  // middleware's exposure window too.
+  session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
   providers: [],
   pages: {
     signIn: "/",
