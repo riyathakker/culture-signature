@@ -12,17 +12,18 @@ const withPWA = withPWAInit({
   },
 });
 
-// Cashfree's SDK loads a script + opens checkout in an in-page frame from
-// its own domain; the CSP below allow-lists just what payment + image
-// hosting need. Only applied in production to keep Turbopack HMR unrestricted.
+// Razorpay's checkout.js loads from checkout.razorpay.com and opens the payment
+// flow in an in-page frame from api.razorpay.com; the CSP below allow-lists
+// just what payment + image hosting need. Only applied in production to keep
+// Turbopack HMR unrestricted.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.cashfree.com https://*.cashfree.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: https://res.cloudinary.com https://*.cashfree.com",
+  "img-src 'self' data: https://res.cloudinary.com https://*.razorpay.com",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.cashfree.com https://res.cloudinary.com",
-  "frame-src 'self' https://*.cashfree.com",
+  "connect-src 'self' https://*.razorpay.com https://lumberjack.razorpay.com https://res.cloudinary.com",
+  "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://*.razorpay.com",
   "frame-ancestors 'self'",
   "object-src 'none'",
   "base-uri 'self'",
