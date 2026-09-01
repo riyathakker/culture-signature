@@ -1,24 +1,25 @@
-import { createCashfreeOrder, getCashfreeOrder, getCashfreePayments } from "@/lib/cashfree";
+import {
+  createRazorpayOrder,
+  fetchRazorpayPayment,
+  verifyRazorpaySignature,
+} from "@/lib/razorpay";
 
 export class PaymentService {
   static async createOrder(
     amount: number,
     customerDetails: {
-      id: string;
+      id?: string;
       name: string;
       email: string;
       phone: string;
     },
     currency: string = "INR"
   ) {
-    const orderId = `CF_${Date.now()}_${Math.random().toString(36).slice(2, 7).toUpperCase()}`;
-
-    const order = await createCashfreeOrder({
-      order_id: orderId,
-      order_amount: Math.round(amount * 100) / 100,
-      order_currency: currency,
-      customer_details: {
-        customer_id: customerDetails.id || `guest_${Date.now()}`,
+    const order = await createRazorpayOrder({
+      amount,
+      currency,
+      receipt: `rcpt_${Date.now()}_${(customerDetails.id ?? "guest").slice(0, 8)}`,
+      notes: {
         customer_name: customerDetails.name,
         customer_email: customerDetails.email,
         customer_phone: customerDetails.phone,
@@ -28,20 +29,38 @@ export class PaymentService {
     return order;
   }
 
-  static async verifyPayment(
-    cfOrderId: string
-  ): Promise<{ success: boolean; paymentId?: string; amountPaid?: number }> {
-    const order = await getCashfreeOrder(cfOrderId);
-
-    if (order.order_status !== "PAID") {
+  /**
+   * Verifies a completed Razorpay checkout. First checks the HMAC signature
+   * the client received (proves authenticity), then fetches the payment
+   * server-side to confirm it was actually captured and to read the
+   * authoritative amount — never trust client-sent amount/status.
+   */
+  static async verifyPayment(params: {
+    orderId: string;
+    paymentId: string;
+    signature: string;
+  }): Promise<{ success: boolean; paymentId?: string; amountPaid?: number }> {
+    const signatureValid = verifyRazorpaySignature(params);
+    if (!signatureValid) {
       return { success: false };
     }
 
-    const payments = await getCashfreePayments(cfOrderId);
-    const successPayment = payments.find((p: any) => p.payment_status === "SUCCESS");
-    const paymentId = successPayment?.cf_payment_id?.toString() || cfOrderId;
-    const amountPaid = successPayment?.payment_amount ?? order.order_amount;
+    const payment = await fetchRazorpayPayment(params.paymentId);
 
-    return { success: true, paymentId, amountPaid };
+    // Razorpay marks a successful payment as "captured" (or "authorized" when
+    // capture is deferred). Reject anything else.
+    if (payment.status !== "captured" && payment.status !== "authorized") {
+      return { success: false };
+    }
+
+    // The payment must belong to the order it claims to.
+    if (payment.order_id !== params.orderId) {
+      return { success: false };
+    }
+
+    // amount is in paise → convert back to rupees.
+    const amountPaid = Number(payment.amount) / 100;
+
+    return { success: true, paymentId: params.paymentId, amountPaid };
   }
 }
