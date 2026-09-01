@@ -28,7 +28,9 @@ export class PaymentService {
     return order;
   }
 
-  static async verifyPayment(cfOrderId: string): Promise<{ success: boolean; paymentId?: string }> {
+  static async verifyPayment(
+    cfOrderId: string
+  ): Promise<{ success: boolean; paymentId?: string; amountPaid?: number }> {
     const order = await getCashfreeOrder(cfOrderId);
 
     if (order.order_status !== "PAID") {
@@ -38,7 +40,8 @@ export class PaymentService {
     const payments = await getCashfreePayments(cfOrderId);
     const successPayment = payments.find((p: any) => p.payment_status === "SUCCESS");
     const paymentId = successPayment?.cf_payment_id?.toString() || cfOrderId;
+    const amountPaid = successPayment?.payment_amount ?? order.order_amount;
 
-    return { success: true, paymentId };
+    return { success: true, paymentId, amountPaid };
   }
 }

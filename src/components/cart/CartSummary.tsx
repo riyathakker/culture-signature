@@ -82,7 +82,8 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: total,
+          items,
+          promoCode: appliedPromo?.code,
           customerName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
           customerEmail: session?.user?.email || "guest@culturesignature.com",
           customerPhone: shippingAddress.phone,
@@ -135,14 +136,9 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items,
-          totalPrice: total,
-          discountAmount: discountValue,
           promoCode: appliedPromo?.code,
           shippingAddress,
-          paymentId: verifyData.paymentId,
           cf_order_id,
-          userId: session?.user?.id,
-          userEmail: session?.user?.email,
         }),
       });
 
