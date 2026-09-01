@@ -436,6 +436,11 @@ export function ComingSoon() {
             max-width: 26rem;
           }
         }
+        @media (max-width: 643px) {
+          .cs-halo {
+            width: min(32vw, 140px);
+          }
+        }
         @media (max-width: 640px) {
           .cs-sub {
             white-space: normal;
@@ -518,8 +523,7 @@ export function ComingSoon() {
 
       <h1 className="cs-title">Coming Soon</h1>
       <p className="cs-sub">
-        Something timeless is being crafted. A new home for artisanal jewellery
-        &amp; timepieces — worthy of the wait.
+        A new home for handcrafted jewellery & timepieces is coming soon. Stay tuned - it’ll be worth the wait.
       </p>
 
       <div className="cs-divider" aria-hidden="true">
