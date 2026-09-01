@@ -19,13 +19,19 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
       });
     }
 
+    // Scope by userId so a user can't update someone else's address; a
+    // non-match (wrong owner or missing id) throws P2025 → 404, not 500.
     const address = await prisma.address.update({
       where: { id, userId },
       data: { firstName, lastName, street, city, state, zipCode, country, phone, isDefault },
     });
 
     return NextResponse.json(address);
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === "P2025") {
+      return NextResponse.json({ error: "Address not found" }, { status: 404 });
+    }
+    console.error("[ADDRESS_PATCH]", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
