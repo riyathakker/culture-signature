@@ -5,8 +5,8 @@ import { resolveVariant } from "./colorVariant";
 const GST_RATE = 0.18;
 const FREE_SHIPPING_THRESHOLD = 5000;
 const SHIPPING_COST = 200;
-// Cashfree/float rounding can differ by fractions of a rupee between the
-// amount charged and the amount recomputed here.
+// Float rounding can differ by fractions of a rupee between the amount
+// charged by the payment gateway and the amount recomputed here.
 export const AMOUNT_TOLERANCE = 1;
 
 export interface RequestedItem {

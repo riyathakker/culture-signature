@@ -22,21 +22,27 @@ export default async function handler(req: NextRequest & { userId?: string; user
   }
 
   try {
-    const { items, promoCode, shippingAddress, cf_order_id } = await req.json();
+    const { items, promoCode, shippingAddress, razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      await req.json();
 
     if (!items?.length || !shippingAddress) {
       return NextResponse.json({ error: "Missing order information" }, { status: 400 });
     }
-    if (!cf_order_id) {
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json({ error: "Payment verification required" }, { status: 400 });
     }
 
-    // Server-side truth: verify the payment actually succeeded with Cashfree —
-    // never trust a client-asserted paymentId/status. Any failure here (bad
-    // order id, Cashfree outage, forged id) is treated the same: reject.
+    // Server-side truth: verify the Razorpay signature and confirm the payment
+    // was captured — never trust a client-asserted paymentId/status. Any
+    // failure here (bad signature, uncaptured payment, forged ids, API error)
+    // is treated the same: reject.
     let verification: Awaited<ReturnType<typeof PaymentService.verifyPayment>>;
     try {
-      verification = await PaymentService.verifyPayment(cf_order_id);
+      verification = await PaymentService.verifyPayment({
+        orderId: razorpay_order_id,
+        paymentId: razorpay_payment_id,
+        signature: razorpay_signature,
+      });
     } catch (verifyError) {
       console.error("[ORDERS_POST] verifyPayment failed", verifyError);
       return NextResponse.json({ error: "Payment could not be verified" }, { status: 402 });
@@ -46,7 +52,9 @@ export default async function handler(req: NextRequest & { userId?: string; user
     }
 
     // Reject if this payment has already been used to create an order.
-    const existingOrder = await prisma.order.findFirst({ where: { cfOrderId: cf_order_id } });
+    const existingOrder = await prisma.order.findFirst({
+      where: { OR: [{ paymentId: razorpay_payment_id }, { paymentOrderId: razorpay_order_id }] },
+    });
     if (existingOrder) {
       return NextResponse.json({ error: "This payment has already been recorded" }, { status: 409 });
     }
@@ -70,13 +78,13 @@ export default async function handler(req: NextRequest & { userId?: string; user
 
     const totals = computeOrderTotals(lines, discountUsable);
 
-    // Cross-check what was actually charged via Cashfree against the
+    // Cross-check what was actually charged via Razorpay against the
     // server-recomputed total — catches any tampering upstream of this call.
     if (
       typeof verification.amountPaid !== "number" ||
       Math.abs(verification.amountPaid - totals.total) > AMOUNT_TOLERANCE
     ) {
-      console.error("[ORDERS_POST] amount mismatch", { cf_order_id, amountPaid: verification.amountPaid, expected: totals.total });
+      console.error("[ORDERS_POST] amount mismatch", { razorpay_order_id, amountPaid: verification.amountPaid, expected: totals.total });
       return NextResponse.json({ error: "Payment amount does not match order total" }, { status: 409 });
     }
 
@@ -96,7 +104,7 @@ export default async function handler(req: NextRequest & { userId?: string; user
           phone: shippingAddress.phone,
           status: "PAID",
           paymentId: verification.paymentId,
-          cfOrderId: cf_order_id,
+          paymentOrderId: razorpay_order_id,
         },
       });
 
