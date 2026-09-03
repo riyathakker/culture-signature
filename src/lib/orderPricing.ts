@@ -2,7 +2,6 @@ import { resolveVariant } from "./colorVariant";
 
 // Mirrors the display math in cartStore/CartSummary — this file is the
 // server-trusted source of truth; client numbers are never used to price an order.
-const GST_RATE = 0.18;
 const FREE_SHIPPING_THRESHOLD = 2000;
 const SHIPPING_COST = 100;
 // Float rounding can differ by fractions of a rupee between the amount
@@ -80,8 +79,7 @@ export function isDiscountUsable(discount: DiscountLike): boolean {
 export interface OrderTotals {
   subtotal: number;
   discountAmount: number;
-  taxableAmount: number;
-  gstAmount: number;
+  netAmount: number;
   shippingCost: number;
   total: number;
 }
@@ -96,10 +94,9 @@ export function computeOrderTotals(
       ? (subtotal * discount.value) / 100
       : Math.min(discount.value, subtotal)
     : 0;
-  const taxableAmount = subtotal - discountAmount;
-  const gstAmount = taxableAmount * GST_RATE;
-  const shippingCost = taxableAmount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const total = taxableAmount + gstAmount + shippingCost;
+  const netAmount = subtotal - discountAmount;
+  const shippingCost = netAmount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const total = netAmount + shippingCost;
 
-  return { subtotal, discountAmount, taxableAmount, gstAmount, shippingCost, total };
+  return { subtotal, discountAmount, netAmount, shippingCost, total };
 }

@@ -43,7 +43,7 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
         </>
       )}
       <PWABottomNav />
-      {/* <PWAInstallPrompt /> */}
+      <PWAInstallPrompt />
     </>
   );
 }

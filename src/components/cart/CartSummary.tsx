@@ -186,15 +186,14 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
     }
   };
 
-  // User Calculation Logic: (Total value without GST - Discount) + GST
+  // Prices are GST-inclusive: total = (subtotal - discount) + shipping
   const discountValue = getDiscountAmount();
-  const taxableAmount = subtotal - discountValue;
+  const netAmount = subtotal - discountValue;
 
   const shippingThreshold = 2000;
-  const shippingCost = (taxableAmount > 0 && taxableAmount >= shippingThreshold) ? 0 : 100;
+  const shippingCost = (netAmount > 0 && netAmount >= shippingThreshold) ? 0 : 100;
 
-  const gstAmount = taxableAmount * 0.18;
-  const total = taxableAmount + gstAmount + shippingCost;
+  const total = netAmount + shippingCost;
 
   return (
     <div className="bg-secondary/30 p-8 rounded-sm space-y-8 sticky top-32 border border-border/10 shadow-luxury">
@@ -253,11 +252,6 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
           ) : (
             <span className="font-medium">₹{shippingCost.toLocaleString()}</span>
           )}
-        </div>
-
-        <div className="flex justify-between text-sm uppercase tracking-widest">
-          <span className="text-muted-foreground">{t("cart.summary.estimatedTax")}</span>
-          <span className="font-medium">₹{gstAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
         </div>
 
         <Separator className="bg-border/50" />

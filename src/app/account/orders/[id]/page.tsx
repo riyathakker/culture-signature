@@ -78,11 +78,10 @@ export default function OrderDetailPage() {
 
   const subtotal = order.items?.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0) || 0;
   const discount = (order as any).discountAmount || 0;
-  const taxable = subtotal - discount;
-  const gst = taxable * 0.18;
+  const net = subtotal - discount;
   // Derive shipping from the stored total so the breakdown always reflects what
   // was actually charged, independent of any later change to the shipping rule.
-  const shipping = Math.max(0, Math.round((order.totalPrice - taxable - gst) * 100) / 100);
+  const shipping = Math.max(0, Math.round((order.totalPrice - net) * 100) / 100);
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -202,10 +201,6 @@ export default function OrderDetailPage() {
                 <span className="font-bold">-₹{discount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
               </div>
             )}
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">{t("account.orders.gst")}</span>
-              <span>₹{gst.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
-            </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground uppercase tracking-widest text-[11px] font-bold">{t("account.orders.shipping")}</span>
               {shipping === 0 ? (

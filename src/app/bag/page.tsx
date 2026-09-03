@@ -61,17 +61,6 @@ export default function BagPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
           {/* Cart Items List */}
           <div className="lg:col-span-2 space-y-8">
-            <div className="flex  border-b pb-4">
-              <span className="text-[10px] uppercase tracking-[0.3em] font-bold">
-                {t("cart.page.selection").replace("{count}", itemCount.toString())}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              {items.map((item) => (
-                <CartItem key={cartLineKey(item.id, item.color)} item={item} variant="page" />
-              ))}
-            </div>
-
             <div className="pt-8 flex flex-row items-center justify-between gap-4">
               <Link href={ROUTES.COLLECTIONS} className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors shrink-0">
                 <ArrowLeft className="w-4 h-4" /> {t("cart.page.continueShopping")}
@@ -79,6 +68,11 @@ export default function BagPage() {
               <Button variant="ghost" onClick={handleMoveAllToWishlist} className="gap-2 text-spaced-bold font-bold text-muted-foreground text-[10px] shrink-0">
                 <Heart className="w-4 h-4" /> {t("cart.page.moveToWishlist")}
               </Button>
+            </div>
+            <div className="flex flex-col">
+              {items.map((item) => (
+                <CartItem key={cartLineKey(item.id, item.color)} item={item} variant="page" />
+              ))}
             </div>
           </div>
 
