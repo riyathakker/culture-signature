@@ -9,8 +9,9 @@ import { ROUTES } from "@/constants/routes";
 import { useOrderStore } from "@/store/orderStore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
+import { OrdersSkeleton } from "@/components/account/AccountSkeletons";
 import { useTranslation } from "@/context/TranslationContext";
 
 export default function OrdersPage() {
@@ -47,11 +48,7 @@ export default function OrdersPage() {
   }, [status]);
 
   if (myOrdersLoading) {
-    return (
-      <div className="flex justify-center py-32">
-        <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
-      </div>
-    );
+    return <OrdersSkeleton />;
   }
 
   return (

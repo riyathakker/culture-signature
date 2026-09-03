@@ -9,12 +9,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { EmptyState } from "@/components/common/EmptyState";
+import { CartSkeleton } from "@/components/account/AccountSkeletons";
 import { toast } from "sonner";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
 
 export default function BagPage() {
-  const { items, clearCart } = useCartStore();
+  const { items, clearCart, isLoading } = useCartStore();
   const { addItem: addToWishlist, isInWishlist } = useWishlistStore();
   const { t } = useTranslation();
   const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
@@ -50,7 +51,9 @@ export default function BagPage() {
       heading={t("cart.page.title")}
       description={t("cart.page.description")}
     >
-      {items.length === 0 ? (
+      {isLoading && items.length === 0 ? (
+        <CartSkeleton />
+      ) : items.length === 0 ? (
         <EmptyState
           icon={ShoppingBag}
           title={t("cart.page.emptyTitle")}

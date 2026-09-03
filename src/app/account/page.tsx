@@ -2,9 +2,10 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Heart, Loader2 } from "lucide-react";
+import { ShoppingBag, Heart } from "lucide-react";
 import Link from "next/link";
 import { AccountStatCard } from "@/components/account/AccountStatCard";
+import { AccountOverviewSkeleton } from "@/components/account/AccountSkeletons";
 import { ROUTES } from "@/constants/routes";
 import { useAccountStore } from "@/store/accountStore";
 import { useSession } from "next-auth/react";
@@ -24,11 +25,7 @@ export default function AccountPage() {
   }, [status]);
 
   if (isLoading || !user) {
-    return (
-      <div className="flex justify-center py-32">
-        <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
-      </div>
-    );
+    return <AccountOverviewSkeleton />;
   }
 
   return (
