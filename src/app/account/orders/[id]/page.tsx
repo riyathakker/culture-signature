@@ -80,7 +80,9 @@ export default function OrderDetailPage() {
   const discount = (order as any).discountAmount || 0;
   const taxable = subtotal - discount;
   const gst = taxable * 0.18;
-  const shipping = taxable >= 5000 ? 0 : 200;
+  // Derive shipping from the stored total so the breakdown always reflects what
+  // was actually charged, independent of any later change to the shipping rule.
+  const shipping = Math.max(0, Math.round((order.totalPrice - taxable - gst) * 100) / 100);
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">

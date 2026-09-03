@@ -190,8 +190,8 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   const discountValue = getDiscountAmount();
   const taxableAmount = subtotal - discountValue;
 
-  const shippingThreshold = 5000;
-  const shippingCost = (taxableAmount > 0 && taxableAmount >= shippingThreshold) ? 0 : 200;
+  const shippingThreshold = 2000;
+  const shippingCost = (taxableAmount > 0 && taxableAmount >= shippingThreshold) ? 0 : 100;
 
   const gstAmount = taxableAmount * 0.18;
   const total = taxableAmount + gstAmount + shippingCost;

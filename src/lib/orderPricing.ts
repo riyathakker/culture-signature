@@ -3,8 +3,8 @@ import { resolveVariant } from "./colorVariant";
 // Mirrors the display math in cartStore/CartSummary — this file is the
 // server-trusted source of truth; client numbers are never used to price an order.
 const GST_RATE = 0.18;
-const FREE_SHIPPING_THRESHOLD = 5000;
-const SHIPPING_COST = 200;
+const FREE_SHIPPING_THRESHOLD = 2000;
+const SHIPPING_COST = 100;
 // Float rounding can differ by fractions of a rupee between the amount
 // charged by the payment gateway and the amount recomputed here.
 export const AMOUNT_TOLERANCE = 1;

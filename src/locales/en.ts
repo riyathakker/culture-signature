@@ -563,8 +563,8 @@ export const en = {
         title: "Admin Preview Mode",
         description: "Transactional features are disabled for administrative accounts."
       },
-      footerNote: "Free shipping above ₹{threshold}. Securely processed via Stripe.",
-      footerNoteCheckout: "By placing your order, you agree to our Terms & Conditions.",
+      footerNote: "Free shipping above ₹{threshold}. Delivery in 4–8 working days. Securely processed via Razorpay.",
+      footerNoteCheckout: "Delivery in 4–8 working days. By placing your order, you agree to our Terms & Conditions.",
       badges: {
         expressDelivery: "White Glove Delivery",
         securePayment: "Authenticity Guaranteed"
@@ -665,7 +665,7 @@ export const en = {
     trust: {
       delivery: {
         title: "Fast Delivery",
-        desc: "Free shipping over ₹5,000"
+        desc: "Free shipping over ₹2,000 · 4–8 working days"
       },
       quality: {
         title: "Quality Assured",
@@ -702,7 +702,7 @@ export const en = {
         },
         {
           question: "Do you offer international shipping?",
-          answer: "Yes, we ship globally. Free shipping is available on orders above ₹5,000."
+          answer: "Yes, we ship globally. Free shipping is available on orders above ₹2,000, and orders are delivered within 4–8 working days."
         },
         {
           question: "Are the bags made from genuine leather?",
