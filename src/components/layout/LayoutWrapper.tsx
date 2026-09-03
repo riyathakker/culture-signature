@@ -14,7 +14,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isHome = pathname === "/";
   const isAccount = pathname.startsWith("/account");
   const { fetchWishlist, clearWishlist } = useWishlistStore();
-  const { fetchCart, setIsAuthenticated, clearCart } = useCartStore();
+  const { fetchCart, setIsAuthenticated, mergeGuestCartOnLogin, clearLocalCart } = useCartStore();
   const { status } = useSession();
   const prevStatus = useRef(status);
 
@@ -22,14 +22,21 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(status === "authenticated");
     if (status === "authenticated") {
       fetchWishlist();
-      fetchCart();
+      // Merge any guest cart on the actual guest→auth transition; otherwise
+      // (e.g. refresh while already logged in) just load the server cart.
+      if (prevStatus.current === "unauthenticated") {
+        mergeGuestCartOnLogin();
+      } else {
+        fetchCart();
+      }
     }
-    // Clear stores immediately when session ends
+    // Clear local stores when the session ends (server cart is preserved).
     if (prevStatus.current === "authenticated" && status === "unauthenticated") {
       clearWishlist();
+      clearLocalCart();
     }
     prevStatus.current = status;
-  }, [status, fetchWishlist, fetchCart, setIsAuthenticated, clearWishlist, clearCart]);
+  }, [status, fetchWishlist, fetchCart, setIsAuthenticated, clearWishlist, mergeGuestCartOnLogin, clearLocalCart]);
 
   const showPWAHeader = !isAdminPanel && !isAuthPage && !isHome && !isAccount;
 
