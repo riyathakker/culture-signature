@@ -49,7 +49,7 @@ export function PWAPageHeader() {
   return (
     <>
       <header
-        className="flex lg:hidden [@media(display-mode:standalone)]:!flex fixed top-0 left-0 right-0 z-50 bg-primary px-4 pb-3 items-center justify-between"
+        className="hidden [@media(display-mode:standalone)]:!flex fixed top-0 left-0 right-0 z-50 bg-primary px-4 pb-3 items-center justify-between"
         style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
       >
         <div className="flex items-center gap-2 min-w-0">

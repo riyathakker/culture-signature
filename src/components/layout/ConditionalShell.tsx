@@ -17,7 +17,10 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
   const isAdmin = pathname.startsWith("/admin");
   const isAccount = pathname.startsWith("/account");
   const showPWAHeader = !isAuthPage && !isHome && !isAdmin && !isAccount;
-  const hideHeaderOnMobile = showPWAHeader || isAccount;
+  // Account pages keep their dedicated mobile header; storefront pages now show
+  // the standard responsive web header on mobile browsers (PWA header is
+  // standalone-only), so only account hides the web header on mobile.
+  const hideHeaderOnMobile = isAccount;
 
   if (isAuthPage) {
     return <>{children}</>;

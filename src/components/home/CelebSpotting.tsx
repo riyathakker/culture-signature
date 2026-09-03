@@ -4,7 +4,6 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
 import { usePWA } from "@/hooks/usePWA";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 const DEFAULT_IMAGES = [
   "/celebs/celeb-1.jpg",
@@ -146,7 +145,6 @@ function PWAScroller({ images, onSelect }: { images: string[]; onSelect: (s: str
 export function CelebSpotting() {
   const { t } = useTranslation();
   const isPWA = usePWA();
-  const isMobile = useIsMobile();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
@@ -158,7 +156,7 @@ export function CelebSpotting() {
           align="center"
         />
 
-        {isPWA || isMobile ? (
+        {isPWA ? (
           <PWAScroller images={DEFAULT_IMAGES} onSelect={setSelectedImage} />
         ) : (
           <DesktopMarquee images={DEFAULT_IMAGES} onSelect={setSelectedImage} />

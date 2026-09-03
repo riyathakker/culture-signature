@@ -11,8 +11,6 @@ import { ProductRowSkeleton } from "@/components/home/HomeSkeletons";
 import { useProductStore } from "@/store/productStore";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
-import { usePWA } from "@/hooks/usePWA";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 export function NewArrivals() {
   const {
@@ -22,9 +20,7 @@ export function NewArrivals() {
   } = useProductStore();
 
   const { t } = useTranslation();
-  const isPWA = usePWA();
-  const isMobile = useIsMobile();
-  const displayLimit = isMobile && !isPWA ? 4 : 8;
+  const displayLimit = 8;
 
   useEffect(() => {
     fetchNewArrivals();
