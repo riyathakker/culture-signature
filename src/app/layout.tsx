@@ -27,7 +27,8 @@ import NextTopLoader from "nextjs-toploader";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // No maximum-scale — capping zoom fails accessibility (users must be able to
+  // pinch-zoom).
   viewportFit: "cover",
 };
 

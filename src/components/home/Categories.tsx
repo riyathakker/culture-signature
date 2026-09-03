@@ -41,7 +41,7 @@ function CategoryCards() {
                 {cat.name ? cat.name[0] : "?"}
               </span>
             </div>
-            <h4 className="font-heading text-xl group-hover:text-primary-foreground transition-all duration-500 relative z-10 text-center">{cat.name}</h4>
+            <h3 className="font-heading text-xl group-hover:text-primary-foreground transition-all duration-500 relative z-10 text-center">{cat.name}</h3>
             <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground group-hover:text-primary-foreground/70 transition-colors mt-2 relative z-10">
               {cat._count?.products || 0} {t("home.categories.pieces")}
             </p>

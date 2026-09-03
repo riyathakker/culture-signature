@@ -29,7 +29,7 @@ export function SectionTitle({
       {...props}
     >
       {subtitle && (
-        <span className="text-luxury text-xs! italic opacity-80">{subtitle}</span>
+        <span className="text-luxury text-xs! italic">{subtitle}</span>
       )}
       <h2
         className={cn(

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { Container } from "./Container";
-import { IconButton } from "@/components/common/IconButton";
 import { usePathname } from "next/navigation";
 import { socialLinks } from "@/constants/constants";
 
@@ -60,7 +59,7 @@ export function Footer() {
               {t("shop.footer.brand.description")}
             </p>
 
-            <div className="flex items-center flex-wrap gap-2">
+            <div className="flex items-center flex-wrap gap-3">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
                 return (
@@ -70,9 +69,9 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                  // className="flex items-center justify-center w-11 h-11 rounded-full border border-border text-muted-foreground transition-all duration-300 hover:bg-primary/10 hover:border-primary hover:text-primary hover:-translate-y-1"
+                    className="inline-flex items-center justify-center w-11 h-11 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                   >
-                    <IconButton icon={Icon} aria-label={social.label} />
+                    <Icon className="w-5 h-5" />
                   </a>
                   // <Link href={social.href} key={index}>
                   //   <IconButton icon={Icon} aria-label={social.label} />
