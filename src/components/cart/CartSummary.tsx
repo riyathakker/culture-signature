@@ -92,7 +92,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   };
 
   const handleFinalize = async () => {
-    if (!shippingAddress.firstName || !shippingAddress.lastName || !shippingAddress.street || !shippingAddress.city || !shippingAddress.phone) {
+    if (!shippingAddress.firstName || !shippingAddress.lastName || !shippingAddress.street || !shippingAddress.state || !shippingAddress.city || !shippingAddress.phone) {
       toast.error(t("cart.summary.messages.completeShipping"));
       return;
     }

@@ -155,6 +155,7 @@ export function AddressDialog({ address, trigger }: AddressDialogProps) {
                 zipCode: watch("zipCode") || "",
               }}
               onChange={(field, value) => setValue(field, value, { shouldValidate: true })}
+              allowedCountries={["India"]}
               errors={{
                 country: errors.country?.message,
                 state: errors.state?.message,
