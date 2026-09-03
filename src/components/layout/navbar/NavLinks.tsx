@@ -18,8 +18,6 @@ export function NavLinks() {
       case "Home": return t("nav.links.home");
       case "New Arrivals": return t("nav.links.newArrivals");
       case "Collections": return t("nav.links.collections");
-      case "About Us": return t("nav.links.aboutUs");
-      case "Contact Us": return t("nav.links.contactUs");
       default: return name;
     }
   };
@@ -28,8 +26,13 @@ export function NavLinks() {
     <nav className="w-full">
       <ul className="flex items-center justify-center space-x-10">
         {navigationLinks.map((item) => {
-          let isActive = pathname === item.href;
-          
+          // Home matches exactly; every other link is active on its own path
+          // and any sub-path (e.g. /categories/earrings → "Shop by Categories").
+          let isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
+
           if (pathname.startsWith("/product") && from) {
             if (from === "collections" && item.href === "/collections") {
               isActive = true;

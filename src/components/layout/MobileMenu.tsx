@@ -40,8 +40,7 @@ export function MobileMenu() {
       case "Home": return t("nav.links.home");
       case "New Arrivals": return t("nav.links.newArrivals");
       case "Collections": return t("nav.links.collections");
-      case "About Us": return t("nav.links.aboutUs");
-      case "Contact Us": return t("nav.links.contactUs");
+      case "Categories": return t("nav.links.categories");
       default: return name;
     }
   };
