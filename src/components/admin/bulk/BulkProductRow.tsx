@@ -47,6 +47,7 @@ export function BulkProductRow({
 }: BulkProductRowProps) {
   const { t } = useTranslation();
   const [imageTab, setImageTab] = useState<"pool" | "direct">("pool");
+  const [colorImageTab, setColorImageTab] = useState<"pool" | "direct">("pool");
   const [activeColorIdx, setActiveColorIdx] = useState(0);
 
   const statusColor: Record<RowStatus, string> = {
@@ -296,15 +297,86 @@ export function BulkProductRow({
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[9px] uppercase tracking-widest text-muted-foreground">Images for this color</Label>
-                      {c.images.length === 0 && (
-                        <NoImage className="h-20 rounded-lg border border-dashed border-border/50" />
+
+                      {/* Pool / Upload toggle for this color's images */}
+                      <div className="flex items-center gap-0 border-b border-border/30">
+                        <button type="button"
+                          onClick={() => setColorImageTab("pool")}
+                          className={cn(
+                            "flex-1 py-2 text-[10px] uppercase tracking-[0.2em] font-bold transition-colors",
+                            colorImageTab === "pool" ? "text-primary border-b-2 border-primary" : "text-muted-foreground hover:text-foreground"
+                          )}>
+                          {t("admin.products.bulk.imagePool.tabPool")}
+                          {imagePool.length > 0 && ` (${c.images.filter((u) => imagePool.some((p) => p.url === u)).length}/${imagePool.length})`}
+                        </button>
+                        <button type="button"
+                          onClick={() => setColorImageTab("direct")}
+                          className={cn(
+                            "flex-1 py-2 text-[10px] uppercase tracking-[0.2em] font-bold transition-colors",
+                            colorImageTab === "direct" ? "text-primary border-b-2 border-primary" : "text-muted-foreground hover:text-foreground"
+                          )}>
+                          {t("admin.products.bulk.imagePool.tabDirect")}
+                        </button>
+                      </div>
+
+                      {colorImageTab === "pool" ? (
+                        imagePool.length === 0 ? (
+                          <p className="text-xs text-muted-foreground italic text-center py-4">
+                            {t("admin.products.bulk.imagePool.emptyPool")}
+                          </p>
+                        ) : (
+                          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 pt-1">
+                            {imagePool.map((img) => {
+                              const selected = c.images.includes(img.url);
+                              return (
+                                <button
+                                  key={img.id}
+                                  type="button"
+                                  disabled={locked}
+                                  onClick={() => {
+                                    if (selected) {
+                                      update({ images: c.images.filter((u) => u !== img.url) });
+                                    } else if (c.images.length < 4) {
+                                      update({ images: [...c.images, img.url] });
+                                    } else {
+                                      toast.error(t("admin.products.bulk.toast.maxImages"));
+                                    }
+                                  }}
+                                  className={cn(
+                                    "relative aspect-square rounded-sm overflow-hidden border-2 transition-all",
+                                    selected ? "border-primary shadow-md" : "border-transparent",
+                                    !locked && "cursor-pointer hover:opacity-90"
+                                  )}
+                                >
+                                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                  {selected && (
+                                    <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                                      <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                                        <Check className="w-3 h-3 text-white" />
+                                      </div>
+                                    </div>
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )
+                      ) : (
+                        <>
+                          {c.images.length === 0 && (
+                            <NoImage className="h-20 rounded-lg border border-dashed border-border/50" />
+                          )}
+                          <ImageUpload
+                            value={c.images.filter((u) => !imagePool.some((p) => p.url === u))}
+                            onChange={(urls) => {
+                              const poolUrls = c.images.filter((u) => imagePool.some((p) => p.url === u));
+                              update({ images: [...poolUrls, ...urls] });
+                            }}
+                            maxFiles={Math.max(0, 4 - c.images.filter((u) => imagePool.some((p) => p.url === u)).length)}
+                            compact
+                          />
+                        </>
                       )}
-                      <ImageUpload
-                        value={c.images}
-                        onChange={(urls) => update({ images: urls })}
-                        maxFiles={4}
-                        compact
-                      />
                     </div>
                   </div>
                 );
