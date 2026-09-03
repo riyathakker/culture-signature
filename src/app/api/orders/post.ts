@@ -88,7 +88,23 @@ export default async function handler(req: NextRequest & { userId?: string; user
       return NextResponse.json({ error: "Payment amount does not match order total" }, { status: 409 });
     }
 
-    const order = await prisma.$transaction(async (tx) => {
+    // Precompute stock mutations OUTSIDE the transaction (using the products
+    // already fetched above) so the transaction only issues writes — no reads.
+    // This keeps the interactive transaction well under its time budget.
+    const stockOps = lines.map((line) => {
+      if (line.color) {
+        const p = productMap.get(line.productId);
+        const colors = Array.isArray(p?.colors) ? [...(p!.colors as any[])] : [];
+        const ci = colors.findIndex((c: any) => c?.name === line.color);
+        if (ci >= 0 && colors[ci]?.stock != null) {
+          colors[ci] = { ...colors[ci], stock: Math.max(0, Number(colors[ci].stock) - line.quantity) };
+          return { productId: line.productId, data: { colors } };
+        }
+      }
+      return { productId: line.productId, data: { stock: { decrement: line.quantity } } };
+    });
+
+    const newOrderId = await prisma.$transaction(async (tx) => {
       const newOrder = await tx.order.create({
         data: {
           userId,
@@ -130,38 +146,22 @@ export default async function handler(req: NextRequest & { userId?: string; user
         });
       }
 
-      // Clear the user's cart
       if (userId) {
-        await tx.cartItem.deleteMany({
-          where: { userId }
-        });
+        await tx.cartItem.deleteMany({ where: { userId } });
       }
 
-      // Update product stock (shared across colors).
-      for (const line of lines) {
-        if (line.color) {
-          const p = await tx.product.findUnique({ where: { id: line.productId } });
-          const colors = Array.isArray(p?.colors) ? [...(p!.colors as any[])] : [];
-          const ci = colors.findIndex((c: any) => c?.name === line.color);
-          if (ci >= 0 && colors[ci]?.stock != null) {
-            colors[ci] = {
-              ...colors[ci],
-              stock: Math.max(0, Number(colors[ci].stock) - line.quantity),
-            };
-            await tx.product.update({ where: { id: line.productId }, data: { colors } });
-            continue;
-          }
-        }
-        await tx.product.update({
-          where: { id: line.productId },
-          data: { stock: { decrement: line.quantity } },
-        });
+      for (const op of stockOps) {
+        await tx.product.update({ where: { id: op.productId }, data: op.data });
       }
 
-      return tx.order.findUnique({
-        where: { id: newOrder.id },
-        include: { items: { include: { product: true } } },
-      });
+      return newOrder.id;
+    }, { timeout: 20000 });
+
+    // Read the full order back after the transaction commits — heavy includes
+    // don't belong inside the write transaction.
+    const order = await prisma.order.findUnique({
+      where: { id: newOrderId },
+      include: { items: { include: { product: true } } },
     });
 
     // Fire order-confirmation emails to the customer + admin (best-effort).
