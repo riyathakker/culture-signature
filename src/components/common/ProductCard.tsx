@@ -35,7 +35,6 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
 
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  // Color variants are chosen on the product detail page, not on the card.
   const displayImage = product.images?.[0];
 
   useEffect(() => {
@@ -92,17 +91,12 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
   };
 
   const discountPercentage = convertINRToDiscountPercentage(product.price, product.discount);
-  const isLowStock = effStock > 0 && effStock < 5;
   const productHref = `/product/${product.id}${from ? `?from=${from}` : ""}`;
 
-  // On the browse pages (new-arrivals, collections, categories) and anywhere the
-  // caller opts in, the card is purely a link to the product detail page —
-  // no inline cart/wishlist actions.
   const hideActions = hideActionsProp || !!from;
 
   return (
     <>
-      {/* Outer wrapper is NOT a link — link is only on the visual card */}
       <div className={cn("group relative bg-transparent rounded-lg", isOutOfStock && "grayscale-[0.5]")}>
 
         {/* --- IMAGE AREA --- */}
@@ -126,7 +120,6 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
             )}
           </div>
 
-          {/* Desktop hover overlay (hidden on mobile) */}
           {!isOutOfStock && !isMobile && !hideActions && (
             <div className="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-20 flex gap-2">
               {!isAdmin && (
@@ -199,7 +192,7 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
         {/* --- PRODUCT INFO (links to product page) --- */}
         <Link href={productHref}>
           <div className={cn(
-            "py-4 space-y-2 transition-opacity duration-500",
+            "py-2 transition-opacity duration-500",
             isOutOfStock ? "opacity-50" : "opacity-100"
           )}>
             <div className="flex justify-between items-center">

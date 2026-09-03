@@ -16,6 +16,7 @@ import { PincodeChecker } from "./PincodeChecker";
 import { ROUTES } from "@/constants/routes";
 import { toast } from "sonner";
 import { ColorVariant } from "@/types";
+import { convertINRToDiscountPercentage } from "@/utils/helper";
 
 interface ProductInfoProps {
   product: {
@@ -91,9 +92,10 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
     if (!cartItem) addItem(buildCartItem());
     router.push(ROUTES.SHOPPING_BAG);
   };
-
+  const isOutOfStock = effStock === 0;
+  const discountPercentage = convertINRToDiscountPercentage(product.price, product.discount);
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 flex-1">
       {/* Header */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -128,6 +130,11 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
         <span className="text-2xl font-medium">₹{effNetPrice.toLocaleString()}</span>
         {product.discount > 0 && (
           <span className="text-base text-muted-foreground line-through opacity-50">₹{effBasePrice.toLocaleString()}</span>
+        )}
+        {discountPercentage && !isOutOfStock && (
+          <span className="text-spaced-bold bg-success/90 text-white px-2 py-1">
+            {discountPercentage}% {t("shop.product.off")}
+          </span>
         )}
       </div>
 
@@ -222,17 +229,6 @@ export function ProductInfo({ product, onColorChange }: ProductInfoProps) {
 
       {!isAdmin && <PincodeChecker />}
 
-      {/* Info Grid */}
-      <div className="grid grid-cols-2 gap-4 pt-2">
-        <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
-          <Truck className="w-5 h-5 text-primary opacity-60" />
-          <span>{t("shop.product.details.premiumShipping")}</span>
-        </div>
-        <div className="flex items-center gap-3 text-xs uppercase tracking-widest">
-          <ShieldCheck className="w-5 h-5 text-primary opacity-60" />
-          <span>{t("shop.product.details.lifetimeWarranty")}</span>
-        </div>
-      </div>
 
       <ShareDialog
         open={shareOpen}

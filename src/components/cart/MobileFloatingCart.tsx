@@ -20,6 +20,8 @@ export function MobileFloatingCart() {
 
   const isAdminPage = pathname?.startsWith("/admin");
   const isBagPage = pathname === ROUTES.SHOPPING_BAG || pathname?.startsWith("/bag/checkout");
+  // The product page shows its own sticky add-to-cart bar on mobile.
+  const isProductPage = pathname?.startsWith("/product/");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,7 +31,7 @@ export function MobileFloatingCart() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (status !== "authenticated" || itemCount === 0 || isAdminPage || isBagPage) return null;
+  if (status !== "authenticated" || itemCount === 0 || isAdminPage || isBagPage || isProductPage) return null;
 
   return (
     <AnimatePresence>

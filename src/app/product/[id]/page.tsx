@@ -27,63 +27,92 @@ export default function ProductPage() {
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
   useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+
+    // Fetch the product itself with a couple of retries so a transient error
+    // or Neon cold-start on refresh doesn't wrongly render "no product found".
+    // A genuine 404 stops immediately (no point retrying a missing product).
     const fetchProduct = async () => {
       setLoading(true);
-      try {
-        const res = await fetch(`/api/products/${id}`);
-        if (!res.ok) throw new Error("Product not found");
-        const data = await res.json();
+      let data: any = null;
 
-        const colors = Array.isArray(data.colors) ? data.colors : [];
-        const defaultImages = (colors.length > 0 && colors[0].images?.length > 0)
-          ? colors[0].images
-          : data.images || [];
-        setGalleryImages(defaultImages);
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const res = await fetch(`/api/products/${id}`, { cache: "no-store" });
+          if (res.status === 404) {
+            if (!cancelled) { setProduct(null); setLoading(false); }
+            return;
+          }
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          data = await res.json();
+          break;
+        } catch (error) {
+          if (attempt === 2) {
+            console.error("[ProductPage] load failed after retries", error);
+            if (!cancelled) { toast.error(t("shop.product.details.loadError")); setLoading(false); }
+            return;
+          }
+          await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+        }
+      }
 
-        addRecentlyViewed({
-          id: data.id,
-          name: data.name,
-          price: data.price,
-          discount: data.discount || 0,
-          images: data.images || [],
-          category: data.category?.name || t("shop.product.defaultCollection"),
-        });
+      if (cancelled || !data) return;
 
-        setProduct({
-          ...data,
-          image: data.images?.[0] || "/placeholder.jpg",
-          category: data.category?.name || t("shop.product.defaultCollection"),
-          categoryId: data.categoryId,
-          colors,
-          details: {
-            description: data.description,
-            specifications: [
-              { label: t("shop.product.details.specs.category"), value: data.category?.name || t("shop.product.defaultCollection") },
-              { label: t("shop.product.details.specs.stock"), value: data.stock > 0 ? t("shop.product.details.specs.inStock") : t("shop.product.details.specs.outOfStock") },
-            ],
-            shipping: t("shop.product.details.shippingNote"),
-          },
-        });
+      const colors = Array.isArray(data.colors) ? data.colors : [];
+      const defaultImages = (colors.length > 0 && colors[0].images?.length > 0)
+        ? colors[0].images
+        : data.images || [];
+      setGalleryImages(defaultImages);
 
-        // Fetch related products from same category
-        if (data.categoryId) {
+      addRecentlyViewed({
+        id: data.id,
+        name: data.name,
+        price: data.price,
+        discount: data.discount || 0,
+        images: data.images || [],
+        category: data.category?.name || t("shop.product.defaultCollection"),
+      });
+
+      setProduct({
+        ...data,
+        image: data.images?.[0] || "/placeholder.jpg",
+        category: data.category?.name || t("shop.product.defaultCollection"),
+        categoryId: data.categoryId,
+        colors,
+        details: {
+          description: data.description,
+          specifications: [
+            { label: t("shop.product.details.specs.category"), value: data.category?.name || t("shop.product.defaultCollection") },
+            { label: t("shop.product.details.specs.stock"), value: data.stock > 0 ? t("shop.product.details.specs.inStock") : t("shop.product.details.specs.outOfStock") },
+          ],
+          shipping: t("shop.product.details.shippingNote"),
+        },
+      });
+      setLoading(false);
+
+      // Related products are best-effort — never let them affect the product view.
+      if (data.categoryId) {
+        try {
           const relRes = await fetch(`/api/products?categoryId=${data.categoryId}&limit=5`);
           const relData = await relRes.json();
-          setRelatedProducts(
-            (Array.isArray(relData) ? relData : [])
-              .filter((p: any) => p.id !== id)
-              .slice(0, 4)
-          );
+          if (!cancelled) {
+            setRelatedProducts(
+              (Array.isArray(relData) ? relData : [])
+                .filter((p: any) => p.id !== id)
+                .slice(0, 4)
+            );
+          }
+        } catch {
+          /* ignore related-products failure */
         }
-      } catch (error) {
-        toast.error(t("shop.product.details.loadError"));
-      } finally {
-        setLoading(false);
       }
     };
 
-    if (id) fetchProduct();
-  }, [id, t]);
+    fetchProduct();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   if (loading)
     return (
@@ -118,17 +147,17 @@ export default function ProductPage() {
           ]}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 mt-4">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-12 mt-4">
           <ProductGallery images={galleryImages} />
           <ProductInfo product={product} onColorChange={setGalleryImages} />
         </div>
 
-        <div className="mt-10">
+        <div className="mt-7">
           <ProductReviews productName={product.name} />
         </div>
 
         {relatedProducts.length > 0 && (
-          <div className="mt-14">
+          <div className="mt-7">
             <SectionTitle
               title={t("shop.product.details.relatedTitle")}
               subtitle={t("shop.product.details.relatedSubtitle")}
@@ -136,7 +165,7 @@ export default function ProductPage() {
             />
             <div
               className={
-                "mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 md:max-w-3xl lg:max-w-4xl md:mx-auto " +
+                "mt-7 grid grid-cols-2 md:grid-cols-4 gap-6 md:mx-auto " +
                 // PWA: collapse to a single horizontal scroll row
                 "[@media(display-mode:standalone)]:flex [@media(display-mode:standalone)]:max-w-none [@media(display-mode:standalone)]:mx-0 " +
                 "[@media(display-mode:standalone)]:flex-nowrap [@media(display-mode:standalone)]:overflow-x-auto [@media(display-mode:standalone)]:gap-4 " +

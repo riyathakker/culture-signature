@@ -24,23 +24,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
   }
 
   return (
-    <div className="flex flex-col-reverse md:flex-row gap-4">
-      {/* Thumbnails */}
-      <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto no-scrollbar md:w-20 lg:w-24">
-        {images.map((img, idx) => (
-          <button
-            key={idx}
-            onClick={() => setActiveIndex(idx)}
-            className={cn(
-              "relative aspect-square w-16 md:w-full border-2 transition-all duration-300 rounded-sm overflow-hidden flex-shrink-0",
-              activeIndex === idx ? "border-primary" : "border-transparent opacity-60 hover:opacity-100"
-            )}
-          >
-            <img src={img} alt="" className="w-full h-full object-cover" />
-          </button>
-        ))}
-      </div>
-
+    <div className="flex flex-col-reverse md:flex-row gap-4 max-w-[500px] max-h-[450px]">
       {/* Main image */}
       <div className="flex-1 relative aspect-square bg-secondary/30 rounded-sm overflow-hidden group">
         <AnimatePresence mode="wait">
@@ -62,22 +46,24 @@ export function ProductGallery({ images }: ProductGalleryProps) {
             />
           </motion.div>
         </AnimatePresence>
+        {
+          images.length > 1 &&
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <button
+              onClick={() => setActiveIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
+              className="pointer-events-auto p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-primary hover:text-primary-foreground transition-all"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setActiveIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
+              className="pointer-events-auto p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-primary hover:text-primary-foreground transition-all"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        }
 
-        {/* Navigation Arrows */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          <button
-            onClick={() => setActiveIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
-            className="pointer-events-auto p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-primary hover:text-primary-foreground transition-all"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setActiveIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
-            className="pointer-events-auto p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-primary hover:text-primary-foreground transition-all"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
       </div>
     </div>
   );
