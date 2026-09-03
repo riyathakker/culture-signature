@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,10 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { Logo } from "../layout/navbar/Logo";
+import { PasswordStrength } from "@/components/auth/PasswordStrength";
+import { useCountdown } from "@/hooks/useCountdown";
+
+export const RESEND_COOLDOWN = 30;
 
 type AuthView = "login" | "signup" | "forgot-password";
 
@@ -30,7 +34,30 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const { seconds: resendIn, start: startResend } = useCountdown();
 
+  // Reset the OTP step when leaving signup or editing the email.
+  useEffect(() => { setOtpSent(false); setCode(""); }, [view]);
+  useEffect(() => { if (otpSent) { setOtpSent(false); setCode(""); } }, [email]);
+
+  const handleResendCode = async () => {
+    if (resendIn > 0) return;
+    try {
+      const res = await fetch("/api/auth/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t("auth.signup.error"));
+      startResend(RESEND_COOLDOWN);
+      toast.success(t("auth.signup.codeSent"));
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,10 +72,30 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
           router.push(callbackUrl);
         }
       } else if (view === "signup") {
+        // Step 1 — request the emailed verification code.
+        if (!otpSent) {
+          if (!name.trim() || !email.trim() || password.length < 8) {
+            toast.error(t("auth.signup.validation"));
+            return;
+          }
+          const otpRes = await fetch("/api/auth/otp/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          const otpData = await otpRes.json();
+          if (!otpRes.ok) throw new Error(otpData.error || t("auth.signup.error"));
+          setOtpSent(true);
+          startResend(RESEND_COOLDOWN);
+          toast.success(t("auth.signup.codeSent"));
+          return;
+        }
+
+        // Step 2 — create the account with the code.
         const response = await fetch("/api/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password }),
+          body: JSON.stringify({ name, email, password, code }),
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || t("auth.signup.error"));
@@ -206,6 +253,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       required
+                      maxLength={view === "signup" ? 15 : undefined}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-11 pr-12 input-luxury w-full"
@@ -216,6 +264,39 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-primary transition-colors"
                     >
                       {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  {view === "signup" && password.length > 0 && <PasswordStrength password={password} />}
+                </div>
+              )}
+
+              {view === "signup" && otpSent && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="code" className="label-luxury">
+                    {t("auth.signup.codeLabel")}
+                  </Label>
+                  <Input
+                    id="code"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="••••••"
+                    required
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                    className="input-luxury w-full tracking-[0.5em] text-center"
+                  />
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground font-serif italic truncate">
+                      {t("auth.signup.codeHint")}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleResendCode}
+                      disabled={resendIn > 0}
+                      className="font-bold text-primary hover:opacity-70 disabled:text-muted-foreground disabled:cursor-default whitespace-nowrap ml-2"
+                    >
+                      {resendIn > 0 ? t("auth.signup.resendIn", { seconds: resendIn.toString() }) : t("auth.signup.resend")}
                     </button>
                   </div>
                 </div>
@@ -234,7 +315,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
                 ) : (
                   <>
                     {view === "login" && t("auth.login.submit")}
-                    {view === "signup" && t("auth.signup.submit")}
+                    {view === "signup" && (otpSent ? t("auth.signup.submit") : t("auth.signup.sendCode"))}
                     {view === "forgot-password" && t("auth.forgotPassword.submit")}
                   </>
                 )}
@@ -252,7 +333,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
             <div className="text-center">
               {view === "login" ? (
                 <p className="text-sm text-muted-foreground font-serif italic">
-                  {t("auth.login.newToBrand")}{" "}
+                  {t("auth.login.newToBrand")}{"     "}
                   <button
                     onClick={() => setView("signup")}
                     className="not-italic font-sans font-bold text-primary hover:underline underline-offset-4"

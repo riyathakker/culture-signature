@@ -23,6 +23,9 @@ interface AuthModalProps {
 type AuthView = "login" | "signup" | "forgot-password";
 
 import { useTranslation } from "@/context/TranslationContext";
+import { useCountdown } from "@/hooks/useCountdown";
+import { RESEND_COOLDOWN } from "./AuthPageContent";
+import { PasswordStrength } from "./PasswordStrength";
 
 export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: AuthModalProps) {
   const { t } = useTranslation();
@@ -47,6 +50,30 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const { seconds: resendIn, start: startResend } = useCountdown();
+
+  // Reset the OTP step whenever the user leaves signup or edits their email.
+  useEffect(() => { setOtpSent(false); setCode(""); }, [view]);
+  useEffect(() => { if (otpSent) { setOtpSent(false); setCode(""); } }, [email]);
+
+  const handleResendCode = async () => {
+    if (resendIn > 0) return;
+    try {
+      const res = await fetch("/api/auth/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t("auth.signup.error"));
+      startResend(RESEND_COOLDOWN);
+      toast.success(t("auth.signup.codeSent"));
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,10 +103,30 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
           }
         }
       } else if (view === "signup") {
+        // Step 1 — request the emailed verification code.
+        if (!otpSent) {
+          if (!name.trim() || !email.trim() || password.length < 8) {
+            toast.error(t("auth.signup.validation"));
+            return;
+          }
+          const otpRes = await fetch("/api/auth/otp/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          const otpData = await otpRes.json();
+          if (!otpRes.ok) throw new Error(otpData.error || t("auth.signup.error"));
+          setOtpSent(true);
+          startResend(RESEND_COOLDOWN);
+          toast.success(t("auth.signup.codeSent"));
+          return;
+        }
+
+        // Step 2 — create the account with the code.
         const response = await fetch("/api/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password }),
+          body: JSON.stringify({ name, email, password, code }),
         });
 
         const data = await response.json();
@@ -118,7 +165,7 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] p-0 border-none bg-background rounded-2xl overflow-hidden shadow-2xl [&>button]:text-white [&>button]:opacity-100">
+      <DialogContent className="sm:max-w-[450px] p-0 border-none bg-background rounded-2xl overflow-y-auto max-h-[90dvh] shadow-2xl [&>button]:text-white [&>button]:opacity-100">
         {/* Banner */}
         <div className="relative h-18 bg-primary flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-luxury-gradient opacity-20" />
@@ -210,6 +257,7 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     required
+                    maxLength={view === "signup" ? 15 : undefined}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-11 pr-12 input-luxury w-full"
@@ -220,6 +268,37 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {view === "signup" && password.length > 0 && <PasswordStrength password={password} />}
+              </div>
+            )}
+
+            {view === "signup" && otpSent && (
+              <div className="space-y-2">
+                <Label htmlFor="code" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  {t("auth.signup.codeLabel")} <span className="text-primary">*</span>
+                </Label>
+                <Input
+                  id="code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  placeholder="••••••"
+                  required
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                  className="input-luxury w-full tracking-[0.5em] text-center"
+                />
+                <div className="flex items-center justify-between text-xs">
+                  <span className="muted-italic truncate">{t("auth.signup.codeHint")}</span>
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={resendIn > 0}
+                    className="font-bold text-primary hover:opacity-70 disabled:text-muted-foreground disabled:opacity-100 disabled:cursor-default whitespace-nowrap ml-2"
+                  >
+                    {resendIn > 0 ? t("auth.signup.resendIn", { seconds: resendIn.toString() }) : t("auth.signup.resend")}
                   </button>
                 </div>
               </div>
@@ -238,7 +317,7 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
               ) : (
                 <>
                   {view === "login" && t("auth.login.submit")}
-                  {view === "signup" && t("auth.signup.submit")}
+                  {view === "signup" && (otpSent ? t("auth.signup.submit") : t("auth.signup.sendCode"))}
                   {view === "forgot-password" && t("auth.forgotPassword.submit")}
                 </>
               )}
@@ -248,7 +327,7 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
           <div className="text-center">
             {view === "login" ? (
               <p className="text-sm muted-italic">
-                {t("auth.login.newToBrand")}{"  "}
+                {t("auth.login.newToBrand")}{"      "}
                 <button
                   type="button"
                   onClick={() => setView("signup")}
