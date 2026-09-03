@@ -146,6 +146,25 @@ export function CelebSpotting() {
   const { t } = useTranslation();
   const isPWA = usePWA();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>(DEFAULT_IMAGES);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/celebs")
+      .then((r) => r.json())
+      .then((d) => {
+        // Use the Cloudinary "celebs" folder when it has images; otherwise keep
+        // the bundled defaults so the section is never empty.
+        if (!cancelled && Array.isArray(d.images) && d.images.length > 0) {
+          setImages(d.images);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  // Nothing to show (no Cloudinary images and no defaults) → hide the section.
+  if (images.length === 0) return null;
 
   return (
     <>
@@ -157,9 +176,9 @@ export function CelebSpotting() {
         />
 
         {isPWA ? (
-          <PWAScroller images={DEFAULT_IMAGES} onSelect={setSelectedImage} />
+          <PWAScroller images={images} onSelect={setSelectedImage} />
         ) : (
-          <DesktopMarquee images={DEFAULT_IMAGES} onSelect={setSelectedImage} />
+          <DesktopMarquee images={images} onSelect={setSelectedImage} />
         )}
       </section>
 
