@@ -19,8 +19,22 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, MapPin, Loader2 } from "lucide-react";
 
 import { useAddressStore } from "@/store/addressStore";
-import { LocationSelector } from "@/components/common/LocationSelector";
+import dynamic from "next/dynamic";
 import { useTranslation } from "@/context/TranslationContext";
+
+// Lazy-load the location picker (large country-state-city dataset) so opening
+// the address dialog doesn't block on it.
+const LocationSelector = dynamic(
+  () => import("@/components/common/LocationSelector").then((m) => m.LocationSelector),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center gap-2 h-10 text-muted-foreground text-sm">
+        <Loader2 className="w-4 h-4 animate-spin" /> Loading location…
+      </div>
+    ),
+  }
+);
 
 interface AddressFormValues {
   firstName: string;

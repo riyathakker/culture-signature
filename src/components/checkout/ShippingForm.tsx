@@ -16,7 +16,21 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useTranslation } from "@/context/TranslationContext";
-import { LocationSelector } from "@/components/common/LocationSelector";
+import dynamic from "next/dynamic";
+
+// The location picker pulls in the (large) country-state-city dataset — load it
+// lazily so it never blocks the rest of the checkout form from rendering.
+const LocationSelector = dynamic(
+  () => import("@/components/common/LocationSelector").then((m) => m.LocationSelector),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center gap-2 h-10 text-muted-foreground text-sm">
+        <Loader2 className="w-4 h-4 animate-spin" /> Loading location…
+      </div>
+    ),
+  }
+);
 
 export function ShippingForm() {
   const { t } = useTranslation();
