@@ -374,6 +374,7 @@ export function BulkProductRow({
                             }}
                             maxFiles={Math.max(0, 4 - c.images.filter((u) => imagePool.some((p) => p.url === u)).length)}
                             compact
+                            aspect={3 / 4}
                           />
                         </>
                       )}
@@ -462,6 +463,7 @@ export function BulkProductRow({
                     }}
                     maxFiles={Math.max(0, 4 - row.images.filter((u) => imagePool.some((p) => p.url === u)).length)}
                     compact
+                    aspect={3 / 4}
                   />
                 )}
               </div>

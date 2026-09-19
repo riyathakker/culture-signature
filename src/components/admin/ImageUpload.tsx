@@ -1,53 +1,51 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Upload, X, Loader2 } from "lucide-react";
+import { useCallback, useState } from "react";
+import { Upload, X, Loader2, Crop } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import { ImageCropModal } from "@/components/admin/ImageCropModal";
 
 interface ImageUploadProps {
   value: string[];
   onChange: (value: string[]) => void;
   maxFiles?: number;
   compact?: boolean;
+  aspect?: number;
 }
 
-export function ImageUpload({ value, onChange, maxFiles = 4, compact = false }: ImageUploadProps) {
+async function uploadBlob(blob: Blob, filename: string): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", blob, filename);
+
+  const response = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) throw new Error("Upload failed");
+  const data = await response.json();
+  return data.url;
+}
+
+export function ImageUpload({ value, onChange, maxFiles = 4, compact = false, aspect = 1 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  // Files waiting to be cropped, one at a time, after a drop.
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  // Set only when re-cropping an already-uploaded image (its index in `value`).
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
+    (acceptedFiles: File[]) => {
       if (value.length + acceptedFiles.length > maxFiles) {
         toast.error(`You can only upload up to ${maxFiles} images.`);
         return;
       }
-
-      setIsUploading(true);
-      try {
-        const uploadPromises = acceptedFiles.map(async (file) => {
-          const formData = new FormData();
-          formData.append("file", file);
-
-          const response = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-          });
-
-          if (!response.ok) throw new Error("Upload failed");
-          const data = await response.json();
-          return data.url;
-        });
-
-        const urls = await Promise.all(uploadPromises);
-        onChange([...value, ...urls]);
-        toast.success("Images uploaded successfully");
-      } catch (error) {
-        toast.error("Failed to upload images");
-      } finally {
-        setIsUploading(false);
-      }
+      setPendingFiles(acceptedFiles);
+      setCropSrc(URL.createObjectURL(acceptedFiles[0]));
     },
-    [value, onChange, maxFiles]
+    [value, maxFiles]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -58,8 +56,54 @@ export function ImageUpload({ value, onChange, maxFiles = 4, compact = false }: 
     disabled: isUploading || value.length >= maxFiles,
   });
 
+  const advanceQueue = () => {
+    if (cropSrc?.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
+    const [, ...rest] = pendingFiles;
+    setPendingFiles(rest);
+    setCropSrc(rest.length > 0 ? URL.createObjectURL(rest[0]) : null);
+  };
+
+  const handleCropCancel = () => {
+    if (editingIndex !== null) {
+      setEditingIndex(null);
+      setCropSrc(null);
+      return;
+    }
+    advanceQueue();
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setIsUploading(true);
+    try {
+      const url = await uploadBlob(blob, "image.jpg");
+      if (editingIndex !== null) {
+        const next = [...value];
+        next[editingIndex] = url;
+        onChange(next);
+        setEditingIndex(null);
+      } else {
+        onChange([...value, url]);
+      }
+      toast.success("Image saved");
+    } catch {
+      toast.error("Failed to upload image");
+    } finally {
+      setIsUploading(false);
+      if (editingIndex !== null) {
+        setCropSrc(null);
+      } else {
+        advanceQueue();
+      }
+    }
+  };
+
   const removeImage = (url: string) => {
     onChange(value.filter((img) => img !== url));
+  };
+
+  const editImage = (url: string, idx: number) => {
+    setEditingIndex(idx);
+    setCropSrc(url);
   };
 
   const isSingle = maxFiles === 1;
@@ -82,13 +126,24 @@ export function ImageUpload({ value, onChange, maxFiles = 4, compact = false }: 
           className={`relative border border-border/30 rounded-lg overflow-hidden group ${tileSize}`}
         >
           <img src={url} alt={`Image ${idx}`} className="w-full h-full object-cover" />
-          <button
-            type="button"
-            onClick={() => removeImage(url)}
-            className="absolute top-1.5 right-1.5 p-1 bg-background/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-white"
-          >
-            <X className="w-3 h-3" />
-          </button>
+          <div className="absolute top-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              type="button"
+              onClick={() => editImage(url, idx)}
+              className="p-1 bg-background/80 rounded-full hover:bg-primary hover:text-primary-foreground"
+              aria-label="Crop image"
+            >
+              <Crop className="w-3 h-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => removeImage(url)}
+              className="p-1 bg-background/80 rounded-full hover:bg-destructive hover:text-white"
+              aria-label="Remove image"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
         </div>
       ))}
 
@@ -108,6 +163,13 @@ export function ImageUpload({ value, onChange, maxFiles = 4, compact = false }: 
           </span>
         </div>
       )}
+
+      <ImageCropModal
+        imageSrc={cropSrc}
+        aspect={aspect}
+        onCancel={handleCropCancel}
+        onConfirm={handleCropConfirm}
+      />
     </div>
   );
 }

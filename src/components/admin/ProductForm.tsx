@@ -209,6 +209,7 @@ export function ProductForm({ productId }: ProductFormProps) {
               onChange={(urls) => setFormData({ ...formData, images: urls })}
               maxFiles={4}
               compact
+              aspect={3 / 4}
             />
           </div>
 
@@ -376,6 +377,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                       onChange={(urls) => updateColor({ images: urls })}
                       maxFiles={4}
                       compact
+                      aspect={3 / 4}
                     />
                   </div>
                 </div>
