@@ -32,7 +32,10 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.culturesignature.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Culture Signature by Jalpa Thakkar | Luxury Jewellery & Timepieces",
   description: "Culture Signature by Jalpa Thakkar — experience the pinnacle of artisanal craftsmanship and timeless elegance.",
   manifest: "/manifest.json",
