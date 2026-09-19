@@ -629,16 +629,13 @@ export const en = {
       viewAll: "View All",
       discoverCollection: "Discover Collection",
       saveChanges: "Save Changes",
+      edit: "Edit",
     },
     sidebar: {
-      overview: "Profile Overview",
+      overview: "My Account",
       wishlist: "My Wishlist",
     },
     overview: {
-      totalOrders: "Total Orders",
-      wishlistItems: "Wishlist Items",
-      recentSelection: "Recent Selection",
-      seeAllOrders: "See All Orders",
       order: "Order",
       placed: "Placed",
       ordersInCollectionOne: "You have {count} order in your collection.",

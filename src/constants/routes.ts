@@ -31,8 +31,6 @@ export const ROUTES = {
     DASHBOARD: "/account",
     ORDERS: "/account/orders",
     WISHLIST: "/account/wishlist",
-    ADDRESSES: "/account/addresses",
-    SETTINGS: "/account/settings",
   },
   AUTH: {
     LOGIN: "/login",

@@ -15,8 +15,6 @@ import { usePWA } from "@/hooks/usePWA";
 const PATH_LABELS: { prefix: string; label: string }[] = [
   { prefix: "/account/wishlist", label: "My Wishlist" },
   { prefix: "/account/orders", label: "Order History" },
-  { prefix: "/account/addresses", label: "Saved Addresses" },
-  { prefix: "/account/settings", label: "Account Settings" },
   { prefix: "/account", label: "My Account" },
   { prefix: "/new-arrivals", label: "New Arrivals" },
   { prefix: "/collections", label: "Collections" },
