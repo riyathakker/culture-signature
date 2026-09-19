@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import { ProductPageClient } from "./ProductPageClient";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.culturesignature.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.culturesignatureindia.com";
 
 async function getProduct(id: string) {
   return prisma.product.findUnique({

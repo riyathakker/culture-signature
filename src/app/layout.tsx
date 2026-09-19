@@ -32,7 +32,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.culturesignature.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.culturesignatureindia.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
