@@ -703,6 +703,11 @@ export const en = {
       title: "Common Inquiries",
       subtitle: "Your Questions Answered",
       breadcrumb: "FAQ",
+      pageHeading: "Frequently Asked Questions",
+      pageDescription: "Everything you need to know about our jewelry, shipping, care, and returns. Can't find your answer? We're just a message away.",
+      ctaTitle: "Still have questions?",
+      ctaDescription: "Our team is happy to help with anything not covered here.",
+      ctaButton: "Contact Us",
       questions: [
         {
           question: "How do I care for my jewelry?",
