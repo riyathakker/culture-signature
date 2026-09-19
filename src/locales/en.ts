@@ -626,11 +626,14 @@ export const en = {
   },
   home: {
     hero: {
-      established: "Established 2013",
-      title1: "Artisanal",
-      title2: "Heritage",
-      description: "Celebrating the soul of Indian craftsmanship through handcrafted jewelry and artisanal bags. Founded by Jalpa Thakkar to empower through mastery.",
-      imageAlt: "Luxury Jewelry",
+      established: "Est. 2013 · Handcrafted in India",
+      signatureLine1: "Culture is our",
+      signatureLine2: "Signature",
+      badge: "Rooted in India",
+      title1: "Crafted by Hand.",
+      title2: "Worn for Generations.",
+      description: "Jewelry and bags built on artisanal mastery — founded by Jalpa Thakkar to celebrate the soul of Indian craftsmanship.",
+      imageAlt: "Model wearing Culture Signature jewelry",
       cta: "Explore the Collection",
       ctaSecondary: "Our Story"
     },

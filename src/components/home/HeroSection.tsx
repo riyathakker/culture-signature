@@ -1,74 +1,141 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { Container } from "@/components/layout/Container";
+import { ArrowRight } from "lucide-react";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
+import { cn } from "@/lib/utils";
+
+const HERO_IMAGE_POOL = [
+  "/hero/hero_image1.png",
+  "/hero/hero_image2.png",
+  "/hero/hero_image3.png",
+  "/hero/hero_image5.png",
+  "/hero/hero_image6.png",
+  "/hero/hero_image7.png",
+];
+
+const FLOAT_COUNT = 4;
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// `sequence` is the slot's position in the clockwise load-in order:
+// top-left -> top-right -> bottom-right -> bottom-left.
+const SLOTS = [
+  { position: "top-2 left-0 sm:left-4 lg:left-16", size: "w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60", rotate: "-rotate-6", sequence: 0 },
+  { position: "top-0 right-0 sm:right-4 lg:right-16", size: "w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60", rotate: "rotate-6", visibility: "hidden sm:block", sequence: 1 },
+  { position: "bottom-0 left-6 sm:left-12 lg:left-28", size: "w-24 h-32 sm:w-32 sm:h-44 lg:w-40 lg:h-52", rotate: "rotate-3", visibility: "hidden sm:block", translate: "translate-y-1/3", sequence: 3 },
+  { position: "bottom-2 right-2 sm:right-16 lg:right-32", size: "w-24 h-32 sm:w-28 sm:h-36 lg:w-36 lg:h-48", rotate: "-rotate-3", sequence: 2 },
+];
 
 export function HeroSection() {
   const { t } = useTranslation();
+  const [images, setImages] = useState(() => HERO_IMAGE_POOL.slice(0, FLOAT_COUNT));
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.resolve().then(() => {
+      if (!cancelled) setImages(shuffle(HERO_IMAGE_POOL).slice(0, FLOAT_COUNT));
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   return (
-    <section className="relative flex min-h-[88vh] items-center overflow-hidden pwa-hide">
-      {/* Warm editorial background — cream drifting into a soft rust wash */}
-      <div className="absolute inset-0 -z-20 bg-gradient-to-br from-secondary via-background to-accent" />
-      {/* Ambient rust glows for depth */}
-      <div className="absolute -top-40 -right-40 -z-10 h-[540px] w-[540px] rounded-full bg-primary/10 blur-[130px]" />
-      <div className="absolute -bottom-52 -left-44 -z-10 h-[540px] w-[540px] rounded-full bg-primary/[0.06] blur-[130px]" />
-      {/* Oversized logo watermark */}
-      <img
-        src="/Logo_Without_Text.png"
-        alt=""
-        aria-hidden
-        className="pointer-events-none absolute right-[-6%] top-1/2 -z-10 hidden w-[48%] max-w-[660px] -translate-y-1/2 opacity-[0.06] md:block"
-      />
+    <section className="relative overflow-hidden pwa-hide bg-accent">
+      <div className="relative flex h-[calc(100vh-100px)] items-center justify-center md:h-[calc(100vh-115px)]">
+        {images.map((src, i) => {
+          const slot = SLOTS[i];
+          return (
+            <motion.div
+              key={src}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 + slot.sequence * 0.15, ease: "easeOut" }}
+              className={cn(
+                "absolute z-10 overflow-hidden rounded-2xl bg-gradient-to-b from-white/0 to-white shadow-xl ring-1 ring-white/60",
+                slot.position,
+                slot.size,
+                slot.rotate,
+                slot.translate,
+                slot.visibility
+              )}
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                sizes="220px"
+                className="object-cover"
+              />
+            </motion.div>
+          );
+        })}
 
-      <Container className="relative">
-        <div className="max-w-3xl">
+        <div className="relative z-20 flex w-full flex-col items-center text-center">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-luxury mb-6 block"
+            className="text-luxury mb-2 block"
           >
             {t("home.hero.established")}
           </motion.span>
+
+          <div
+            aria-hidden
+            className="pointer-events-none select-none whitespace-nowrap font-sans text-[clamp(2.75rem,11vw,7rem)] leading-[0.85] font-bold tracking-tight text-primary/10 uppercase"
+          >
+            {t("home.hero.signatureLine1")}
+          </div>
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15 }}
-            className="mb-8 font-heading text-4xl md:text-4xl lg:text-6xl leading-[0.92] tracking-tighter text-foreground"
+            className="relative z-10 -my-[0.3em] whitespace-nowrap px-6 font-heading text-[clamp(1.75rem,5vw,3.75rem)] leading-[0.95] tracking-tighter text-foreground"
           >
-            {t("home.hero.title1")} <br />
-            <span className="italic text-primary">{t("home.hero.title2")}</span>
+            <span className="italic">{t("home.hero.title2")}</span>
           </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mb-10 max-w-2xl font-serif text-lg md:text-xl italic leading-relaxed text-muted-foreground"
+          <div
+            aria-hidden
+            className="pointer-events-none select-none whitespace-nowrap font-sans text-[clamp(2.75rem,11vw,7rem)] leading-[0.85] font-bold tracking-tight text-primary/10 uppercase"
           >
-            {t("home.hero.description")}
-          </motion.p>
+            {t("home.hero.signatureLine2")}
+          </div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.45 }}
-            className="flex flex-wrap items-center gap-4"
+            className="mt-2 flex flex-wrap items-center justify-center gap-6 px-6"
           >
-            <Link href={ROUTES.COLLECTIONS} className="btn-luxury">
+            <Link
+              href={ROUTES.COLLECTIONS}
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-xs font-bold tracking-[0.2em] text-primary-foreground uppercase shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98]"
+            >
               {t("home.hero.cta")}
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
-            <Link href={ROUTES.ABOUT_US} className="btn-luxury-outline">
+            <Link
+              href={ROUTES.ABOUT_US}
+              className="text-xs font-bold tracking-[0.2em] text-foreground uppercase underline decoration-primary/40 underline-offset-4 transition-colors hover:text-primary"
+            >
               {t("home.hero.ctaSecondary")}
             </Link>
           </motion.div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
