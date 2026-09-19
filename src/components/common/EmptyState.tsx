@@ -33,7 +33,7 @@ export function EmptyState({ icon: Icon, title, description, action, className }
       </div>
 
       <div className="space-y-2 max-w-sm mx-auto">
-        <h2 className="text-3xl font-heading">{title}</h2>
+        <h2 className="text-2xl md:text-3xl font-heading">{title}</h2>
         <p className="muted-italic">{description}</p>
       </div>
 

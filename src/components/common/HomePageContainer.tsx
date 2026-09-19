@@ -32,11 +32,11 @@ export function HomePageContainer({ label, heading, description, children, bread
 
 export const TitleAndDescription = ({ heading, description }: { heading: string; description?: string }) => {
     return (
-        <>
+        <div className="hidden sm:inline-block">
             <h1 className="text-3xl font-heading mt-0 md:mt-3 mb-2"> {heading}</h1>
             {description && <p className="muted-italic text-l max-w-2xl">
                 {description}
             </p>}
-        </>
+        </div>
     );
 }

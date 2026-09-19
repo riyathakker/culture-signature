@@ -10,6 +10,7 @@ import { Heart } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { useTranslation } from "@/context/TranslationContext";
+import { TitleAndDescription } from "@/components/common/HomePageContainer";
 
 export default function AccountWishlistPage() {
   const { data: session, status } = useSession();
@@ -32,11 +33,6 @@ export default function AccountWishlistPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-1">
-        <h2 className="text-3xl font-heading">{t("account.wishlist.heading")}</h2>
-        <p className="muted-italic pwa-hide">{t("account.wishlist.subtitle")}</p>
-      </div>
-
       {items.length === 0 ? (
         <EmptyState
           icon={Heart}

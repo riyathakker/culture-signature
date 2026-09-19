@@ -53,11 +53,6 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-1">
-        <h2 className="text-3xl font-heading">{t("account.orders.heading")}</h2>
-        <p className="muted-italic pwa-hide">{t("account.orders.subtitle")}</p>
-      </div>
-
       {myOrders.length === 0 ? (
         <EmptyState
           icon={ShoppingBag}
