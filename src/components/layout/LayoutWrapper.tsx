@@ -44,7 +44,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     <main className={cn(
       "flex-grow transition-all duration-500 pwa-main-content",
       !isAdminPanel && !isAuthPage && !isAccount && " pt-[100px] md:pt-[115px]",
-      isAccount && "lg:pt-[110px]",
+      isAccount && "pt-[100px] md:pt-[115px] lg:pt-[110px] [@media(display-mode:standalone)]:!pt-0",
       showPWAHeader && "pwa-page-content",
     )}>
       {children}
