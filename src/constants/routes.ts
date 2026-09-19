@@ -3,6 +3,7 @@ export const ROUTES = {
   NEW_ARRIVALS: "/new-arrivals",
   COLLECTIONS: "/collections",
   CATEGORIES: "/categories",
+  SEARCH: "/search",
   ABOUT_US: "/about-us",
   CONTACT_US: "/contact-us",
   WISHLIST: "/wishlist",
