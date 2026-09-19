@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ShoppingBag, Heart, MapPin, Loader2, Pencil, ChevronDown } from "lucide-react";
+import { MapPin, Loader2, Pencil, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +14,6 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { AddressDialog } from "@/components/account/AddressDialog";
 import { AddressActions } from "@/components/account/AddressActions";
-import { AccountStatCard } from "@/components/account/AccountStatCard";
 import { AccountOverviewSkeleton } from "@/components/account/AccountSkeletons";
 import { ROUTES } from "@/constants/routes";
 import { useAccountStore } from "@/store/accountStore";

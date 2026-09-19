@@ -15,7 +15,7 @@ import { OrdersSkeleton } from "@/components/account/AccountSkeletons";
 import { useTranslation } from "@/context/TranslationContext";
 
 export default function OrdersPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { myOrders, myOrdersLoading, fetchMyOrders, applyOrderUpdate } = useOrderStore();
   const { t } = useTranslation();

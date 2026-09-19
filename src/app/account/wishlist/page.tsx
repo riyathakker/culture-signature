@@ -10,10 +10,9 @@ import { Heart } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { useTranslation } from "@/context/TranslationContext";
-import { TitleAndDescription } from "@/components/common/HomePageContainer";
 
 export default function AccountWishlistPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { items, isLoading, fetchWishlist } = useWishlistStore();
   const { t } = useTranslation();
