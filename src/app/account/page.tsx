@@ -166,7 +166,7 @@ export default function AccountPage() {
           <Separator />
 
           <section className="space-y-6">
-            <div className="flex flex-row lg:flex-col justify-between items-start sm:items-end gap-4">
+            <div className="flex lg:flex-row justify-between items-start sm:items-end gap-4">
               <SectionHeader>{t("account.addresses.heading")}</SectionHeader>
               <AddressDialog />
             </div>
