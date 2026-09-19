@@ -100,16 +100,16 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       `${idx + 1}. ${item.name}${item.color ? ` (${item.color})` : ""} x${item.quantity} — ₹${(item.price * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
     );
     return [
-      "Hi Culture Signature! I'd like to place this order:",
+      "Hi Culture Signature! ✨ I'd like to place the following order:",
       "",
       ...lines,
       "",
       `Grand Total: ₹${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       "",
-      `Shipping to: ${shippingAddress.firstName} ${shippingAddress.lastName}, ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}`,
+      `Shipping Details: ${shippingAddress.firstName} ${shippingAddress.lastName}, ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}`,
       `Phone: ${shippingAddress.phone}`,
       "",
-      `I'll share the payment screenshot here after paying via UPI to ${UPI_NUMBER_DISPLAY}.`,
+      `I'll share the payment screenshot once the payment is done.`,
     ].join("\n");
   };
 
