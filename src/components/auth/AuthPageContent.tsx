@@ -192,7 +192,7 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5 mb-[12px]">
               {view === "signup" && (
                 <div className="space-y-1.5">
                   <Label htmlFor="name" className="label-luxury">
@@ -322,13 +322,6 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
               </Button>
             </form>
 
-            {/* Divider */}
-            <div className="flex items-center gap-4">
-              <div className="flex-1 h-px bg-border" />
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground/50 font-bold">{t("auth.common.or")}</span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-
             {/* Toggle login / signup */}
             <div className="text-center">
               {view === "login" ? (
@@ -343,7 +336,6 @@ export function AuthPageContent({ initialView = "login", callbackUrl = "/" }: Au
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground font-serif italic">
-                  {t("auth.signup.hasAccount")}{" "}
                   <button
                     onClick={() => setView("login")}
                     className="not-italic font-sans font-bold text-primary hover:underline underline-offset-4"

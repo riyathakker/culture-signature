@@ -165,11 +165,10 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] p-0 border-none bg-background rounded-2xl overflow-y-auto max-h-[90dvh] shadow-2xl [&>button]:text-white [&>button]:opacity-100">
-        {/* Banner */}
+      <DialogContent className="sm:max-w-[450px] gap-0 p-0 border-none bg-background rounded-xl overflow-y-auto max-h-[95dvh] shadow-2xl [&>button]:text-white [&>button]:opacity-100">
         <div className="relative h-18 bg-primary flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 bg-luxury-gradient opacity-20" />
-          <h2 className="text-primary-foreground font-heading text-xl tracking-widest uppercase relative z-10">
+          <h2 className="text-secondary font-heading text-xl tracking-widest uppercase relative z-10">
             Culture Signature
           </h2>
         </div>
@@ -188,7 +187,7 @@ export function AuthModal({ open: openProp, onOpenChange: onOpenChangeProp }: Au
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5 mb-[12px]">
             {view === "signup" && (
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
