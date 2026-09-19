@@ -9,7 +9,6 @@ import { useCartStore, CartItem } from "@/store/cartStore";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { QuickViewModal } from "./QuickViewModal";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { QuantitySelector } from "./QuantitySelector";
 import { convertINRToDiscountPercentage } from "@/utils/helper";
@@ -23,7 +22,7 @@ interface ProductCardProps {
   hideActions?: boolean;
 }
 
-export function ProductCard({ product, variant = "default", hideActions: hideActionsProp = false }: ProductCardProps) {
+export function ProductCard({ product, variant = "default", hideActions = false }: ProductCardProps) {
   const pathname = usePathname();
   const from = pathname.startsWith("/collections")
     ? "collections"
@@ -33,7 +32,6 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
     ? "new-arrivals"
     : null;
 
-  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const displayImage = product.images?.[0];
 
@@ -93,8 +91,6 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
   const discountPercentage = convertINRToDiscountPercentage(product.price, product.discount);
   const productHref = `/product/${product.id}${from ? `?from=${from}` : ""}`;
 
-  const hideActions = hideActionsProp || !!from;
-
   return (
     <>
       <div className={cn("group relative bg-transparent rounded-lg", isOutOfStock && "grayscale-[0.5]")}>
@@ -121,7 +117,7 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
           </div>
 
           {!isOutOfStock && !isMobile && !hideActions && (
-            <div className="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-20 flex gap-2">
+            <div className="absolute bottom-4 left-0 w-full px-4 translate-y-4 opacity-0 pointer-events-none group-hover:translate-y-0 group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-500 z-20 flex gap-2">
               {!isAdmin && (
                 cartItem ? (
                   <div className="flex-1" onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}>
@@ -145,18 +141,7 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
               )}
               {variant !== "wishlist" && (
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); setIsQuickViewOpen(true); }}
-                    className={cn(
-                      "bg-background/90 border-none backdrop-blur-sm hover:text-primary h-10 w-10 rounded-full",
-                      isAdmin && "flex-1 w-auto px-4 gap-2 text-spaced-bold"
-                    )}
-                  >
-                    <Eye className="w-4 h-4" />
-                    {isAdmin && t("shop.product.quickView")}
-                  </Button>
+                  
                   {!isAdmin && (
                     <Button
                       variant="outline"
@@ -260,12 +245,6 @@ export function ProductCard({ product, variant = "default", hideActions: hideAct
           </div>
         )}
       </div>
-
-      <QuickViewModal
-        product={product}
-        open={isQuickViewOpen}
-        onOpenChange={setIsQuickViewOpen}
-      />
     </>
   );
 }

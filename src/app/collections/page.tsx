@@ -127,7 +127,7 @@ export default function ShopPage() {
         ) : (
           <div className="grid-gallery animate-in fade-in duration-700">
             {sortedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} hideActions={false}/>
             ))}
           </div>
         )}
