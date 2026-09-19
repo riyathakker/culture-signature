@@ -18,7 +18,7 @@ export default function RefundPage() {
       </Container>
 
       <Container>
-        <div className="max-w-4xl mx-6 prose prose-luxury">
+        <div className="max-w-4xl prose prose-luxury">
           <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.refund.sections.commitment.title")}</h2>
             <p className="text-muted-foreground leading-relaxed font-serif italic mb-4">
