@@ -61,10 +61,10 @@ export default function BagPage() {
           action={{ label: t("cart.page.browseCollection"), href: ROUTES.COLLECTIONS }}
         />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Cart Items List */}
           <div className="lg:col-span-2 space-y-8">
-            <div className="pt-8 flex flex-row items-center justify-between gap-4">
+            <div className="pt-2 flex flex-row items-center justify-between gap-4">
               <Link href={ROUTES.COLLECTIONS} className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground hover:text-primary transition-colors shrink-0">
                 <ArrowLeft className="w-4 h-4" /> {t("cart.page.continueShopping")}
               </Link>
