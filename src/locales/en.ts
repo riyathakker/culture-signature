@@ -1167,7 +1167,7 @@ export const en = {
         global: { title: "Global Reach", desc: "Partnering with premium couriers for worldwide delivery." }
       },
       sections: {
-        processing: { title: "1. Processing Times", content: "As our pieces are often finished to order, please allow 2-4 business days for processing. Custom masterpieces may require extended timeframes, which will be communicated during the design phase." },
+        processing: { title: "1. Processing Times", content: "As our pieces are often finished to order, please allow 4-8 business days for processing. Custom masterpieces may require extended timeframes, which will be communicated through email." },
         methods: { title: "2. Shipping Methods & Rates", table: { region: "Region", courier: "Courier", rate: "Rate", domestic: "India (Domestic)", domesticCourier: "Premium Express", complimentary: "Complimentary", international: "International", internationalCourier: "DHL/FedEx Priority" } },
         signature: { title: "3. Signature Requirement", content: "To ensure the security of your high-value purchase, all Culture Signature shipments require an adult signature upon delivery. We do not ship to P.O. boxes." },
         customs: { title: "4. International Customs", content: "For international orders, the recipient is responsible for any local customs duties or import taxes. These are not included in the shipping rate and will be collected by the courier at the time of delivery." }
