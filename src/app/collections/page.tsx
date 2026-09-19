@@ -31,6 +31,10 @@ export default function ShopPage() {
     () => products.length ? Math.ceil(Math.max(...products.map((p) => p.price)) / 1000) * 1000 : 100000,
     [products]
   );
+  // Clamp the upper bound to the real max so the slider's value never exceeds
+  // its own `max` (which otherwise pushes the right thumb off the track)
+  // while priceMax is still catching up to a freshly-loaded product list.
+  const clampedPriceRange: [number, number] = [priceRange[0], Math.min(priceRange[1], priceMax)];
 
   const matchesFilters = (p: (typeof products)[number], f: FilterDraft) => {
     if (searchQuery.trim()) {
@@ -48,7 +52,7 @@ export default function ShopPage() {
   };
 
   const filtered = products.filter((p) =>
-    matchesFilters(p, { categoryIds: activeCategoryIds, inStock: inStockOnly, discount: hasDiscountOnly, price: priceRange })
+    matchesFilters(p, { categoryIds: activeCategoryIds, inStock: inStockOnly, discount: hasDiscountOnly, price: clampedPriceRange })
   );
 
   const sortedProducts = [...filtered].sort((a, b) => {
@@ -67,7 +71,7 @@ export default function ShopPage() {
     onInStockChange: setInStockOnly,
     hasDiscountOnly,
     onHasDiscountChange: setHasDiscountOnly,
-    priceRange,
+    priceRange: clampedPriceRange,
     onPriceChange: setPriceRange,
     maxPrice: priceMax,
     filteredCount: sortedProducts.length,
@@ -98,7 +102,7 @@ export default function ShopPage() {
           onInStockChange={setInStockOnly}
           hasDiscountOnly={hasDiscountOnly}
           onHasDiscountChange={setHasDiscountOnly}
-          priceRange={priceRange}
+          priceRange={clampedPriceRange}
           onPriceChange={setPriceRange}
           maxPrice={priceMax}
         />

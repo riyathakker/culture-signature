@@ -13,30 +13,50 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isHome = pathname === "/";
   const isAccount = pathname.startsWith("/account");
-  const { fetchWishlist, clearWishlist } = useWishlistStore();
+  const {
+    fetchWishlist,
+    clearWishlist,
+    setIsAuthenticated: setWishlistAuthenticated,
+    mergeGuestWishlistOnLogin,
+    clearLocalWishlist,
+  } = useWishlistStore();
   const { fetchCart, setIsAuthenticated, mergeGuestCartOnLogin, clearLocalCart } = useCartStore();
   const { status } = useSession();
   const prevStatus = useRef(status);
 
   useEffect(() => {
     setIsAuthenticated(status === "authenticated");
+    setWishlistAuthenticated(status === "authenticated");
     if (status === "authenticated") {
-      fetchWishlist();
-      // Merge any guest cart on the actual guest→auth transition; otherwise
-      // (e.g. refresh while already logged in) just load the server cart.
+      // Merge any guest wishlist/cart on the actual guest→auth transition;
+      // otherwise (e.g. refresh while already logged in) just load the server state.
       if (prevStatus.current === "unauthenticated") {
+        mergeGuestWishlistOnLogin();
         mergeGuestCartOnLogin();
       } else {
+        fetchWishlist();
         fetchCart();
       }
     }
-    // Clear local stores when the session ends (server cart is preserved).
+    // Clear local stores when the session ends (server cart/wishlist are preserved).
     if (prevStatus.current === "authenticated" && status === "unauthenticated") {
       clearWishlist();
+      clearLocalWishlist();
       clearLocalCart();
     }
     prevStatus.current = status;
-  }, [status, fetchWishlist, fetchCart, setIsAuthenticated, clearWishlist, mergeGuestCartOnLogin, clearLocalCart]);
+  }, [
+    status,
+    fetchWishlist,
+    fetchCart,
+    setIsAuthenticated,
+    setWishlistAuthenticated,
+    clearWishlist,
+    clearLocalWishlist,
+    mergeGuestWishlistOnLogin,
+    mergeGuestCartOnLogin,
+    clearLocalCart,
+  ]);
 
   const showPWAHeader = !isAdminPanel && !isAuthPage && !isHome && !isAccount;
 

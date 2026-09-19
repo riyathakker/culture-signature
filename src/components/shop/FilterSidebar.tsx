@@ -102,7 +102,7 @@ export function FilterSidebar({
     <aside className="w-full flex-shrink-0 space-y-8">
       <div>
 
-        <Accordion defaultValue={["availability", "price"]} className="w-full">
+        <Accordion defaultValue={["availability", "categories", "price"]} className="w-full">
 
           <AccordionItem value="availability" className="border-b border-muted-foreground/10">
             <AccordionTrigger className="hover:no-underline uppercase tracking-widest text-sm py-3">

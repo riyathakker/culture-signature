@@ -33,8 +33,8 @@ function shuffle<T>(arr: T[]): T[] {
 // top-left -> top-right -> bottom-right -> bottom-left.
 const SLOTS = [
   { position: "top-2 left-0 sm:left-4 lg:left-16", size: "w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60", rotate: "-rotate-6", sequence: 0 },
-  { position: "top-0 right-0 sm:right-4 lg:right-16", size: "w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60", rotate: "rotate-6", visibility: "hidden sm:block", sequence: 1 },
-  { position: "bottom-0 left-6 sm:left-12 lg:left-28", size: "w-24 h-32 sm:w-32 sm:h-44 lg:w-40 lg:h-52", rotate: "rotate-3", visibility: "hidden sm:block", translate: "translate-y-1/3", sequence: 3 },
+  { position: "top-0 right-0 sm:right-4 lg:right-16", size: "w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60", rotate: "rotate-6", sequence: 1 },
+  { position: "bottom-0 left-6 sm:left-12 lg:left-28", size: "w-24 h-32 sm:w-32 sm:h-44 lg:w-40 lg:h-52", rotate: "rotate-3", translate: "translate-y-1/3", sequence: 3 },
   { position: "bottom-2 right-2 sm:right-16 lg:right-32", size: "w-24 h-32 sm:w-28 sm:h-36 lg:w-36 lg:h-48", rotate: "-rotate-3", sequence: 2 },
 ];
 
@@ -66,8 +66,7 @@ export function HeroSection() {
                 slot.position,
                 slot.size,
                 slot.rotate,
-                slot.translate,
-                slot.visibility
+                slot.translate
               )}
             >
               <Image

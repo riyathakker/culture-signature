@@ -22,6 +22,10 @@ export default function NewArrivalsPage() {
     () => newArrivals.length ? Math.ceil(Math.max(...newArrivals.map((p) => p.price)) / 1000) * 1000 : 100000,
     [newArrivals]
   );
+  // Clamp the upper bound to the real max so the slider's value never exceeds
+  // its own `max` (which otherwise pushes the right thumb off the track)
+  // while priceMax is still catching up to a freshly-loaded product list.
+  const clampedPriceRange: [number, number] = [priceRange[0], Math.min(priceRange[1], priceMax)];
   const [sortBy, setSortBy] = useState("newest");
 
   useEffect(() => {
@@ -37,7 +41,7 @@ export default function NewArrivalsPage() {
   };
 
   const filtered = newArrivals.filter((p) =>
-    matchesFilters(p, { categoryIds: activeCategoryIds, inStock: inStockOnly, discount: hasDiscountOnly, price: priceRange })
+    matchesFilters(p, { categoryIds: activeCategoryIds, inStock: inStockOnly, discount: hasDiscountOnly, price: clampedPriceRange })
   );
 
   const sorted = [...filtered].sort((a, b) => {
@@ -56,7 +60,7 @@ export default function NewArrivalsPage() {
     onInStockChange: setInStockOnly,
     hasDiscountOnly,
     onHasDiscountChange: setHasDiscountOnly,
-    priceRange,
+    priceRange: clampedPriceRange,
     onPriceChange: setPriceRange,
     maxPrice: priceMax,
     filteredCount: sorted.length,
@@ -87,7 +91,7 @@ export default function NewArrivalsPage() {
           onInStockChange={setInStockOnly}
           hasDiscountOnly={hasDiscountOnly}
           onHasDiscountChange={setHasDiscountOnly}
-          priceRange={priceRange}
+          priceRange={clampedPriceRange}
           onPriceChange={setPriceRange}
           maxPrice={priceMax}
         />
@@ -101,7 +105,7 @@ export default function NewArrivalsPage() {
         ) : sorted.length === 0 ? (
           <div className="py-32 text-center space-y-6">
             <p className="muted-italic text-lg">{t("home.newArrivals.empty")}</p>
-            {(activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly || priceRange[0] > 0 || priceRange[1] < priceMax) && (
+            {(activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly || clampedPriceRange[0] > 0 || clampedPriceRange[1] < priceMax) && (
               <button
                 onClick={() => {
                   setActiveCategoryIds([]);
