@@ -14,6 +14,7 @@ import {
   Sparkles,
   LogOut,
   Star,
+  Home,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
@@ -81,6 +82,13 @@ export function AdminSidebar() {
       </nav>
 
       <div className="p-4 border-t border-primary-foreground/10 space-y-1">
+        <Link
+          href={ROUTES.HOME}
+          className="flex items-center gap-3 px-4 py-3 text-primary-foreground/60 hover:text-primary-foreground hover:bg-primary-foreground/10 rounded-sm transition-all w-full group"
+        >
+          <Home className="w-4 h-4" />
+          <span className="text-spaced-bold font-bold">{t("nav.links.home")}</span>
+        </Link>
         <button
           onClick={() => setSignOutOpen(true)}
           className="flex items-center gap-3 px-4 py-3 text-primary-foreground/60 hover:text-destructive hover:bg-primary-foreground/10 rounded-sm transition-all w-full group"
