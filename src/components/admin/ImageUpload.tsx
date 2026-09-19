@@ -99,6 +99,15 @@ export function ImageUpload({ value, onChange, maxFiles = 4, compact = false, as
 
   const removeImage = (url: string) => {
     onChange(value.filter((img) => img !== url));
+    if (url.includes("res.cloudinary.com")) {
+      fetch("/api/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      }).catch(() => {
+        // best-effort cleanup; the image is already removed from the product
+      });
+    }
   };
 
   const editImage = (url: string, idx: number) => {
