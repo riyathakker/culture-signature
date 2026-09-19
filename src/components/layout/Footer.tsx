@@ -59,7 +59,7 @@ export function Footer() {
               {t("shop.footer.brand.description")}
             </p>
 
-            <div className="flex items-center flex-wrap gap-3">
+            <div className="flex items-center flex-wrap">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
                 return (
