@@ -8,8 +8,16 @@ import { toast } from "sonner";
 import { ROUTES } from "@/constants/routes";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { useTranslation } from "@/context/TranslationContext";
+import { cn } from "@/lib/utils";
 
-export function AccountMobileHeader() {
+interface AccountMobileHeaderProps {
+  // Shopper /account pages show the standard site header on mobile web and
+  // reserve this bar for standalone/PWA. The admin panel has no standard
+  // header at all on mobile, so it keeps this bar on mobile web too.
+  alwaysShowOnMobile?: boolean;
+}
+
+export function AccountMobileHeader({ alwaysShowOnMobile = false }: AccountMobileHeaderProps) {
   const { data: session } = useSession();
   const { t } = useTranslation();
   const user = session?.user;
@@ -24,7 +32,10 @@ export function AccountMobileHeader() {
   return (
     <>
       <header
-        className="sticky top-0 z-30 bg-primary px-5 pb-4 items-center justify-between hidden [@media(display-mode:standalone)]:!flex"
+        className={cn(
+          "sticky top-0 z-30 bg-primary px-5 pb-4 items-center justify-between [@media(display-mode:standalone)]:!flex",
+          alwaysShowOnMobile ? "flex lg:hidden" : "hidden"
+        )}
         style={{ paddingTop: "calc(1rem + env(safe-area-inset-top))" }}
       >
         <Link href={ROUTES.HOME} className="text-xl text-primary-foreground font-heading tracking-tighter leading-none">
