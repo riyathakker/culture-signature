@@ -5,38 +5,45 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore, cartLineKey } from "@/store/cartStore";
 import { useCheckoutStore } from "@/store/checkoutStore";
-import { useProductStore } from "@/store/productStore";
-import { useOrderStore } from "@/store/orderStore";
 import { useAuthStore } from "@/store/authStore";
 import { Truck, ShieldCheck, ArrowRight, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
 
-const RAZORPAY_SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+// --- Razorpay (paused — see handleFinalize below) --------------------------
+// const RAZORPAY_SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+//
+// // Inject the Razorpay checkout script once and resolve when it's ready.
+// function loadRazorpayScript(): Promise<void> {
+//   return new Promise((resolve, reject) => {
+//     if (typeof window !== "undefined" && window.Razorpay) return resolve();
+//     const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_SCRIPT_SRC}"]`);
+//     if (existing) {
+//       existing.addEventListener("load", () => resolve());
+//       existing.addEventListener("error", () => reject(new Error("Failed to load payment gateway")));
+//       return;
+//     }
+//     const script = document.createElement("script");
+//     script.src = RAZORPAY_SCRIPT_SRC;
+//     script.onload = () => resolve();
+//     script.onerror = () => reject(new Error("Failed to load payment gateway"));
+//     document.body.appendChild(script);
+//   });
+// }
 
-// Inject the Razorpay checkout script once and resolve when it's ready.
-function loadRazorpayScript(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (typeof window !== "undefined" && window.Razorpay) return resolve();
-    const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_SCRIPT_SRC}"]`);
-    if (existing) {
-      existing.addEventListener("load", () => resolve());
-      existing.addEventListener("error", () => reject(new Error("Failed to load payment gateway")));
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = RAZORPAY_SCRIPT_SRC;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load payment gateway"));
-    document.body.appendChild(script);
-  });
-}
+// --- Temporary manual UPI / WhatsApp payment flow ---------------------------
+// Online payments are paused for now: on checkout we send the customer to
+// WhatsApp with the order details pre-filled, they pay via UPI to this
+// number, then share the payment screenshot on WhatsApp for manual
+// confirmation. Swap back to the Razorpay flow above once ready.
+const WHATSAPP_BUSINESS_NUMBER = "917878904555";
+const UPI_NUMBER_DISPLAY = "+91 78789 04555";
 
 interface OrderSummaryProps {
   variant?: "cart" | "checkout";
@@ -46,8 +53,6 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   const { t } = useTranslation();
   const { items, appliedPromo, setAppliedPromo, getDiscountAmount, clearCart } = useCartStore();
   const { shippingAddress, resetCheckout } = useCheckoutStore();
-  const { fetchFeaturedProducts, fetchNewArrivals } = useProductStore();
-  const { fetchOrders } = useOrderStore();
   const { openModal } = useAuthStore();
   const [promoCode, setPromoCode] = useState("");
   const [isApplying, setIsApplying] = useState(false);
@@ -55,7 +60,6 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   const [processingStage, setProcessingStage] = useState<"verifying" | "recording" | null>(null);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
-  const router = useRouter();
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -91,6 +95,24 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
     setAppliedPromo(null);
   };
 
+  const buildWhatsAppOrderMessage = () => {
+    const lines = items.map((item, idx) =>
+      `${idx + 1}. ${item.name}${item.color ? ` (${item.color})` : ""} x${item.quantity} — ₹${(item.price * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+    );
+    return [
+      "Hi Culture Signature! I'd like to place this order:",
+      "",
+      ...lines,
+      "",
+      `Grand Total: ₹${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      "",
+      `Shipping to: ${shippingAddress.firstName} ${shippingAddress.lastName}, ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}`,
+      `Phone: ${shippingAddress.phone}`,
+      "",
+      `I'll share the payment screenshot here after paying via UPI to ${UPI_NUMBER_DISPLAY}.`,
+    ].join("\n");
+  };
+
   const handleFinalize = async () => {
     if (!shippingAddress.firstName || !shippingAddress.lastName || !shippingAddress.street || !shippingAddress.state || !shippingAddress.city || !shippingAddress.phone) {
       toast.error(t("cart.summary.messages.completeShipping"));
@@ -99,6 +121,20 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
     setIsFinalizing(true);
     try {
+      // --- Temporary manual UPI / WhatsApp payment flow ---------------------
+      toast.success(
+        `Please pay ₹${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} via UPI to ${UPI_NUMBER_DISPLAY}, then share the payment screenshot on WhatsApp to confirm your order.`,
+        { duration: 8000 }
+      );
+
+      const waLink = `https://wa.me/${WHATSAPP_BUSINESS_NUMBER}?text=${encodeURIComponent(buildWhatsAppOrderMessage())}`;
+      window.open(waLink, "_blank", "noopener,noreferrer");
+
+      await clearCart();
+      resetCheckout();
+      setIsFinalizing(false);
+
+      /* --- Razorpay flow (paused) ------------------------------------------
       const orderResponse = await fetch("/api/razorpay/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -177,6 +213,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       fetchOrders(true);
       router.refresh();
       router.push(`/bag/checkout/success?id=${order.id}`);
+      ------------------------------------------------------------------- */
 
     } catch (error: any) {
       console.error("Finalize error:", error);
