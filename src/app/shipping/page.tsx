@@ -10,37 +10,14 @@ export default function ShippingPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="bg-background min-h-screen pb-20">
+    <div className="bg-background min-h-screen pb-8">
       <Container className="pt-4 pb-4 mb-4">
         <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.shipping.breadcrumb") }]} />
         <TitleAndDescription heading={t("legal.shipping.title")} description={t("legal.shipping.subtitle")} />
       </Container>
 
       <Container>
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 mb-20">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto">
-                <Truck className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-heading text-xl">{t("legal.shipping.badges.discrete.title")}</h3>
-              <p className="text-sm muted-italic">{t("legal.shipping.badges.discrete.desc")}</p>
-            </div>
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto">
-                <ShieldCheck className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-heading text-xl">{t("legal.shipping.badges.insured.title")}</h3>
-              <p className="text-sm muted-italic">{t("legal.shipping.badges.insured.desc")}</p>
-            </div>
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto">
-                <Globe className="w-8 h-8 text-primary" />
-              </div>
-              <h3 className="font-heading text-xl">{t("legal.shipping.badges.global.title")}</h3>
-              <p className="text-sm muted-italic">{t("legal.shipping.badges.global.desc")}</p>
-            </div>
-          </div>
+        <div className="max-w-4xl mx-6">
 
           <div className="space-y-12 prose prose-luxury max-w-none">
             <section>

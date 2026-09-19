@@ -14,13 +14,19 @@ export default async function handler(req: NextRequest & { userEmail?: string; u
 
     if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
+    // Scoped by userId; a non-match (wrong owner or missing id) throws
+    // P2025 → 404 rather than a generic 500.
     await prisma.address.update({
       where: { id, userId },
       data: { isDeleted: true }
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === "P2025") {
+      return NextResponse.json({ error: "Address not found" }, { status: 404 });
+    }
+    console.error("[ADDRESS_DELETE]", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

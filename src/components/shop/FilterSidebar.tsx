@@ -99,9 +99,8 @@ export function FilterSidebar({
     : filteredCount;
 
   return (
-    <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
+    <aside className="w-full flex-shrink-0 space-y-8">
       <div>
-        <h3 className="text-luxury mb-6 font-heading text-2xl">{t("shop.filter.title")}</h3>
 
         <Accordion defaultValue={["availability", "price"]} className="w-full">
 

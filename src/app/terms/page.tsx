@@ -9,7 +9,7 @@ export default function TermsPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="bg-background min-h-screen pb-20">
+    <div className="bg-background min-h-screen pb-8">
       <Container className="pt-4 pb-4 mb-4">
         <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.terms.breadcrumb") }]} />
         <TitleAndDescription heading={t("legal.terms.title")} description={t("legal.terms.subtitle")} />
@@ -18,14 +18,14 @@ export default function TermsPage() {
       <Container>
         <div className="max-w-4xl mx-6 prose prose-luxury">
 
-          <section className="mb-12">
+          <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.terms.sections.agreement.title")}</h2>
             <p className="text-muted-foreground leading-relaxed">
               {t("legal.terms.sections.agreement.content")}
             </p>
           </section>
 
-          <section className="mb-12">
+          <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.terms.sections.intellectualProperty.title")}</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
               {t("legal.terms.sections.intellectualProperty.content")}
@@ -35,14 +35,14 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="mb-12">
+          <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.terms.sections.accounts.title")}</h2>
             <p className="text-muted-foreground leading-relaxed">
               {t("legal.terms.sections.accounts.content")}
             </p>
           </section>
 
-          <section className="mb-12">
+          <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.terms.sections.pricing.title")}</h2>
             <p className="text-muted-foreground leading-relaxed mb-4">
               {t("legal.terms.sections.pricing.content")}
@@ -52,7 +52,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="mb-12">
+          <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.terms.sections.liability.title")}</h2>
             <p className="text-muted-foreground leading-relaxed">
               {t("legal.terms.sections.liability.content")}

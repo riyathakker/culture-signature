@@ -11,22 +11,22 @@ export default function RefundPage() {
   const processItems = t("legal.refund.sections.process.items") as unknown as string[];
 
   return (
-    <div className="bg-background min-h-screen pb-20">
+    <div className="bg-background min-h-screen pb-8">
       <Container className="pt-4 pb-4 mb-4">
         <Breadcrumbs items={[{ label: t("footer.sections.legal.title") }, { label: t("legal.refund.breadcrumb") }]} />
         <TitleAndDescription heading={t("legal.refund.title")} description={t("legal.refund.subtitle")} />
       </Container>
 
       <Container>
-        <div className="max-w-4xl mx-6 prose prose-luxury">
-          <section className="mb-12">
+        <div className="max-w-4xl prose prose-luxury">
+          <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.refund.sections.commitment.title")}</h2>
             <p className="text-muted-foreground leading-relaxed font-serif italic mb-4">
               {t("legal.refund.sections.commitment.content")}
             </p>
           </section>
 
-          <section className="mb-12 border-l-2 border-primary/20 pl-6 py-2">
+          <section className="mb-8">
             <h2 className="text-xl font-heading mb-3 text-primary">{t("legal.refund.sections.eligibility.title")}</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               {t("legal.refund.sections.eligibility.intro")}
@@ -41,14 +41,14 @@ export default function RefundPage() {
             </ul>
           </section>
 
-          <section className="mb-12">
+          <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.refund.sections.nonReturnable.title")}</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {t("legal.refund.sections.nonReturnable.content")}
             </p>
           </section>
 
-          <section className="mb-12">
+          <section className="mb-8">
             <h2 className="text-2xl font-heading mb-4 text-primary">{t("legal.refund.sections.process.title")}</h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               {t("legal.refund.sections.process.intro")}
@@ -58,14 +58,6 @@ export default function RefundPage() {
                 <li key={idx}>{item}</li>
               ))}
             </ol>
-          </section>
-
-          <section className="bg-secondary/10 p-8 rounded-sm">
-            <h2 className="text-xl font-heading mb-4 text-primary uppercase tracking-widest text-center">{t("legal.refund.sections.assistance.title")}</h2>
-            <p className="text-sm text-muted-foreground text-center font-serif italic">
-              {t("legal.refund.sections.assistance.content")} <br />
-              <span className="text-primary font-bold not-italic">{t("legal.refund.sections.assistance.email")}</span>
-            </p>
           </section>
         </div>
       </Container>

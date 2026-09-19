@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { timingSafeEqual } from "crypto";
+
+function isAuthorized(req: Request): boolean {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) return false; // fail closed if not configured
+
+  const authHeader = req.headers.get("authorization") || "";
+  const expected = `Bearer ${secret}`;
+  const a = Buffer.from(authHeader);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 export async function GET(req: Request) {
-  // Optional: Add a secret key check to prevent unauthorized triggers
-  // const authHeader = req.headers.get('authorization');
-  // if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-  //   return new Response('Unauthorized', { status: 401 });
-  // }
+  if (!isAuthorized(req)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
   try {
     const now = new Date();

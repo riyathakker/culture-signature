@@ -39,12 +39,6 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/", nextUrl));
   }
 
-  // Admin identity is confined to the admin panel — no storefront. To browse
-  // the store, the admin switches to their customer account (role becomes USER).
-  if (isLoggedIn && role === "ADMIN" && !isAdminRoute) {
-    return NextResponse.redirect(new URL("/admin", nextUrl));
-  }
-
   return NextResponse.next();
 });
 

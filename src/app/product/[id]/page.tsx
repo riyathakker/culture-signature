@@ -1,161 +1,89 @@
-"use client";
+import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
+import { ProductPageClient } from "./ProductPageClient";
 
-import { Container } from "@/components/layout/Container";
-import { Breadcrumbs } from "@/components/common/Breadcrumbs";
-import { ProductGallery } from "@/components/product/ProductGallery";
-import { ProductInfo } from "@/components/product/ProductInfo";
-import { ProductReviews } from "@/components/product/ProductReviews";
-import { RecentlyViewed } from "@/components/product/RecentlyViewed";
-import { ProductCard } from "@/components/common/ProductCard";
-import { SectionTitle } from "@/components/common/SectionTitle";
-import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { useTranslation } from "@/context/TranslationContext";
-import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.culturesignatureindia.com";
 
-export default function ProductPage() {
-  const { id } = useParams();
-  const searchParams = useSearchParams();
-  const from = searchParams.get("from");
-  const [product, setProduct] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
-  const [galleryImages, setGalleryImages] = useState<string[]>([]);
-  const { t } = useTranslation();
-  const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
+async function getProduct(id: string) {
+  return prisma.product.findUnique({
+    where: { id, isDeleted: false },
+    include: { category: true },
+  });
+}
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/products/${id}`);
-        if (!res.ok) throw new Error("Product not found");
-        const data = await res.json();
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const product = await getProduct(id);
 
-        const colors = Array.isArray(data.colors) ? data.colors : [];
-        const defaultImages = (colors.length > 0 && colors[0].images?.length > 0)
-          ? colors[0].images
-          : data.images || [];
-        setGalleryImages(defaultImages);
+  if (!product) {
+    return { title: "Product Not Found | Culture Signature" };
+  }
 
-        addRecentlyViewed({
-          id: data.id,
-          name: data.name,
-          price: data.price,
-          discount: data.discount || 0,
-          images: data.images || [],
-          category: data.category?.name || t("shop.product.defaultCollection"),
-        });
+  const title = `${product.name} | Culture Signature`;
+  const description =
+    product.description?.slice(0, 160) ||
+    `Shop ${product.name} from Culture Signature — luxury jewellery & timepieces.`;
+  const url = `${SITE_URL}/product/${product.id}`;
+  const images = product.images?.length ? product.images : undefined;
 
-        setProduct({
-          ...data,
-          image: data.images?.[0] || "/placeholder.jpg",
-          category: data.category?.name || t("shop.product.defaultCollection"),
-          categoryId: data.categoryId,
-          colors,
-          details: {
-            description: data.description,
-            specifications: [
-              { label: t("shop.product.details.specs.category"), value: data.category?.name || t("shop.product.defaultCollection") },
-              { label: t("shop.product.details.specs.stock"), value: data.stock > 0 ? t("shop.product.details.specs.inStock") : t("shop.product.details.specs.outOfStock") },
-            ],
-            shipping: t("shop.product.details.shippingNote"),
-          },
-        });
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url,
+      images,
+    },
+  };
+}
 
-        // Fetch related products from same category
-        if (data.categoryId) {
-          const relRes = await fetch(`/api/products?categoryId=${data.categoryId}&limit=5`);
-          const relData = await relRes.json();
-          setRelatedProducts(
-            (Array.isArray(relData) ? relData : [])
-              .filter((p: any) => p.id !== id)
-              .slice(0, 4)
-          );
-        }
-      } catch (error) {
-        toast.error(t("shop.product.details.loadError"));
-      } finally {
-        setLoading(false);
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const product = await getProduct(id);
+
+  const jsonLd = product
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        description: product.description || undefined,
+        image: product.images,
+        sku: product.id,
+        brand: { "@type": "Brand", name: "Culture Signature" },
+        category: product.category?.name,
+        offers: {
+          "@type": "Offer",
+          url: `${SITE_URL}/product/${product.id}`,
+          priceCurrency: "INR",
+          price: product.price,
+          availability:
+            product.stock > 0
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+        },
       }
-    };
-
-    if (id) fetchProduct();
-  }, [id, t]);
-
-  if (loading)
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
-      </div>
-    );
-
-  if (!product)
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p className="text-xl font-serif italic">{t("shop.product.details.notFound")}</p>
-      </div>
-    );
+    : null;
 
   return (
-    <div className="bg-background min-h-screen pb-20">
-      <Container className="pt-4 pb-8">
-        <Breadcrumbs
-          items={[
-            from === "categories"
-              ? { label: t("nav.links.categories") || "Categories", href: "/categories" }
-              : from === "new-arrivals"
-              ? { label: t("nav.links.newArrivals") || "New Arrivals", href: "/new-arrivals" }
-              : { label: t("nav.links.collections") || "Collections", href: "/collections" },
-
-            ...(from === "categories"
-              ? [{ label: product.category, href: `/categories/${product.categoryId}` }]
-              : []),
-
-            { label: product.name },
-          ]}
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-16 mt-4">
-          <ProductGallery images={galleryImages} />
-          <ProductInfo product={product} onColorChange={setGalleryImages} />
-        </div>
-
-        <div className="mt-10">
-          <ProductReviews productName={product.name} />
-        </div>
-
-        {relatedProducts.length > 0 && (
-          <div className="mt-14">
-            <SectionTitle
-              title={t("shop.product.details.relatedTitle")}
-              subtitle={t("shop.product.details.relatedSubtitle")}
-              align="center"
-            />
-            <div
-              className={
-                "mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 md:max-w-3xl lg:max-w-4xl md:mx-auto " +
-                // PWA: collapse to a single horizontal scroll row
-                "[@media(display-mode:standalone)]:flex [@media(display-mode:standalone)]:max-w-none [@media(display-mode:standalone)]:mx-0 " +
-                "[@media(display-mode:standalone)]:flex-nowrap [@media(display-mode:standalone)]:overflow-x-auto [@media(display-mode:standalone)]:gap-4 " +
-                "[@media(display-mode:standalone)]:snap-x [@media(display-mode:standalone)]:snap-mandatory [@media(display-mode:standalone)]:pb-2 no-scrollbar"
-              }
-            >
-              {relatedProducts.map((p) => (
-                <div
-                  key={p.id}
-                  className="[@media(display-mode:standalone)]:min-w-[46%] [@media(display-mode:standalone)]:shrink-0 [@media(display-mode:standalone)]:snap-start"
-                >
-                  <ProductCard product={p} hideActions />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-      </Container>
-    </div>
+      )}
+      <ProductPageClient />
+    </>
   );
 }

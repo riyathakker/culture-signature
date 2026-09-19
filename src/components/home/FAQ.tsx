@@ -17,7 +17,7 @@ export function FAQ() {
   const faqs = t("home.faq.questions") as FaqItem[];
 
   return (
-    <section className="py-14 bg-muted/50 border-t border-border/50 pwa-hide">
+    <section className="py-12 bg-accent/30 border-t border-border/50 pwa-hide">
       <Container>
         <SectionTitle
           title={t("home.faq.title")}

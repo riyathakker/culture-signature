@@ -89,12 +89,12 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
     );
 
   return (
-    <div className="py-10 border-t">
-      <h3 className="font-heading text-3xl mb-8">{t("shop.product.details.reviews.title")}</h3>
+    <div className="py-5 border-t">
+      <h3 className="font-heading text-2xl lg:text-3xl mb-4">{t("shop.product.details.reviews.title")}</h3>
 
       {reviews.length === 0 ? (
         /* ── Empty state ── */
-        <div className="py-16 flex flex-col items-center gap-6 border border-dashed border-muted-foreground/20 rounded-sm text-center px-8">
+        <div className="py-12 lg:py-16 flex flex-col items-center gap-6 border border-dashed border-muted-foreground/20 rounded-sm text-center px-8">
           <div className="w-14 h-14 rounded-full bg-primary/5 border border-primary/10 flex items-center justify-center">
             <PenLine className="w-6 h-6 text-primary/40" />
           </div>

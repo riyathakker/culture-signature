@@ -41,7 +41,7 @@ export function FilterDrawer(props: FilterDrawerProps) {
         render={
           <Button
             variant="outline"
-            className="lg:hidden flex items-center gap-2 h-10 px-4 uppercase tracking-widest text-[10px] relative"
+            className="flex items-center gap-2 h-10 px-4 uppercase tracking-widest text-[10px] relative"
           >
             <SlidersHorizontal className="w-4 h-4" /> {t("shop.filter.filter")}
             {activeCount > 0 && (

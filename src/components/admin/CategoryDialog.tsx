@@ -135,7 +135,7 @@ export function CategoryDialog({
 
             <div className="space-y-2">
               <Label className="text-spaced-bold opacity-60">{t("admin.categories.dialog.labels.image")}</Label>
-              <ImageUpload value={image} onChange={setImage} maxFiles={1} />
+              <ImageUpload value={image} onChange={setImage} maxFiles={1} aspect={4 / 5} />
             </div>
 
             {category && (

@@ -20,7 +20,7 @@ export function EmptyState({ icon: Icon, title, description, action, className }
   return (
     <div
       className={cn(
-        "py-20 flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700",
+        "py-12 md:py-20 flex flex-col items-center justify-center text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700",
         className
       )}
     >
@@ -33,7 +33,7 @@ export function EmptyState({ icon: Icon, title, description, action, className }
       </div>
 
       <div className="space-y-2 max-w-sm mx-auto">
-        <h2 className="text-3xl font-heading">{title}</h2>
+        <h2 className="text-2xl md:text-3xl font-heading">{title}</h2>
         <p className="muted-italic">{description}</p>
       </div>
 

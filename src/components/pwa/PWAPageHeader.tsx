@@ -15,8 +15,6 @@ import { usePWA } from "@/hooks/usePWA";
 const PATH_LABELS: { prefix: string; label: string }[] = [
   { prefix: "/account/wishlist", label: "My Wishlist" },
   { prefix: "/account/orders", label: "Order History" },
-  { prefix: "/account/addresses", label: "Saved Addresses" },
-  { prefix: "/account/settings", label: "Account Settings" },
   { prefix: "/account", label: "My Account" },
   { prefix: "/new-arrivals", label: "New Arrivals" },
   { prefix: "/collections", label: "Collections" },
@@ -49,7 +47,7 @@ export function PWAPageHeader() {
   return (
     <>
       <header
-        className="flex lg:hidden [@media(display-mode:standalone)]:!flex fixed top-0 left-0 right-0 z-50 bg-primary px-4 pb-3 items-center justify-between"
+        className="hidden [@media(display-mode:standalone)]:!flex fixed top-0 left-0 right-0 z-50 bg-primary px-4 pb-3 items-center justify-between"
         style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
       >
         <div className="flex items-center gap-2 min-w-0">

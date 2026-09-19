@@ -11,8 +11,6 @@ import { ProductRowSkeleton } from "@/components/home/HomeSkeletons";
 import { useProductStore } from "@/store/productStore";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
-import { usePWA } from "@/hooks/usePWA";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 export function NewArrivals() {
   const {
@@ -22,9 +20,7 @@ export function NewArrivals() {
   } = useProductStore();
 
   const { t } = useTranslation();
-  const isPWA = usePWA();
-  const isMobile = useIsMobile();
-  const displayLimit = isMobile && !isPWA ? 4 : 8;
+  const displayLimit = 8;
 
   useEffect(() => {
     fetchNewArrivals();
@@ -35,7 +31,7 @@ export function NewArrivals() {
   }
 
   return (
-    <section className="py-10 pwa-section border-t border-border/50 bg-secondary/50">
+    <section className="py-8 pwa-section border-t border-border/50 bg-background">
       <Container>
         <SectionTitle
           title={t("home.newArrivals.title")}

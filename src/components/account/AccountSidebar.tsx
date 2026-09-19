@@ -7,10 +7,9 @@ import {
   User,
   ShoppingBag,
   Heart,
-  MapPin,
-  Settings,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Home
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -23,9 +22,9 @@ const navItems = [
   { id: "overview", labelKey: "account.sidebar.overview", href: "/account", icon: User },
   { id: "orders", labelKey: "account.orders.heading", href: "/account/orders", icon: ShoppingBag },
   { id: "wishlist", labelKey: "account.sidebar.wishlist", href: "/account/wishlist", icon: Heart },
-  { id: "addresses", labelKey: "account.addresses.heading", href: "/account/addresses", icon: MapPin },
-  { id: "settings", labelKey: "account.settings.heading", href: "/account/settings", icon: Settings },
 ];
+
+const homeNavItem = { id: "home", labelKey: "nav.links.home", href: ROUTES.HOME, icon: Home };
 
 export function AccountSidebar() {
   const { data: session } = useSession();
@@ -34,12 +33,11 @@ export function AccountSidebar() {
   const pathname = usePathname();
   const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
 
-  const filteredNavItems = navItems.filter(item => {
-    if (isAdmin) {
-      return !["orders", "wishlist", "addresses"].includes(item.id);
-    }
-    return true;
-  });
+  // Admins only get the merged Account page (profile + danger zone) — orders
+  // and wishlist are shopper-only concepts.
+  const filteredNavItems = isAdmin
+    ? [...navItems.filter((item) => item.id === "overview"), homeNavItem]
+    : navItems;
 
   return (
     <aside className="w-full lg:w-64 space-y-8 [@media(display-mode:standalone)]:hidden">
@@ -90,9 +88,9 @@ export function AccountSidebar() {
         variant="destructive"
       />
 
-      {/* Mobile Horizontal Nav — hidden in PWA mode (bottom tabs handle navigation) */}
-      <div className="lg:hidden pwa-hide relative">
-        <div className="flex overflow-x-auto no-scrollbar gap-2 pb-4 px-1 scroll-smooth">
+      {/* Mobile Tab Nav — hidden in PWA mode (bottom tabs handle navigation) */}
+      <div className="lg:hidden pwa-hide">
+        <div className="flex items-stretch gap-1 rounded-full border border-border bg-secondary/20 p-1">
           {filteredNavItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -100,22 +98,19 @@ export function AccountSidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 px-6 py-3 whitespace-nowrap rounded-sm transition-all border",
+                  "flex-1 flex items-center justify-center text-center px-1.5 py-2.5 rounded-full transition-all",
                   isActive
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background border-border text-muted-foreground"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground active:bg-secondary/60"
                 )}
               >
-                <item.icon className="w-4 h-4" />
-                <span className="text-spaced-bold font-bold">{t(item.labelKey)}</span>
+                <span className="text-[9px] leading-tight uppercase tracking-wide font-bold">
+                  {t(item.labelKey)}
+                </span>
               </Link>
             );
           })}
         </div>
-
-        {/* Scroll Indicators */}
-        <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
-        <div className="absolute left-0 top-0 bottom-4 w-4 bg-gradient-to-r from-background to-transparent pointer-events-none z-10 opacity-50" />
       </div>
     </aside>
   );

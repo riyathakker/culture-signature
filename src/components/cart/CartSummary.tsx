@@ -5,18 +5,46 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCartStore, cartLineKey } from "@/store/cartStore";
 import { useCheckoutStore } from "@/store/checkoutStore";
-import { useProductStore } from "@/store/productStore";
-import { useOrderStore } from "@/store/orderStore";
 import { useAuthStore } from "@/store/authStore";
 import { Truck, ShieldCheck, ArrowRight, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
+
+// --- Razorpay (paused — see handleFinalize below) --------------------------
+// const RAZORPAY_SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+//
+// // Inject the Razorpay checkout script once and resolve when it's ready.
+// function loadRazorpayScript(): Promise<void> {
+//   return new Promise((resolve, reject) => {
+//     if (typeof window !== "undefined" && window.Razorpay) return resolve();
+//     const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_SCRIPT_SRC}"]`);
+//     if (existing) {
+//       existing.addEventListener("load", () => resolve());
+//       existing.addEventListener("error", () => reject(new Error("Failed to load payment gateway")));
+//       return;
+//     }
+//     const script = document.createElement("script");
+//     script.src = RAZORPAY_SCRIPT_SRC;
+//     script.onload = () => resolve();
+//     script.onerror = () => reject(new Error("Failed to load payment gateway"));
+//     document.body.appendChild(script);
+//   });
+// }
+
+// --- Temporary manual UPI / WhatsApp payment flow ---------------------------
+// Online payments are paused for now: on checkout we send the customer to
+// WhatsApp with the order details pre-filled, they pay via UPI to this
+// number, then share the payment screenshot on WhatsApp for manual
+// confirmation. Swap back to the Razorpay flow above once ready.
+const WHATSAPP_BUSINESS_NUMBER = "917878904555";
+const UPI_NUMBER_DISPLAY = "+91 78789 04555";
+
 interface OrderSummaryProps {
   variant?: "cart" | "checkout";
 }
@@ -25,8 +53,6 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   const { t } = useTranslation();
   const { items, appliedPromo, setAppliedPromo, getDiscountAmount, clearCart } = useCartStore();
   const { shippingAddress, resetCheckout } = useCheckoutStore();
-  const { fetchFeaturedProducts, fetchNewArrivals } = useProductStore();
-  const { fetchOrders } = useOrderStore();
   const { openModal } = useAuthStore();
   const [promoCode, setPromoCode] = useState("");
   const [isApplying, setIsApplying] = useState(false);
@@ -34,7 +60,6 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   const [processingStage, setProcessingStage] = useState<"verifying" | "recording" | null>(null);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
-  const router = useRouter();
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
@@ -70,19 +95,52 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
     setAppliedPromo(null);
   };
 
+  const buildWhatsAppOrderMessage = () => {
+    const lines = items.map((item, idx) =>
+      `${idx + 1}. ${item.name}${item.color ? ` (${item.color})` : ""} x${item.quantity} — ₹${(item.price * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+    );
+    return [
+      "Hi Culture Signature! ✨ I'd like to place the following order:",
+      "",
+      ...lines,
+      "",
+      `Grand Total: ₹${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      "",
+      `Shipping Details: ${shippingAddress.firstName} ${shippingAddress.lastName}, ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}`,
+      `Phone: ${shippingAddress.phone}`,
+      "",
+      `I'll share the payment screenshot once the payment is done.`,
+    ].join("\n");
+  };
+
   const handleFinalize = async () => {
-    if (!shippingAddress.firstName || !shippingAddress.lastName || !shippingAddress.street || !shippingAddress.city || !shippingAddress.phone) {
+    if (!shippingAddress.firstName || !shippingAddress.lastName || !shippingAddress.street || !shippingAddress.state || !shippingAddress.city || !shippingAddress.phone) {
       toast.error(t("cart.summary.messages.completeShipping"));
       return;
     }
 
     setIsFinalizing(true);
     try {
-      const orderResponse = await fetch("/api/cashfree/order", {
+      // --- Temporary manual UPI / WhatsApp payment flow ---------------------
+      toast.success(
+        `Please pay ₹${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} via UPI to ${UPI_NUMBER_DISPLAY}, then share the payment screenshot on WhatsApp to confirm your order.`,
+        { duration: 8000 }
+      );
+
+      const waLink = `https://wa.me/${WHATSAPP_BUSINESS_NUMBER}?text=${encodeURIComponent(buildWhatsAppOrderMessage())}`;
+      window.open(waLink, "_blank", "noopener,noreferrer");
+
+      await clearCart();
+      resetCheckout();
+      setIsFinalizing(false);
+
+      /* --- Razorpay flow (paused) ------------------------------------------
+      const orderResponse = await fetch("/api/razorpay/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: total,
+          items,
+          promoCode: appliedPromo?.code,
           customerName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
           customerEmail: session?.user?.email || "guest@culturesignature.com",
           customerPhone: shippingAddress.phone,
@@ -94,39 +152,37 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         throw new Error(err.error || t("cart.summary.messages.paymentOrderError"));
       }
 
-      const { payment_session_id, cf_order_id } = await orderResponse.json();
+      const { razorpay_order_id, amount, currency, key_id } = await orderResponse.json();
 
-      const { load } = await import("@cashfreepayments/cashfree-js");
-      const cashfree = await load({
-        mode: (process.env.NEXT_PUBLIC_CASHFREE_ENVIRONMENT as "sandbox" | "production") || "sandbox",
-      });
+      await loadRazorpayScript();
 
-      const result = await cashfree.checkout({
-        paymentSessionId: payment_session_id,
-        redirectTarget: "_modal",
-      });
-
-      if (result.error) {
-        throw new Error(result.error.message || t("cart.summary.messages.paymentFailed"));
-      }
-
-      setProcessingStage("verifying");
-
-      let verifyData: any = null;
-      for (let attempt = 0; attempt < 3; attempt++) {
-        if (attempt > 0) await new Promise((r) => setTimeout(r, 1500));
-        const verifyResponse = await fetch("/api/cashfree/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cf_order_id }),
+      // Razorpay checkout is callback-based; wrap it in a promise that resolves
+      // with the signed payment response on success and rejects when the user
+      // dismisses the modal or the payment fails.
+      const payment = await new Promise<any>((resolve, reject) => {
+        const rzp = new window.Razorpay({
+          key: key_id,
+          order_id: razorpay_order_id,
+          amount,
+          currency,
+          name: "Culture Signature",
+          description: t("cart.summary.title"),
+          prefill: {
+            name: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+            email: session?.user?.email || "",
+            contact: shippingAddress.phone,
+          },
+          theme: { color: "#95473D" },
+          handler: (response: any) => resolve(response),
+          modal: {
+            ondismiss: () => reject(new Error(t("cart.summary.messages.paymentFailed"))),
+          },
         });
-        verifyData = await verifyResponse.json();
-        if (verifyData.success) break;
-      }
-
-      if (!verifyData?.success) {
-        throw new Error(t("cart.summary.messages.verificationFailed"));
-      }
+        rzp.on("payment.failed", (resp: any) =>
+          reject(new Error(resp?.error?.description || t("cart.summary.messages.paymentFailed")))
+        );
+        rzp.open();
+      });
 
       setProcessingStage("recording");
 
@@ -135,14 +191,11 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items,
-          totalPrice: total,
-          discountAmount: discountValue,
           promoCode: appliedPromo?.code,
           shippingAddress,
-          paymentId: verifyData.paymentId,
-          cf_order_id,
-          userId: session?.user?.id,
-          userEmail: session?.user?.email,
+          razorpay_order_id: payment.razorpay_order_id,
+          razorpay_payment_id: payment.razorpay_payment_id,
+          razorpay_signature: payment.razorpay_signature,
         }),
       });
 
@@ -160,6 +213,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       fetchOrders(true);
       router.refresh();
       router.push(`/bag/checkout/success?id=${order.id}`);
+      ------------------------------------------------------------------- */
 
     } catch (error: any) {
       console.error("Finalize error:", error);
@@ -169,15 +223,14 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
     }
   };
 
-  // User Calculation Logic: (Total value without GST - Discount) + GST
+  // Prices are GST-inclusive: total = (subtotal - discount) + shipping
   const discountValue = getDiscountAmount();
-  const taxableAmount = subtotal - discountValue;
+  const netAmount = subtotal - discountValue;
 
-  const shippingThreshold = 5000;
-  const shippingCost = (taxableAmount > 0 && taxableAmount >= shippingThreshold) ? 0 : 200;
+  const shippingThreshold = 2000;
+  const shippingCost = (netAmount > 0 && netAmount >= shippingThreshold) ? 0 : 100;
 
-  const gstAmount = taxableAmount * 0.18;
-  const total = taxableAmount + gstAmount + shippingCost;
+  const total = netAmount + shippingCost;
 
   return (
     <div className="bg-secondary/30 p-8 rounded-sm space-y-8 sticky top-32 border border-border/10 shadow-luxury">
@@ -236,11 +289,6 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
           ) : (
             <span className="font-medium">₹{shippingCost.toLocaleString()}</span>
           )}
-        </div>
-
-        <div className="flex justify-between text-sm uppercase tracking-widest">
-          <span className="text-muted-foreground">{t("cart.summary.estimatedTax")}</span>
-          <span className="font-medium">₹{gstAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
         </div>
 
         <Separator className="bg-border/50" />

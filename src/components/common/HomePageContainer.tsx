@@ -15,7 +15,7 @@ interface Props {
 export function HomePageContainer({ label, heading, description, children, breadcrumbClassName, headerClassName }: Props) {
     return (
         <div className="bg-background pb-10">
-            <div className={cn("py-4 [@media(display-mode:standalone)]:py-2", heading && description && "mb-0 md:mb-6", headerClassName)}>
+            <div className={cn("py-4 [@media(display-mode:standalone)]:py-2", heading && description && "mb-0 md:mb-2", headerClassName)}>
                 <Container>
                     <Breadcrumbs items={label} className={breadcrumbClassName} />
                     <div className="hidden sm:inline-block">
@@ -32,11 +32,11 @@ export function HomePageContainer({ label, heading, description, children, bread
 
 export const TitleAndDescription = ({ heading, description }: { heading: string; description?: string }) => {
     return (
-        <>
+        <div className="hidden sm:inline-block">
             <h1 className="text-3xl font-heading mt-0 md:mt-3 mb-2"> {heading}</h1>
             {description && <p className="muted-italic text-l max-w-2xl">
                 {description}
             </p>}
-        </>
+        </div>
     );
 }

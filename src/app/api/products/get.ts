@@ -14,7 +14,6 @@ export default async function handler(req: NextRequest & { userEmail?: string })
     const products = await prisma.product.findMany({
       where: {
         ...(categoryIds.length > 0 ? { categoryId: { in: categoryIds } } : {}),
-        ...(isNew && { createdAt: { gte: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) } }),
         ...(isFeatured && { isFeatured: true }),
         ...(search && {
           OR: [
@@ -27,10 +26,12 @@ export default async function handler(req: NextRequest & { userEmail?: string })
       include: {
         category: true,
       },
+      // New Arrivals = the newest products (results are already newest-first),
+      // so the section is always populated rather than gated to a fixed window.
       orderBy: {
         createdAt: "desc",
       },
-      take: limit,
+      take: limit ?? (isNew ? 12 : undefined),
     });
 
     return NextResponse.json(products);

@@ -12,18 +12,22 @@ type SendArgs = {
   html: string;
 };
 
-async function send({ to, subject, html }: SendArgs) {
+// Returns true only if the email was actually accepted by the provider.
+async function send({ to, subject, html }: SendArgs): Promise<boolean> {
   if (!resend) {
     console.warn(`[email] RESEND_API_KEY not set — skipping email "${subject}"`);
-    return;
+    return false;
   }
   try {
     const { error } = await resend.emails.send({ from: FROM, to, subject, html });
     if (error) {
       console.error(`[email] send failed "${subject}":`, JSON.stringify(error));
+      return false;
     }
+    return true;
   } catch (e) {
     console.error(`[email] send threw "${subject}":`, e);
+    return false;
   }
 }
 
@@ -43,6 +47,23 @@ function layout(title: string, body: string) {
       This is an automated message from Culture Signature.
     </div>
   </div>`;
+}
+
+export async function sendOtpEmail(to: string, code: string) {
+  const body = `
+    <p style="font-size:14px;line-height:1.6;color:#444;">
+      Use the verification code below to complete your Culture Signature sign-up.
+      This code expires in 10 minutes.
+    </p>
+    <div style="margin:24px 0;text-align:center;">
+      <span style="display:inline-block;font-size:32px;letter-spacing:10px;font-weight:bold;
+        background:#f7f4ef;border:1px solid #e5e5e5;border-radius:8px;padding:16px 28px;">
+        ${code}
+      </span>
+    </div>
+    <p style="font-size:12px;color:#888;">If you didn't request this, you can safely ignore this email.</p>
+  `;
+  return send({ to, subject: "Your Culture Signature verification code", html: layout("Verify your email", body) });
 }
 
 type OrderItemLike = {
@@ -112,7 +133,7 @@ function orderSummary(o: OrderLike) {
 export async function sendOrderConfirmation(order: OrderLike, customerEmail?: string | null) {
   const summary = orderSummary(order);
 
-  const tasks: Promise<void>[] = [];
+  const tasks: Promise<boolean>[] = [];
 
   if (customerEmail) {
     tasks.push(
@@ -149,7 +170,7 @@ export async function sendOrderStatusUpdate(order: OrderLike, customerEmail?: st
   const statusLabel = order.status.charAt(0) + order.status.slice(1).toLowerCase();
   const summary = orderSummary(order);
 
-  const tasks: Promise<void>[] = [];
+  const tasks: Promise<boolean>[] = [];
 
   if (customerEmail) {
     tasks.push(

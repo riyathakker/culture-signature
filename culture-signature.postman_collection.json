@@ -1,0 +1,1601 @@
+{
+  "info": {
+    "name": "Culture Signature API",
+    "_postman_id": "culture-signature-api",
+    "description": "Full API for the Culture Signature storefront (Next.js App Router).\n\n## Setup\n1. Set the `base_url` variable (default `http://localhost:3002`).\n2. **Auth:** most user/admin routes require a NextAuth session cookie. Log in through the web app, open DevTools → Application → Cookies, copy the whole `authjs.session-token` (or `next-auth.session-token`) cookie as `name=value`, and paste it into the `session_cookie` collection variable. Admin routes additionally require the logged-in user to have role ADMIN.\n3. `cron_secret` is the Bearer token for the cron endpoint.\n\nBodies shown are examples — replace ids/values as needed.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3002"
+    },
+    {
+      "key": "session_cookie",
+      "value": "authjs.session-token=PASTE_HERE"
+    },
+    {
+      "key": "cron_secret",
+      "value": "PASTE_CRON_SECRET"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup — send OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/otp/send",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "otp",
+                "send"
+              ]
+            },
+            "description": "Step 1 of signup. Emails a 6-digit code (valid 10 min). Always returns a generic message.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Signup — create account (with OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/signup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "signup"
+              ]
+            },
+            "description": "Step 2 of signup. Requires the code emailed by /api/auth/otp/send. Password min 8 chars.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"customer@example.com\",\n  \"password\": \"password123\",\n  \"code\": \"123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (NextAuth credentials)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/callback/credentials",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "callback",
+                "credentials"
+              ]
+            },
+            "description": "NextAuth credentials sign-in. In practice log in via the web app to obtain the session cookie; this endpoint expects a CSRF token flow. Prefer copying the cookie from the browser.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Session",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/session",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "session"
+              ]
+            },
+            "description": "Returns the current NextAuth session (uses the cookie)."
+          }
+        },
+        {
+          "name": "Delete my account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/delete-account",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "delete-account"
+              ]
+            },
+            "description": "Soft-deletes the logged-in user and their data."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products & Catalog",
+      "item": [
+        {
+          "name": "List products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products?isNew=true&isFeatured=false&limit=12",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "isNew",
+                  "value": "true",
+                  "description": "Newest products (capped at 12)"
+                },
+                {
+                  "key": "isFeatured",
+                  "value": "false"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "",
+                  "disabled": true,
+                  "description": "Comma-separated category ids"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "12",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get product by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/PRODUCT_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "PRODUCT_ID"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Home content",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/content",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "content"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Featured reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reviews/featured",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reviews",
+                "featured"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reviews for product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/reviews?productId=PRODUCT_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reviews"
+              ],
+              "query": [
+                {
+                  "key": "productId",
+                  "value": "PRODUCT_ID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reviews",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reviews"
+              ]
+            },
+            "description": "Requires a non-cancelled order (owned by you) containing the product.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\",\n  \"rating\": 5,\n  \"comment\": \"Beautiful piece.\",\n  \"orderId\": \"ORDER_ID\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Validate promo code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/promos/WELCOME10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "promos",
+                "WELCOME10"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Pincode lookup",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/location/pincode?pincode=400001",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "location",
+                "pincode"
+              ],
+              "query": [
+                {
+                  "key": "pincode",
+                  "value": "400001"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cart",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add to cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cart",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\",\n  \"quantity\": 1,\n  \"color\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update cart item qty",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cart",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\",\n  \"quantity\": 2,\n  \"color\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove item / clear cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cart",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "cart"
+              ]
+            },
+            "description": "Omit productId to clear the whole cart.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\",\n  \"color\": \"\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wishlist",
+      "item": [
+        {
+          "name": "Get wishlist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/wishlist",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "wishlist"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add to wishlist",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/wishlist",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "wishlist"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove from wishlist",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/wishlist",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "wishlist"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Checkout & Orders",
+      "item": [
+        {
+          "name": "Create Razorpay order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/razorpay/order",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "razorpay",
+                "order"
+              ]
+            },
+            "description": "Amount is computed server-side from items+promoCode. Returns razorpay_order_id, amount (paise), currency, key_id.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"id\": \"PRODUCT_ID\",\n      \"quantity\": 1,\n      \"color\": \"\"\n    }\n  ],\n  \"promoCode\": \"\",\n  \"customerName\": \"Jane Doe\",\n  \"customerEmail\": \"customer@example.com\",\n  \"customerPhone\": \"9999999999\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Record order (after payment)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "description": "Verifies the Razorpay signature + captured amount server-side before creating the PAID order.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"id\": \"PRODUCT_ID\",\n      \"quantity\": 1,\n      \"color\": \"\"\n    }\n  ],\n  \"promoCode\": \"\",\n  \"shippingAddress\": {\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"street\": \"1 MG Road\",\n    \"city\": \"Mumbai\",\n    \"state\": \"MH\",\n    \"zipCode\": \"400001\",\n    \"country\": \"India\",\n    \"phone\": \"9999999999\"\n  },\n  \"razorpay_order_id\": \"order_XXXXXXXX\",\n  \"razorpay_payment_id\": \"pay_XXXXXXXX\",\n  \"razorpay_signature\": \"SIGNATURE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "My orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Order status stream (SSE)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/stream",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "stream"
+              ]
+            }
+          }
+        },
+        {
+          "name": "My account summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/account",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "account"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Profile & Address",
+      "item": [
+        {
+          "name": "Update profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/update",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "update"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane D.\",\n  \"mobileNo\": \"9999999999\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List addresses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/address",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "address"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/address",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "address"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"street\": \"1 MG Road\",\n  \"city\": \"Mumbai\",\n  \"state\": \"MH\",\n  \"zipCode\": \"400001\",\n  \"country\": \"India\",\n  \"phone\": \"9999999999\",\n  \"isDefault\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Update address",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/address",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "address"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"ADDRESS_ID\",\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Doe\",\n  \"street\": \"2 MG Road\",\n  \"city\": \"Mumbai\",\n  \"state\": \"MH\",\n  \"zipCode\": \"400001\",\n  \"country\": \"India\",\n  \"phone\": \"9999999999\",\n  \"isDefault\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete address",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/address?id=ADDRESS_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "user",
+                "address"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "ADDRESS_ID"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Misc",
+      "item": [
+        {
+          "name": "Contact form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/contact",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "contact"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane\",\n  \"email\": \"jane@example.com\",\n  \"subject\": \"Hello\",\n  \"message\": \"I love your work.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Upload image (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "upload"
+              ]
+            },
+            "description": "multipart/form-data with field 'file' (image only, <=8MB). Admin only. In Postman set Body → form-data, key 'file' type File."
+          }
+        },
+        {
+          "name": "Cron: update discounts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{cron_secret}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/cron/update-discounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "cron",
+                "update-discounts"
+              ]
+            },
+            "description": "Protected by Bearer {{cron_secret}}."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "description": "All require a session cookie for a user with role ADMIN.",
+      "item": [
+        {
+          "name": "Overview / dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/overview",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "overview"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List products",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Piece\",\n  \"price\": 4999,\n  \"stock\": 5,\n  \"categoryId\": \"CATEGORY_ID\",\n  \"images\": [\n    \"https://res.cloudinary.com/...\"\n  ],\n  \"description\": \"\",\n  \"discount\": 0,\n  \"isFeatured\": false,\n  \"isLimitedDrop\": false,\n  \"colors\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Get product",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/products/PRODUCT_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                "PRODUCT_ID"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update product",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/products/PRODUCT_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                "PRODUCT_ID"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 5999,\n  \"stock\": 3\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/products/PRODUCT_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "products",
+                "PRODUCT_ID"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gifting\",\n  \"image\": \"https://res.cloudinary.com/...\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update category",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"CATEGORY_ID\",\n  \"name\": \"Gifting\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"CATEGORY_ID\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List discounts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/discounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discounts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create discount",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/discounts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discounts"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME10\",\n  \"type\": \"PERCENTAGE\",\n  \"value\": 10,\n  \"usageLimit\": 100,\n  \"expiryDate\": \"2026-12-31\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update discount",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/discounts/DISCOUNT_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discounts",
+                "DISCOUNT_ID"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 15,\n  \"status\": \"ACTIVE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete discount",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/discounts/DISCOUNT_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "discounts",
+                "DISCOUNT_ID"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update order status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/orders/ORDER_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "orders",
+                "ORDER_ID"
+              ]
+            },
+            "description": "status ∈ PENDING|PAID|SHIPPED|DELIVERED|CANCELLED",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SHIPPED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/users?query=&role=&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": ""
+                },
+                {
+                  "key": "role",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/reviews",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "reviews"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List exhibitions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/content/exhibitions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "content",
+                "exhibitions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create exhibition",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/content/exhibitions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "content",
+                "exhibitions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Summer Pop-up\",\n  \"description\": \"\",\n  \"location\": \"https://maps.google.com/...\",\n  \"date\": \"2026-10-01\",\n  \"status\": \"UPCOMING\",\n  \"images\": []\n}"
+            }
+          }
+        },
+        {
+          "name": "Update exhibition",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/content/exhibitions/EXHIBITION_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "content",
+                "exhibitions",
+                "EXHIBITION_ID"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Summer Pop-up (updated)\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete exhibition",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "{{session_cookie}}",
+                "description": "Paste your logged-in session cookie (see collection docs)."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/content/exhibitions/EXHIBITION_ID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "content",
+                "exhibitions",
+                "EXHIBITION_ID"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

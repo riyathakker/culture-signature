@@ -26,6 +26,9 @@ interface LocationSelectorProps {
   onChange: (field: keyof LocationValues, value: string) => void;
   errors?: LocationErrors;
   labelClassName?: string;
+  /** Restrict the country dropdown to these country names. A single entry
+   *  locks the country (disabled select). */
+  allowedCountries?: string[];
 }
 
 const SELECT_CLASS =
@@ -43,9 +46,14 @@ export function LocationSelector({
   onChange,
   errors,
   labelClassName = "text-xs font-bold uppercase tracking-widest",
+  allowedCountries,
 }: LocationSelectorProps) {
   const { t } = useTranslation();
   const allCountries = Country.getAllCountries();
+  const countryOptions = allowedCountries
+    ? allCountries.filter((c) => allowedCountries.includes(c.name))
+    : allCountries;
+  const lockCountry = allowedCountries?.length === 1;
 
   const countryIso = nameToIsoCode(allCountries, values.country);
   const allStates = countryIso ? State.getStatesOfCountry(countryIso) : [];
@@ -99,9 +107,10 @@ export function LocationSelector({
             className={SELECT_CLASS}
             value={values.country}
             onChange={handleCountryChange}
+            disabled={lockCountry}
           >
-            <option value="">{t("common.location.selectCountry")}</option>
-            {allCountries.map((c) => (
+            {!lockCountry && <option value="">{t("common.location.selectCountry")}</option>}
+            {countryOptions.map((c) => (
               <option key={c.isoCode} value={c.name}>{c.name}</option>
             ))}
           </select>
@@ -142,36 +151,24 @@ export function LocationSelector({
           {errors?.state && <p className="text-xs text-destructive">{errors.state}</p>}
         </div>
 
-        {/* City */}
+        {/* City — always a dropdown; disabled until a state is chosen. */}
         <div className="space-y-2">
           <Label className={labelClassName}>{t("common.location.city")}</Label>
           <div className="relative">
-            {allCities.length > 0 ? (
-              <>
-                <select
-                  className={SELECT_CLASS}
-                  value={values.city}
-                  onChange={handleCityChange}
-                  disabled={!stateIso}
-                >
-                  <option value="">{t("common.location.selectCity")}</option>
-                  {allCities.map((c, i) => (
-                    <option key={`${c.name}-${i}`} value={c.name}>{c.name}</option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">▾</span>
-              </>
-            ) : (
-              <Input
-                placeholder={t("common.location.enterCity")}
-                value={values.city}
-                onChange={(e) => {
-                  onChange("city", e.target.value);
-                  lookupPinCode(e.target.value, values.country);
-                }}
-                className="border-muted-foreground/20"
-              />
-            )}
+            <select
+              className={SELECT_CLASS}
+              value={values.city}
+              onChange={handleCityChange}
+              disabled={!stateIso}
+            >
+              <option value="">
+                {stateIso ? t("common.location.selectCity") : t("common.location.selectStateFirst")}
+              </option>
+              {allCities.map((c, i) => (
+                <option key={`${c.name}-${i}`} value={c.name}>{c.name}</option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">▾</span>
           </div>
           {errors?.city && <p className="text-xs text-destructive">{errors.city}</p>}
         </div>

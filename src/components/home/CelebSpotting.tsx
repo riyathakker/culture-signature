@@ -4,7 +4,6 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
 import { usePWA } from "@/hooks/usePWA";
-import { useIsMobile } from "@/hooks/useIsMobile";
 
 const DEFAULT_IMAGES = [
   "/celebs/celeb-1.jpg",
@@ -146,22 +145,40 @@ function PWAScroller({ images, onSelect }: { images: string[]; onSelect: (s: str
 export function CelebSpotting() {
   const { t } = useTranslation();
   const isPWA = usePWA();
-  const isMobile = useIsMobile();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>(DEFAULT_IMAGES);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/celebs")
+      .then((r) => r.json())
+      .then((d) => {
+        // Use the Cloudinary "celebs" folder when it has images; otherwise keep
+        // the bundled defaults so the section is never empty.
+        if (!cancelled && Array.isArray(d.images) && d.images.length > 0) {
+          setImages(d.images);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  // Nothing to show (no Cloudinary images and no defaults) → hide the section.
+  if (images.length === 0) return null;
 
   return (
     <>
-      <section className="py-10 pwa-section overflow-hidden bg-accent border-t border-border/50">
+      <section className="py-8 pwa-section overflow-hidden bg-background border-t border-border/50">
         <SectionTitle
           title={t("home.celebSpotting.title")}
           subtitle={t("home.celebSpotting.subtitle")}
           align="center"
         />
 
-        {isPWA || isMobile ? (
-          <PWAScroller images={DEFAULT_IMAGES} onSelect={setSelectedImage} />
+        {isPWA ? (
+          <PWAScroller images={images} onSelect={setSelectedImage} />
         ) : (
-          <DesktopMarquee images={DEFAULT_IMAGES} onSelect={setSelectedImage} />
+          <DesktopMarquee images={images} onSelect={setSelectedImage} />
         )}
       </section>
 

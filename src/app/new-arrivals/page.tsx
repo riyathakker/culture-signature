@@ -1,8 +1,9 @@
 "use client";
 
 import { ProductCard } from "@/components/common/ProductCard";
-import { FilterSidebar, FilterDraft } from "@/components/shop/FilterSidebar";
+import { FilterDraft } from "@/components/shop/FilterSidebar";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
+import { ActiveFilterChips } from "@/components/shop/ActiveFilterChips";
 import { ShopControls } from "@/components/shop/ShopControls";
 import { useEffect, useState, useMemo } from "react";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
@@ -68,55 +69,59 @@ export default function NewArrivalsPage() {
       heading={t("home.newArrivals.title")}
       description={t("home.newArrivals.description")}
     >
-      <div className="flex flex-col lg:flex-row gap-12">
-        {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-64 flex-shrink-0">
-          <FilterSidebar {...sharedFilterProps} />
-        </aside>
-
-        {/* Main Content */}
-        <div className="flex-1 space-y-8">
-          <div className="flex items-center justify-between gap-3 border-b pb-6">
-            <div className="flex items-center gap-3">
-              <FilterDrawer {...sharedFilterProps} />
-              <p className="hidden sm:inline-block text-spaced-bold text-muted-foreground whitespace-nowrap">
-                {t("shop.showing").replace("{count}", sorted.length.toString())}
-              </p>
-            </div>
-            <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
+      <div className="space-y-8">
+        <div className="flex items-center justify-between gap-3 border-b pb-6">
+          <div className="flex items-center gap-3">
+            <FilterDrawer {...sharedFilterProps} />
+            <p className="hidden sm:inline-block text-spaced-bold text-muted-foreground whitespace-nowrap">
+              {t("shop.showing").replace("{count}", sorted.length.toString())}
+            </p>
           </div>
-
-          {isLoading ? (
-            <div className="grid-gallery">
-              {[...Array(4)].map((_, i) => (
-                <ProductSkeleton key={i} />
-              ))}
-            </div>
-          ) : sorted.length === 0 ? (
-            <div className="py-32 text-center space-y-4">
-              <p className="muted-italic text-lg">{t("home.newArrivals.empty")}</p>
-              {(activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly || priceRange[0] > 0 || priceRange[1] < 10000) && (
-                <button
-                  onClick={() => {
-                    setActiveCategoryIds([]);
-                    setInStockOnly(false);
-                    setHasDiscountOnly(false);
-                    setPriceRange([0, priceMax]);
-                  }}
-                  className="text-primary underline text-sm uppercase tracking-widest font-bold cursor-pointer"
-                >
-                  {t("shop.clearFilters")}
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="grid-gallery animate-in fade-in duration-700">
-              {sorted.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
+          <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
         </div>
+
+        <ActiveFilterChips
+          categoryIds={activeCategoryIds}
+          onCategoryChange={setActiveCategoryIds}
+          inStockOnly={inStockOnly}
+          onInStockChange={setInStockOnly}
+          hasDiscountOnly={hasDiscountOnly}
+          onHasDiscountChange={setHasDiscountOnly}
+          priceRange={priceRange}
+          onPriceChange={setPriceRange}
+          maxPrice={priceMax}
+        />
+
+        {isLoading ? (
+          <div className="grid-gallery">
+            {[...Array(4)].map((_, i) => (
+              <ProductSkeleton key={i} />
+            ))}
+          </div>
+        ) : sorted.length === 0 ? (
+          <div className="py-32 text-center space-y-6">
+            <p className="muted-italic text-lg">{t("home.newArrivals.empty")}</p>
+            {(activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly || priceRange[0] > 0 || priceRange[1] < priceMax) && (
+              <button
+                onClick={() => {
+                  setActiveCategoryIds([]);
+                  setInStockOnly(false);
+                  setHasDiscountOnly(false);
+                  setPriceRange([0, priceMax]);
+                }}
+                className="btn-luxury-outline cursor-pointer"
+              >
+                {t("shop.clearFilters")}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid-gallery animate-in fade-in duration-700">
+            {sorted.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </HomePageContainer>
   );

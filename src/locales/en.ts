@@ -1,3 +1,163 @@
+/** A single content block within a Privacy Policy section: either a paragraph or a bulleted list. */
+export type PrivacyBlock = { text: string } | { items: string[] };
+
+/** A named sub-topic within a Privacy Policy section (e.g. "Payment Information" under "Information We Collect"). */
+export type PrivacySubsection = { title: string; blocks: PrivacyBlock[] };
+
+/** A single top-level section of the Privacy Policy. */
+export type PrivacySection = {
+  title: string;
+  blocks: PrivacyBlock[];
+  subsections?: PrivacySubsection[];
+  contact?: { company: string; website: string; email: string; phone: string; address: string };
+};
+
+const PRIVACY_SECTIONS: PrivacySection[] = [
+  {
+    title: "1. Information We Collect",
+    blocks: [
+      { text: "Depending on how you interact with our website, we may collect the following information:" }
+    ],
+    subsections: [
+      {
+        title: "Personal Information",
+        blocks: [
+          { text: "When you create an account, place an order, contact us, or subscribe to our communications, we may collect:" },
+          { items: ["Full name", "Email address", "Mobile/phone number", "Billing address", "Shipping/delivery address", "Account login information", "Order and purchase history", "Information provided when contacting our customer support"] }
+        ]
+      },
+      {
+        title: "Payment Information",
+        blocks: [
+          { text: "Payments made through our website may be processed by third-party payment service providers." },
+          { text: "Culture Signature does not directly store your complete debit card, credit card, UPI, CVV, PIN, or banking credentials on its servers. Payment information is handled by the applicable payment gateway in accordance with its own privacy and security practices." }
+        ]
+      },
+      {
+        title: "Automatically Collected Information",
+        blocks: [
+          { text: "When you browse our website, certain technical information may be automatically collected, such as:" },
+          { items: ["IP address", "Browser type and version", "Device type", "Operating system", "Pages visited", "Time spent on our website", "Referring website or source", "Basic website usage and interaction information"] },
+          { text: "This information may be used to improve website performance, security, and user experience." }
+        ]
+      }
+    ]
+  },
+  {
+    title: "2. How We Use Your Information",
+    blocks: [
+      { text: "We may use the information we collect to:" },
+      { items: ["Process and fulfil your orders", "Deliver products to your provided address", "Process payments and refunds", "Create and manage customer accounts", "Send order confirmations and shipping updates", "Provide customer support", "Respond to enquiries and requests", "Improve our website, products, and services", "Understand customer preferences and website usage", "Prevent fraud, misuse, and unauthorized activities", "Maintain website security", "Comply with applicable legal and regulatory requirements", "Send promotional communications where permitted and where you have provided the necessary consent"] },
+      { text: "We do not use your personal information for purposes unrelated to the services provided by Culture Signature unless permitted or required by applicable law." }
+    ]
+  },
+  {
+    title: "3. Marketing Communications",
+    blocks: [
+      { text: "If you choose to subscribe to our promotional communications, we may send you information about:" },
+      { items: ["New collections", "New arrivals", "Special offers", "Discounts", "Limited-edition launches", "Exhibitions and events", "Brand updates"] },
+      { text: "You may unsubscribe from promotional emails at any time by using the unsubscribe option provided in the communication or by contacting us." },
+      { text: "Transactional communications, such as order confirmations, payment confirmations, shipping updates, and important account-related notifications, may still be sent when necessary to complete or manage your order." }
+    ]
+  },
+  {
+    title: "4. Cookies and Similar Technologies",
+    blocks: [
+      { text: "Our website may use cookies and similar technologies to provide essential website functionality and improve your browsing experience." },
+      { text: "Cookies may help us:" },
+      { items: ["Keep products in your shopping cart", "Maintain login sessions", "Remember preferences", "Understand website usage", "Improve website performance", "Measure the effectiveness of marketing campaigns"] },
+      { text: "You may be able to control or disable cookies through your browser settings. However, disabling certain cookies may affect some website functionality." }
+    ]
+  },
+  {
+    title: "5. Sharing of Information",
+    blocks: [
+      { text: "We may share necessary information with trusted third-party service providers who help us operate our business, including:" },
+      { items: ["Payment gateway providers", "Shipping and logistics partners", "Website hosting and infrastructure providers", "Email and communication service providers", "Analytics and website performance providers", "Customer support or technology service providers"] },
+      { text: "These parties receive only the information reasonably necessary to provide their respective services." },
+      { text: "We may also disclose information where required by applicable law, legal process, governmental authority, or where necessary to protect our legal rights, customers, website, or business." },
+      { text: "We do not sell or rent your personal information to third parties." }
+    ]
+  },
+  {
+    title: "6. Payment Processing",
+    blocks: [
+      { text: "Payments on Culture Signature may be processed through third-party payment gateways." },
+      { text: "When you make a payment, you may be redirected to or interact with the payment gateway's systems. Your payment information may therefore be subject to the payment provider's privacy policy and security practices." },
+      { text: "Culture Signature does not request or store your UPI PIN, ATM PIN, CVV, or online banking password." }
+    ]
+  },
+  {
+    title: "7. Shipping and Delivery",
+    blocks: [
+      { text: "To fulfil your order, we may share necessary delivery information, including your name, phone number, and delivery address, with our logistics and shipping partners." },
+      { text: "This information is used solely for purposes such as shipment processing, delivery, tracking, and resolving delivery-related issues." }
+    ]
+  },
+  {
+    title: "8. Third-Party Services and Links",
+    blocks: [
+      { text: "Our website may use or integrate with third-party services such as payment gateways, shipping providers, analytics services, social media platforms, authentication providers, or other technology services." },
+      { text: "Our website may also contain links to third-party websites or social media pages." },
+      { text: "Culture Signature is not responsible for the privacy practices, content, or security of third-party websites. We recommend reviewing their respective privacy policies before providing personal information." }
+    ]
+  },
+  {
+    title: "9. Google, Apple, or Social Login",
+    blocks: [
+      { text: "If you choose to create or access your Culture Signature account using a third-party authentication provider such as Google or Apple, we may receive information made available to us by that provider, such as your name, email address, and profile information permitted through the authentication process." },
+      { text: "We use this information to create and manage your account and provide the requested services." }
+    ]
+  },
+  {
+    title: "10. Data Security",
+    blocks: [
+      { text: "We take reasonable technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, misuse, or destruction." },
+      { text: "However, no method of transmission over the internet or method of electronic storage is completely secure. Therefore, while we take reasonable steps to protect your information, we cannot guarantee absolute security." }
+    ]
+  },
+  {
+    title: "11. Data Retention",
+    blocks: [
+      { text: "We retain personal information only for as long as reasonably necessary to:" },
+      { items: ["Provide our services", "Complete and maintain transaction records", "Provide customer support", "Comply with legal, tax, accounting, and regulatory requirements", "Resolve disputes", "Prevent fraud or misuse", "Enforce our agreements and policies"] },
+      { text: "When information is no longer reasonably required, it may be deleted, anonymized, or securely disposed of, subject to applicable legal requirements." }
+    ]
+  },
+  {
+    title: "12. Your Rights and Choices",
+    blocks: [
+      { text: "Depending on applicable law, you may have rights regarding your personal information, including the ability to:" },
+      { items: ["Request information about the personal data we process", "Request correction of inaccurate or incomplete information", "Request deletion of personal information where legally applicable", "Withdraw consent where processing is based on consent", "Opt out of promotional communications", "Raise concerns regarding the processing of your personal information"] },
+      { text: "Requests relating to your personal information may be submitted using the contact details provided below." },
+      { text: "We may need to verify your identity before processing certain requests in order to protect your account and personal information." }
+    ]
+  },
+  {
+    title: "13. Children's Privacy",
+    blocks: [
+      { text: "Our website is intended for general consumers and is not specifically directed toward children." },
+      { text: "We do not knowingly collect personal information from children where such collection is prohibited by applicable law." },
+      { text: "If you believe that a child has provided personal information to us improperly, please contact us so that we can take appropriate action." }
+    ]
+  },
+  {
+    title: "14. International Customers",
+    blocks: [
+      { text: "Culture Signature may receive orders from customers located outside India." },
+      { text: "Where personal information is transferred, stored, or processed outside your country, we will take reasonable steps to handle such information in accordance with applicable laws and our contractual or operational requirements." }
+    ]
+  },
+  {
+    title: "15. Changes to This Privacy Policy",
+    blocks: [
+      { text: "We may update this Privacy Policy from time to time to reflect changes in our services, technology, business practices, or applicable legal requirements." },
+      { text: "The updated Privacy Policy will be published on this page with a revised “Last Updated” date." },
+      { text: "We encourage you to periodically review this page for the latest information about our privacy practices." }
+    ]
+  }
+];
+
 export const en = {
   footer: {
     sections: {
@@ -308,6 +468,13 @@ export const en = {
       eyebrow: "New member",
       editorial: "Begin your journey\ninto timeless elegance.",
       hasAccount: "Already have an account?",
+      sendCode: "Send verification code",
+      codeSent: "Verification code sent to your email.",
+      codeLabel: "Verification code",
+      codeHint: "Enter the 6-digit code sent to your email",
+      resend: "Resend code",
+      resendIn: "Resend in {seconds}s",
+      validation: "Please enter your name, email, and a password of at least 8 characters.",
     },
     forgotPassword: {
       title: "Reset Password",
@@ -354,7 +521,6 @@ export const en = {
       yourReview: "Your review",
       subtotal: "Subtotal",
       discount: "Discount",
-      gst: "GST (18%)",
       shipping: "Shipping",
       total: "Total",
       orderItems: "Order Items",
@@ -463,16 +629,13 @@ export const en = {
       viewAll: "View All",
       discoverCollection: "Discover Collection",
       saveChanges: "Save Changes",
+      edit: "Edit",
     },
     sidebar: {
-      overview: "Profile Overview",
+      overview: "My Account",
       wishlist: "My Wishlist",
     },
     overview: {
-      totalOrders: "Total Orders",
-      wishlistItems: "Wishlist Items",
-      recentSelection: "Recent Selection",
-      seeAllOrders: "See All Orders",
       order: "Order",
       placed: "Placed",
       ordersInCollectionOne: "You have {count} order in your collection.",
@@ -548,10 +711,9 @@ export const en = {
       title: "Order Summary",
       reviewTitle: "Order Review",
       qty: "Qty: {count}",
-      subtotal: "Value (excl. GST)",
+      subtotal: "Value (incl. GST)",
       shipping: "Shipping",
       shippingComplimentary: "Free",
-      estimatedTax: "Estimated GST (18%)",
       total: "Total Amount",
       finalTotal: "Final Total",
       promotionalCode: "Promotional Discount",
@@ -563,8 +725,8 @@ export const en = {
         title: "Admin Preview Mode",
         description: "Transactional features are disabled for administrative accounts."
       },
-      footerNote: "Free shipping above ₹{threshold}. Securely processed via Stripe.",
-      footerNoteCheckout: "By placing your order, you agree to our Terms & Conditions.",
+      footerNote: "Free shipping above ₹{threshold}. Delivery in 4–8 working days. Securely processed via Razorpay.",
+      footerNoteCheckout: "Delivery in 4–8 working days. By placing your order, you agree to our Terms & Conditions.",
       badges: {
         expressDelivery: "White Glove Delivery",
         securePayment: "Authenticity Guaranteed"
@@ -597,13 +759,13 @@ export const en = {
         phone: "Phone Number (For Delivery Updates)",
         billingSame: "Billing address is same as shipping",
         placeholders: {
-          firstName: "John",
-          lastName: "Doe",
-          street: "123 Luxury Lane",
-          city: "New York",
-          state: "NY",
-          zip: "10001",
-          phone: "+1 212 555 0123",
+          firstName: "Riya",
+          lastName: "Sharma",
+          street: "Flat 4B, 12 MG Road, Andheri West",
+          city: "Mumbai",
+          state: "Maharashtra",
+          zip: "400058",
+          phone: "98765 43210",
         }
       },
       success: {
@@ -621,11 +783,14 @@ export const en = {
   },
   home: {
     hero: {
-      established: "Established 2013",
-      title1: "Artisanal",
-      title2: "Heritage",
-      description: "Celebrating the soul of Indian craftsmanship through handcrafted jewelry and artisanal bags. Founded by Jalpa Thakkar to empower through mastery.",
-      imageAlt: "Luxury Jewelry",
+      established: "Est. 2013 · Handcrafted in India",
+      signatureLine1: "Culture is our",
+      signatureLine2: "Signature",
+      badge: "Rooted in India",
+      title1: "Crafted by Hand.",
+      title2: "Worn for Generations.",
+      description: "Jewelry and bags built on artisanal mastery — founded by Jalpa Thakkar to celebrate the soul of Indian craftsmanship.",
+      imageAlt: "Model wearing Culture Signature jewelry",
       cta: "Explore the Collection",
       ctaSecondary: "Our Story"
     },
@@ -665,7 +830,7 @@ export const en = {
     trust: {
       delivery: {
         title: "Fast Delivery",
-        desc: "Free shipping over ₹5,000"
+        desc: "Free shipping over ₹2,000 · 4–8 working days"
       },
       quality: {
         title: "Quality Assured",
@@ -695,6 +860,11 @@ export const en = {
       title: "Common Inquiries",
       subtitle: "Your Questions Answered",
       breadcrumb: "FAQ",
+      pageHeading: "Frequently Asked Questions",
+      pageDescription: "Everything you need to know about our jewelry, shipping, care, and returns. Can't find your answer? We're just a message away.",
+      ctaTitle: "Still have questions?",
+      ctaDescription: "Our team is happy to help with anything not covered here.",
+      ctaButton: "Contact Us",
       questions: [
         {
           question: "How do I care for my jewelry?",
@@ -702,7 +872,7 @@ export const en = {
         },
         {
           question: "Do you offer international shipping?",
-          answer: "Yes, we ship globally. Free shipping is available on orders above ₹5,000."
+          answer: "Yes, we ship globally. Free shipping is available on orders above ₹2,000, and orders are delivered within 4–8 working days."
         },
         {
           question: "Are the bags made from genuine leather?",
@@ -876,6 +1046,7 @@ export const en = {
       city: "City",
       selectCity: "Select city",
       enterCity: "Enter city",
+      selectStateFirst: "Select a state first",
       zipCode: "Pin Code / Zip Code",
       autoFilled: "Auto-filled from city",
       enterZip: "Enter zip code",
@@ -888,6 +1059,19 @@ export const en = {
     emptyTitle: "Your wishlist is empty",
     emptyDescription: "Browse our collection and save your favorites here.",
     explore: "Explore Collection",
+  },
+  search: {
+    label: "Search",
+    placeholder: "Search products, categories...",
+    typeToSearch: "Type to search products and categories",
+    noResults: "No results for \"{query}\"",
+    categories: "Categories",
+    products: "Products",
+    viewAllResults: "View all {count} results",
+    heading: "Search Results",
+    resultsFor: "Results for \"{query}\"",
+    emptyTitle: "No results found",
+    emptyDescription: "Try a different search term or browse our collections.",
   },
   collections: {
     title: "Categories clusters",
@@ -980,7 +1164,7 @@ export const en = {
         global: { title: "Global Reach", desc: "Partnering with premium couriers for worldwide delivery." }
       },
       sections: {
-        processing: { title: "1. Processing Times", content: "As our pieces are often finished to order, please allow 2-4 business days for processing. Custom masterpieces may require extended timeframes, which will be communicated during the design phase." },
+        processing: { title: "1. Processing Times", content: "As our pieces are often finished to order, please allow 4-8 business days for processing. Custom masterpieces may require extended timeframes, which will be communicated through email." },
         methods: { title: "2. Shipping Methods & Rates", table: { region: "Region", courier: "Courier", rate: "Rate", domestic: "India (Domestic)", domesticCourier: "Premium Express", complimentary: "Complimentary", international: "International", internationalCourier: "DHL/FedEx Priority" } },
         signature: { title: "3. Signature Requirement", content: "To ensure the security of your high-value purchase, all Culture Signature shipments require an adult signature upon delivery. We do not ship to P.O. boxes." },
         customs: { title: "4. International Customs", content: "For international orders, the recipient is responsible for any local customs duties or import taxes. These are not included in the shipping rate and will be collected by the courier at the time of delivery." }
@@ -989,25 +1173,26 @@ export const en = {
     refund: {
       breadcrumb: "Return & Refund Policy",
       title: "Return & Refund",
-      subtitle: "Ensuring your complete satisfaction with every artisanal acquisition.",
+      subtitle: "Every piece is inspected before it leaves us — here's what happens if something isn't right.",
       sections: {
-        commitment: { title: "1. Our Commitment", content: "At Culture Signature, we stand by the exceptional quality of our craftsmanship. If a piece does not meet your expectations, we offer a refined return process." },
-        eligibility: { title: "2. Eligibility for Returns", intro: "To be eligible for a return, the following conditions must be met:", items: ["The item must be returned within 14 days of the delivery date.", "Items must be in their original, pristine condition, unworn and unaltered.", "All original packaging, certificates of authenticity, and security tags must be intact."] },
-        nonReturnable: { title: "3. Non-Returnable Items", content: "Please note that custom-designed masterpieces, personalized engravings, and intimate wear are final sale and cannot be returned or exchanged." },
-        process: { title: "4. Refund Process", intro: "Once your return is received and inspected by our master artisans:", items: ["We will notify you of the approval or rejection of your refund.", "Approved refunds will be processed to the original method of payment within 7-10 business days.", "Please note that shipping costs are non-refundable."] },
-        assistance: { title: "Need Assistance?", content: "Our concierge team is available to assist you with any return inquiries at", email: "concierge@culturesignature.com" }
+        commitment: { title: "1. Our Policy", content: "At Culture Signature, all sales are final. We do not offer returns, refunds, or exchanges for change of mind, sizing preferences, or general dissatisfaction. Each piece is quality-checked before dispatch. The only exception is outlined below." },
+        eligibility: { title: "2. Eligibility for Exchange", intro: "An exchange is offered only if your order arrives damaged, defective, or with an item missing - due to an error on our part. To qualify:", items: ["You must report the issue within 48 hours of delivery, along with photos or a video of the item received.", "The item must be unused, unworn, and in its original packaging with all tags intact.", "The issue must be a manufacturing or dispatch error on our part, not damage occurring after delivery."] },
+        nonReturnable: { title: "3. What We Offer", content: "If your claim is approved, we will exchange the item for the same product in the same design. We do not offer refunds, store credit, or exchanges for a different product. Custom-designed pieces and personalized engravings are not eligible for exchange under any circumstance." },
+        process: { title: "4. Exchange Process", intro: "Once you report an issue with supporting evidence:", items: ["Our team will review the claim within 2-3 business days.", "If approved, we will arrange pickup of the item and dispatch its replacement at no extra cost.", "If the claim is not approved - for example, damage after delivery, normal wear, or a change of mind — the order will not be eligible for exchange."] },
+        assistance: { title: "Need Assistance?", content: "Spotted an issue with your order? Reach out within 48 hours of delivery at", email: "concierge@culturesignature.com" }
       }
     },
     privacy: {
       breadcrumb: "Privacy Policy",
       title: "Privacy Policy",
       subtitle: "Your trust is our most precious masterpiece. Learn how we protect your information.",
-      sections: {
-        collect: { title: "1. Information We Collect", content: "At Culture Signature, we collect information that helps us provide a personalized and seamless luxury experience.", items: ["Personal Identification: Name, email address, phone number, and shipping/billing address.", "Transaction Details: Purchase history and payment preferences (though we never store full credit card numbers).", "Digital Footprint: IP address, browser type, and interaction data to improve our boutique experience online."] },
-        use: { title: "2. How We Use Your Data", intro: "Your data is utilized solely to enhance your journey with us. This includes:", items: ["Processing and fulfilling your artisanal orders.", "Providing exclusive \"Inner Circle\" updates and invitations.", "Customizing product recommendations based on your unique style.", "Ensuring the security and integrity of our platform."] },
-        protection: { title: "3. Data Protection", content: "We employ state-of-the-art encryption and security protocols to ensure your data remains as secure as the gems in our vault. We never sell your personal information to third parties." },
-        contact: { title: "4. Contact Our Privacy Officer", content: "If you have any questions regarding your privacy or wish to exercise your data rights, please reach out to us at", email: "privacy@culturesignature.com" }
-      }
+      lastUpdated: "Last Updated: 14 September 2026",
+      intro: [
+        "Welcome to Culture Signature. We value your trust and are committed to protecting your personal information and providing you with a safe and secure shopping experience.",
+        "This Privacy Policy explains how Culture Signature (“we”, “us”, “our”) collects, uses, stores, and protects your information when you visit or use our website, purchase our products, create an account, contact us, or otherwise interact with our services.",
+        "By using our website, you acknowledge that you have read and understood this Privacy Policy."
+      ],
+      sections: PRIVACY_SECTIONS,
     },
     terms: {
       breadcrumb: "Terms of Service",

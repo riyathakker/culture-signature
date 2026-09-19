@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { toast } from "sonner";
 import { Discount } from "@/types";
 import { CartService } from "@/services/cart";
@@ -26,6 +27,8 @@ type CartStore = {
   isAuthenticated: boolean;
   setIsAuthenticated: (status: boolean) => void;
   fetchCart: (force?: boolean) => Promise<void>;
+  mergeGuestCartOnLogin: () => Promise<void>;
+  clearLocalCart: () => void;
   addItem: (item: CartItem) => Promise<void>;
   removeItem: (id: string, color?: string) => Promise<void>;
   updateQuantity: (id: string, quantity: number, color?: string) => Promise<void>;
@@ -35,13 +38,32 @@ type CartStore = {
   getDiscountAmount: () => number;
 };
 
-export const useCartStore = create<CartStore>((set, get) => ({
+export const useCartStore = create<CartStore>()(persist((set, get) => ({
   items: [],
   isLoading: false,
   appliedPromo: null,
   isAuthenticated: false,
 
   setIsAuthenticated: (status: boolean) => set({ isAuthenticated: status }),
+
+  // Called on the guest→authenticated transition: push the locally persisted
+  // guest lines to the server (which sums quantities, capped at stock), then
+  // pull the authoritative merged cart back.
+  mergeGuestCartOnLogin: async () => {
+    const guestItems = get().items;
+    for (const it of guestItems) {
+      try {
+        await CartService.addItem(it.id, it.quantity, it.color);
+      } catch (error) {
+        // Over-stock / unavailable lines are skipped; the refetch reflects truth.
+        console.error("Cart merge skipped a line:", error);
+      }
+    }
+    await get().fetchCart(true);
+  },
+
+  // Local-only clear (used on logout) — never touches the server cart.
+  clearLocalCart: () => set({ items: [], appliedPromo: null }),
 
   fetchCart: async (force = false) => {
     if (!get().isAuthenticated && !force) return;
@@ -165,4 +187,9 @@ export const useCartStore = create<CartStore>((set, get) => ({
       return Math.min(appliedPromo.value, subtotal);
     }
   },
+}), {
+  name: "cs-cart",
+  storage: createJSONStorage(() => localStorage),
+  // Persist only the cart contents; auth/loading are runtime-only.
+  partialize: (state) => ({ items: state.items, appliedPromo: state.appliedPromo }),
 }));

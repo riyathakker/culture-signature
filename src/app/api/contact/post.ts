@@ -1,8 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { sendContactInquiry } from "@/lib/email";
+import { rateLimit, getClientIp } from "@/lib/rateLimit";
 
 export default async function handler(req: NextRequest) {
+  const ip = getClientIp(req);
+  const { allowed } = rateLimit(`contact:${ip}`, 5, 10 * 60 * 1000);
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+  }
+
   try {
     const { name, email, subject, message } = await req.json();
 

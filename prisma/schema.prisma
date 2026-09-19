@@ -106,7 +106,7 @@ model Order {
   street         String?
   updatedAt      DateTime    @updatedAt
   paymentId       String?     @unique
-  cfOrderId       String?
+  paymentOrderId  String?
   user           User?       @relation(fields: [userId], references: [id])
   items          OrderItem[]
 }
@@ -145,6 +145,18 @@ model Inquiry {
   message   String
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
+}
+
+// One-time signup email verification codes. One active row per email (upsert on
+// send); the code is stored hashed and removed once consumed by signup.
+model EmailOtp {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Discount {

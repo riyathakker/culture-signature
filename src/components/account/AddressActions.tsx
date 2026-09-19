@@ -52,7 +52,7 @@ export function AddressActions({ address }: AddressActionsProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 absolute top-4 right-4 md:top-6 md:right-6">
+      <div className="flex gap-2 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 md:absolute md:top-6 md:right-6">
         <AddressDialog
           address={address}
           trigger={

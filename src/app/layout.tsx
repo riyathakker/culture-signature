@@ -27,11 +27,15 @@ import NextTopLoader from "nextjs-toploader";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // No maximum-scale — capping zoom fails accessibility (users must be able to
+  // pinch-zoom).
   viewportFit: "cover",
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.culturesignatureindia.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Culture Signature by Jalpa Thakkar | Luxury Jewellery & Timepieces",
   description: "Culture Signature by Jalpa Thakkar — experience the pinnacle of artisanal craftsmanship and timeless elegance.",
   //  manifest: "/manifest.json", //restore when lauch
@@ -76,7 +80,7 @@ export default function RootLayout({
             </LayoutWrapper>
           </ConditionalShell>
           <BackToTop />
-          {/* <PWAInstallPrompt /> */}
+          <PWAInstallPrompt />
         </Providers>
       </body>
     </html>

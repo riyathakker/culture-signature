@@ -11,9 +11,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         heading="My Account"
         description="Manage your account, orders and preferences."
         breadcrumbClassName="[@media(display-mode:standalone)]:hidden"
-        headerClassName="hidden lg:block [@media(display-mode:standalone)]:hidden [@media(display-mode:standalone)]:py-0"
+        headerClassName="hidden lg:block [@media(display-mode:standalone)]:hidden [@media(display-mode:standalone)]:py-0 pt-10"
       >
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-18">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-18 pt-5">
           <AccountSidebar />
           <div className="flex-1 min-w-0 pt-2 [@media(display-mode:standalone)]:pt-4">
             {children}

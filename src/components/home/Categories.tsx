@@ -41,7 +41,7 @@ function CategoryCards() {
                 {cat.name ? cat.name[0] : "?"}
               </span>
             </div>
-            <h4 className="font-heading text-xl group-hover:text-primary-foreground transition-all duration-500 relative z-10 text-center">{cat.name}</h4>
+            <h3 className="font-heading text-xl group-hover:text-primary-foreground transition-all duration-500 relative z-10 text-center">{cat.name}</h3>
             <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground group-hover:text-primary-foreground/70 transition-colors mt-2 relative z-10">
               {cat._count?.products || 0} {t("home.categories.pieces")}
             </p>
@@ -70,7 +70,7 @@ export function Categories() {
   }
 
   return (
-    <div className="py-10 bg-accent border-y border-border/40">
+    <div className="py-8 bg-background border-y border-border/40">
       <SectionTitle title={t("home.categories.title")} subtitle={t("home.categories.subtitle")} align="center" />
       <CategoryCards />
     </div>

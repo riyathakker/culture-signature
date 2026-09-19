@@ -1,7 +1,7 @@
 "use client";
 
 export function AnnouncementBar() {
-  const message = "Free Shipping on all orders over ₹5,000  •  New Collection Available Now  •  ";
+  const message = "Free Shipping on all orders over ₹2,000  •  New Collection Available Now  •  ";
 
   return (
     <div className="bg-primary text-primary-foreground overflow-hidden">

@@ -9,12 +9,13 @@ import { ROUTES } from "@/constants/routes";
 import { useOrderStore } from "@/store/orderStore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
+import { OrdersSkeleton } from "@/components/account/AccountSkeletons";
 import { useTranslation } from "@/context/TranslationContext";
 
 export default function OrdersPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const { myOrders, myOrdersLoading, fetchMyOrders, applyOrderUpdate } = useOrderStore();
   const { t } = useTranslation();
@@ -47,20 +48,11 @@ export default function OrdersPage() {
   }, [status]);
 
   if (myOrdersLoading) {
-    return (
-      <div className="flex justify-center py-32">
-        <Loader2 className="w-8 h-8 animate-spin text-primary/40" />
-      </div>
-    );
+    return <OrdersSkeleton />;
   }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-1">
-        <h2 className="text-3xl font-heading">{t("account.orders.heading")}</h2>
-        <p className="muted-italic pwa-hide">{t("account.orders.subtitle")}</p>
-      </div>
-
       {myOrders.length === 0 ? (
         <EmptyState
           icon={ShoppingBag}

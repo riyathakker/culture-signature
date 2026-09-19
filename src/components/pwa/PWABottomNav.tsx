@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Home, Sparkles, LayoutGrid, ShoppingBag, User,
-  Package, Heart, MapPin, Settings, ChevronLeft,
+  Package, Heart, ChevronLeft,
   LayoutDashboard,
   Users,
   Tag,
@@ -28,13 +28,13 @@ const mainTabs = [
 
 const accountTabs = [
   { label: "Back", href: ROUTES.HOME, icon: ChevronLeft, isBack: true },
+  { label: "Account", href: ROUTES.ACCOUNT.DASHBOARD, icon: User },
   { label: "Orders", href: ROUTES.ACCOUNT.ORDERS, icon: Package },
   { label: "Wishlist", href: ROUTES.ACCOUNT.WISHLIST, icon: Heart },
-  { label: "Addresses", href: ROUTES.ACCOUNT.ADDRESSES, icon: MapPin },
-  { label: "Settings", href: ROUTES.ACCOUNT.SETTINGS, icon: Settings },
 ];
 
 const adminTabs = [
+  { label: "Home", href: ROUTES.HOME, icon: Home, isBack: true },
   { label: "Overview", href: ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard },
   { label: "Products", href: ROUTES.ADMIN.PRODUCTS, icon: Package },
   { label: "Orders", href: ROUTES.ADMIN.ORDERS, icon: ShoppingBag },
@@ -133,11 +133,9 @@ export function PWABottomNav() {
               ? pathname === href
               : pathname === href || pathname.startsWith(href + "/");
 
-          // Account tab on main nav: admins → admin dashboard,
-          // logged-in shoppers → their orders (Overview is no longer a tab).
-          const resolvedHref = authRequired
-            ? (isAdmin ? ROUTES.ADMIN.DASHBOARD : ROUTES.ACCOUNT.ORDERS)
-            : href;
+          // Account tab on main nav: admins → admin dashboard, logged-in
+          // shoppers → the merged account hub (profile, orders, wishlist).
+          const resolvedHref = authRequired && isAdmin ? ROUTES.ADMIN.DASHBOARD : href;
 
           // Only divert to /login once we KNOW the user is signed out.
           // While the session is still "loading" (e.g. PWA cold-start) let the

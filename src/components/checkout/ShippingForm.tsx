@@ -16,7 +16,21 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { useTranslation } from "@/context/TranslationContext";
-import { LocationSelector } from "@/components/common/LocationSelector";
+import dynamic from "next/dynamic";
+
+// The location picker pulls in the (large) country-state-city dataset — load it
+// lazily so it never blocks the rest of the checkout form from rendering.
+const LocationSelector = dynamic(
+  () => import("@/components/common/LocationSelector").then((m) => m.LocationSelector),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center gap-2 h-10 text-muted-foreground text-sm">
+        <Loader2 className="w-4 h-4 animate-spin" /> Loading location…
+      </div>
+    ),
+  }
+);
 
 export function ShippingForm() {
   const { t } = useTranslation();
@@ -24,6 +38,8 @@ export function ShippingForm() {
   const { addresses: savedAddresses, isLoading, fetchAddresses } = useAddressStore();
 
   useEffect(() => {
+    // Country is fixed to India for now.
+    if (!shippingAddress.country) setShippingAddress({ country: "India" });
     fetchAddresses().then(() => {
       const defaultAddress = useAddressStore.getState().addresses.find((a) => a.isDefault);
       if (defaultAddress && !shippingAddress.street) handleSelectAddress(defaultAddress);
@@ -63,10 +79,9 @@ export function ShippingForm() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-700">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="space-y-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-1">
+        <div className="space-y-2">
           <h3 className="text-2xl font-heading">{t("cart.checkout.shipping.title")}</h3>
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">{t("cart.checkout.shipping.subtitle")}</p>
         </div>
 
         {savedAddresses.length > 0 && (
@@ -110,7 +125,7 @@ export function ShippingForm() {
             placeholder={t("cart.checkout.shipping.placeholders.firstName")}
             value={shippingAddress.firstName || ""}
             onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
+            className="rounded-md border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
           />
         </div>
         <div className="space-y-2">
@@ -120,7 +135,7 @@ export function ShippingForm() {
             placeholder={t("cart.checkout.shipping.placeholders.lastName")}
             value={shippingAddress.lastName || ""}
             onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
+            className="rounded-md border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
           />
         </div>
 
@@ -131,7 +146,7 @@ export function ShippingForm() {
             placeholder={t("cart.checkout.shipping.placeholders.street")}
             value={shippingAddress.street || ""}
             onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
+            className="rounded-md border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
           />
         </div>
 
@@ -145,6 +160,7 @@ export function ShippingForm() {
             }}
             onChange={(field, value) => setShippingAddress({ [field]: value })}
             labelClassName="text-spaced-bold opacity-60"
+            allowedCountries={["India"]}
           />
         </div>
 
@@ -155,16 +171,9 @@ export function ShippingForm() {
             placeholder={t("cart.checkout.shipping.placeholders.phone")}
             value={shippingAddress.phone || ""}
             onChange={handleChange}
-            className="rounded-none border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
+            className="rounded-md border-muted-foreground/30 h-12 focus-visible:ring-primary bg-transparent"
           />
         </div>
-      </div>
-
-      <div className="flex items-center space-x-2 pt-4">
-        <Checkbox id="billing-same" defaultChecked className="border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
-        <Label htmlFor="billing-same" className="text-xs muted-italic cursor-pointer">
-          {t("cart.checkout.shipping.billingSame")}
-        </Label>
       </div>
     </div>
   );

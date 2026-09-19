@@ -23,7 +23,6 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
   const isAdmin = pathname.startsWith("/admin");
   const isAccount = pathname.startsWith("/account");
   const showPWAHeader = !isAuthPage && !isHome && !isAdmin && !isAccount;
-  const hideHeaderOnMobile = showPWAHeader || isAccount;
 
   if (isAuthPage) {
     return <>{children}</>;
@@ -32,7 +31,7 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       {!isAdmin && (
-        <div className={hideHeaderOnMobile ? "hidden lg:block pwa-hide" : "pwa-hide"}>
+        <div className="pwa-hide">
           <Header />
         </div>
       )}
@@ -49,7 +48,7 @@ export function ConditionalShell({ children }: { children: React.ReactNode }) {
         </>
       )}
       <PWABottomNav />
-      {/* <PWAInstallPrompt /> */}
+      <PWAInstallPrompt />
     </>
   );
 }
