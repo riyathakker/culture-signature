@@ -9,6 +9,7 @@ import { FeaturedProducts } from "@/components/home/FeaturedProducts";
 import { ExhibitionsSection, LimitedDropsSection } from "@/components/home/ContentSection";
 import { TrustStrip } from "@/components/home/TrustStrip";
 import { PWAHomeHeader } from "@/components/pwa/PWAHomeHeader";
+import { NewArrivals } from "@/components/home/NewArrivals";
 
 export default function HomePage() {
   return (
@@ -16,12 +17,15 @@ export default function HomePage() {
       <PWAHomeHeader />
       <HeroSection />
       <TrustStrip />
-      <LimitedDropsSection />
       <Categories />
+      <LimitedDropsSection />
+      <NewArrivals />
       <FeaturedProducts />
-      <ExhibitionsSection />
+      
       <CelebSpotting />
       <Testimonials />
+
+      <ExhibitionsSection />
       <FAQ />
     </div>
   );

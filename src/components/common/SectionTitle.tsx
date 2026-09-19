@@ -42,7 +42,7 @@ export function SectionTitle({
       >
         {title}
       </h2>
-      <div className="w-12 h-0.5 bg-primary mt-4 opacity-40" />
+      <div className="w-12 h-0.5 bg-primary opacity-40 mt-[4px]" />
     </div>
   );
 }

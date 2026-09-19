@@ -15,11 +15,11 @@ export function TrustStrip() {
   ];
 
   return (
-    <section className="pwa-hide py-8 border-y border-border/40 bg-muted/50">
+    <section className="pwa-hide py-14 border-y border-border/40 bg-background">
       <Container>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
           {items.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="flex flex-col items-center text-center gap-2 px-2">
+            <div key={title} className="flex flex-col items-center text-center gap-2">
               <Icon className="w-6 h-6 text-primary" strokeWidth={1.25} />
               <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-foreground">
                 {title}

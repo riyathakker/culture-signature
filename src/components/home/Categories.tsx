@@ -70,7 +70,7 @@ export function Categories() {
   }
 
   return (
-    <div className="py-10 bg-accent border-y border-border/40">
+    <div className="py-8 bg-background border-y border-border/40">
       <SectionTitle title={t("home.categories.title")} subtitle={t("home.categories.subtitle")} align="center" />
       <CategoryCards />
     </div>

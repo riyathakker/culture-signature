@@ -15,7 +15,7 @@ interface Props {
 export function HomePageContainer({ label, heading, description, children, breadcrumbClassName, headerClassName }: Props) {
     return (
         <div className="bg-background pb-10">
-            <div className={cn("py-4 [@media(display-mode:standalone)]:py-2", heading && description && "mb-0 md:mb-6", headerClassName)}>
+            <div className={cn("py-4 [@media(display-mode:standalone)]:py-2", heading && description && "mb-0 md:mb-2", headerClassName)}>
                 <Container>
                     <Breadcrumbs items={label} className={breadcrumbClassName} />
                     <div className="hidden sm:inline-block">

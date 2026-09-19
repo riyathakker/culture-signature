@@ -31,7 +31,7 @@ export function NewArrivals() {
   }
 
   return (
-    <section className="py-10 pwa-section border-t border-border/50 bg-secondary/50">
+    <section className="py-8 pwa-section border-t border-border/50 bg-background">
       <Container>
         <SectionTitle
           title={t("home.newArrivals.title")}
