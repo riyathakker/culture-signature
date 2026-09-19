@@ -16,6 +16,11 @@ const HERO_IMAGE_POOL = [
   "/hero/hero_image5.png",
   "/hero/hero_image6.png",
   "/hero/hero_image7.png",
+  "/hero/hero_image8.png",
+  "/hero/hero_image9.png",
+  "/hero/hero_image10.png",
+  "/hero/hero_image11.png",
+  "/hero/hero_image12.png",
 ];
 
 const FLOAT_COUNT = 4;
@@ -29,8 +34,6 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-// `sequence` is the slot's position in the clockwise load-in order:
-// top-left -> top-right -> bottom-right -> bottom-left.
 const SLOTS = [
   { position: "top-2 left-0 sm:left-4 lg:left-16", size: "w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60", rotate: "-rotate-6", sequence: 0 },
   { position: "top-0 right-0 sm:right-4 lg:right-16", size: "w-28 h-36 sm:w-36 sm:h-48 lg:w-44 lg:h-60", rotate: "rotate-6", sequence: 1 },
