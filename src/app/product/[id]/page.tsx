@@ -83,7 +83,7 @@ export default async function ProductPage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <ProductPageClient />
+      <ProductPageClient initialProduct={product} />
     </>
   );
 }

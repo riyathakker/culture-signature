@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
 import { usePWA } from "@/hooks/usePWA";
@@ -30,10 +31,12 @@ function DesktopMarquee({ images, onSelect }: { images: string[]; onSelect: (s: 
             onClick={() => onSelect(src)}
             className="relative w-64 h-[320px] flex-shrink-0 rounded-sm overflow-hidden group cursor-pointer"
           >
-            <img
+            <Image
               src={src}
               alt={t("home.celebSpotting.imageAlt")}
-              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+              fill
+              sizes="256px"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
@@ -128,10 +131,12 @@ function PWAScroller({ images, onSelect }: { images: string[]; onSelect: (s: str
           onClick={() => !isDragging.current && onSelect(src)}
           className="pwa-celeb-card relative w-40 h-[240px] flex-shrink-0 rounded-lg overflow-hidden"
         >
-          <img
+          <Image
             src={src}
             alt={t("home.celebSpotting.imageAlt")}
-            className="w-full h-full object-cover"
+            fill
+            sizes="160px"
+            className="object-cover"
             draggable={false}
           />
         </div>
