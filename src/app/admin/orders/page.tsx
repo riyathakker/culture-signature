@@ -176,7 +176,23 @@ export default function AdminOrders() {
             >
               <Eye className="w-4 h-4" /> {expandedOrders.has(order.id) ? "Hide Details" : "View Details"}
             </DropdownMenuItem>
-            {order.status !== "SHIPPED" && order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
+            {order.status === "PENDING" && (
+              <>
+                <DropdownMenuItem
+                  className="gap-2 text-green-600 focus:text-green-600 cursor-pointer"
+                  onClick={() => updateOrderStatus(order.id, "PAID")}
+                >
+                  <CheckCircle2 className="w-4 h-4" /> Confirm Payment
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="gap-2 text-destructive focus:text-destructive cursor-pointer"
+                  onClick={() => updateOrderStatus(order.id, "CANCELLED")}
+                >
+                  <XCircle className="w-4 h-4" /> Reject (Not Paid)
+                </DropdownMenuItem>
+              </>
+            )}
+            {order.status === "PAID" && (
               <DropdownMenuItem
                 className="gap-2 cursor-pointer"
                 onClick={() => updateOrderStatus(order.id, "SHIPPED")}
@@ -192,7 +208,7 @@ export default function AdminOrders() {
                 <CheckCircle2 className="w-4 h-4" /> Mark as Delivered
               </DropdownMenuItem>
             )}
-            {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
+            {(order.status === "PAID" || order.status === "SHIPPED") && (
               <DropdownMenuItem
                 className="gap-2 text-destructive focus:text-destructive cursor-pointer"
                 onClick={() => updateOrderStatus(order.id, "CANCELLED")}
@@ -276,7 +292,17 @@ export default function AdminOrders() {
                       <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => toggleOrderExpansion(order.id)}>
                         <Eye className="w-4 h-4" /> {expandedOrders.has(order.id) ? "Hide Details" : "View Details"}
                       </DropdownMenuItem>
-                      {order.status !== "SHIPPED" && order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
+                      {order.status === "PENDING" && (
+                        <>
+                          <DropdownMenuItem className="gap-2 text-green-600 focus:text-green-600 cursor-pointer" onClick={() => updateOrderStatus(order.id, "PAID")}>
+                            <CheckCircle2 className="w-4 h-4" /> Confirm Payment
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer" onClick={() => updateOrderStatus(order.id, "CANCELLED")}>
+                            <XCircle className="w-4 h-4" /> Reject (Not Paid)
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                      {order.status === "PAID" && (
                         <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => updateOrderStatus(order.id, "SHIPPED")}>
                           <Truck className="w-4 h-4" /> Mark as Shipped
                         </DropdownMenuItem>
@@ -286,7 +312,7 @@ export default function AdminOrders() {
                           <CheckCircle2 className="w-4 h-4" /> Mark as Delivered
                         </DropdownMenuItem>
                       )}
-                      {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
+                      {(order.status === "PAID" || order.status === "SHIPPED") && (
                         <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive cursor-pointer" onClick={() => updateOrderStatus(order.id, "CANCELLED")}>
                           <XCircle className="w-4 h-4" /> Cancel Order
                         </DropdownMenuItem>

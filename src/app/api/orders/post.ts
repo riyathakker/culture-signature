@@ -28,6 +28,72 @@ export default async function handler(req: NextRequest & { userId?: string; user
     if (!items?.length || !shippingAddress) {
       return NextResponse.json({ error: "Missing order information" }, { status: 400 });
     }
+
+    const isManualOrder = !razorpay_order_id && !razorpay_payment_id && !razorpay_signature;
+    if (isManualOrder) {
+      const requestedItems = items as RequestedItem[];
+      const products = await prisma.product.findMany({
+        where: { id: { in: requestedItems.map((i) => i.id) }, isDeleted: false },
+      });
+      const productMap = new Map(products.map((p) => [p.id, p]));
+
+      const resolved = resolveOrderLines(requestedItems, productMap);
+      if (!resolved.lines) {
+        return NextResponse.json({ error: resolved.error }, { status: 400 });
+      }
+      const lines = resolved.lines;
+
+      const discount = promoCode
+        ? await prisma.discount.findFirst({ where: { code: promoCode, isDeleted: false } })
+        : null;
+      const discountUsable = discount && isDiscountUsable(discount) ? discount : null;
+      const totals = computeOrderTotals(lines, discountUsable);
+
+      const newOrderId = await prisma.$transaction(async (tx) => {
+        const newOrder = await tx.order.create({
+          data: {
+            userId,
+            totalPrice: totals.total,
+            discountAmount: totals.discountAmount,
+            promoCode: discountUsable ? promoCode : null,
+            customerName: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+            street: shippingAddress.street,
+            city: shippingAddress.city,
+            state: shippingAddress.state,
+            zipCode: shippingAddress.zipCode,
+            country: shippingAddress.country || "India",
+            phone: shippingAddress.phone,
+            status: "PENDING",
+          },
+        });
+
+        await tx.orderItem.createMany({
+          data: lines.map((line) => ({
+            orderId: newOrder.id,
+            productId: line.productId,
+            quantity: line.quantity,
+            price: line.unitPrice,
+            color: line.color || null,
+          })),
+        });
+
+        // The customer has committed to this order, so clear their cart. Promo
+        // usage and stock are only applied when the admin confirms payment.
+        if (userId) {
+          await tx.cartItem.deleteMany({ where: { userId } });
+        }
+
+        return newOrder.id;
+      });
+
+      const order = await prisma.order.findUnique({
+        where: { id: newOrderId },
+        include: { items: { include: { product: true } } },
+      });
+
+      return NextResponse.json(order);
+    }
+
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.json({ error: "Payment verification required" }, { status: 400 });
     }

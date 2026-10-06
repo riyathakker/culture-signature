@@ -103,6 +103,7 @@ model Order {
   country        String      @default("India")
   deliveredAt    DateTime?
   shippedAt      DateTime?
+  paidAt         DateTime?
   street         String?
   updatedAt      DateTime    @updatedAt
   paymentId       String?     @unique

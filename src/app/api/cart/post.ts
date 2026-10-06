@@ -25,18 +25,22 @@ export default async function handler(req: NextRequest & { userEmail?: string })
 
   const { stock } = resolveVariant(product as any, selectedColor);
 
+  if (stock <= 0) {
+    return NextResponse.json({
+      error: "This item is out of stock.",
+      currentStock: 0
+    }, { status: 400 });
+  }
+
   const existingCartItem = await prisma.cartItem.findUnique({
     where: { userId_productId_color: { userId: user.id, productId, color: selectedColor } }
   });
 
-  const newQuantity = (existingCartItem?.quantity || 0) + (quantity || 1);
-
-  if (newQuantity > stock) {
-    return NextResponse.json({
-      error: `Only ${stock} ${stock === 1 ? "item" : "items"} available in stock.`,
-      currentStock: stock
-    }, { status: 400 });
-  }
+  // Cap the resulting quantity to available stock instead of rejecting, so the
+  // cart can never exceed stock — e.g. a stale guest cart (saved with an older,
+  // higher stock figure) replayed on login is clamped rather than dropped.
+  const desiredQuantity = (existingCartItem?.quantity || 0) + (quantity || 1);
+  const newQuantity = Math.min(desiredQuantity, stock);
 
   const cartItem = await prisma.cartItem.upsert({
     where: {
@@ -53,7 +57,7 @@ export default async function handler(req: NextRequest & { userEmail?: string })
       userId: user.id,
       productId: productId,
       color: selectedColor,
-      quantity: quantity || 1
+      quantity: newQuantity
     }
   });
 

@@ -15,7 +15,7 @@ export function TrustStrip() {
   ];
 
   return (
-    <section className="pwa-hide py-14 border-y border-border/40 bg-background">
+    <section className="pwa-hide py-8 border-y border-border/40 bg-background">
       <Container>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
           {items.map(({ icon: Icon, title, desc }) => (

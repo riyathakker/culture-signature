@@ -15,6 +15,7 @@ export default async function handler(req: NextRequest & { userEmail?: string })
       where: {
         ...(categoryIds.length > 0 ? { categoryId: { in: categoryIds } } : {}),
         ...(isFeatured && { isFeatured: true }),
+        ...(isNew && { isFeatured: false }),
         ...(search && {
           OR: [
             { name: { contains: search, mode: "insensitive" } },

@@ -47,15 +47,15 @@ export const useCartStore = create<CartStore>()(persist((set, get) => ({
   setIsAuthenticated: (status: boolean) => set({ isAuthenticated: status }),
 
   // Called on the guest→authenticated transition: push the locally persisted
-  // guest lines to the server (which sums quantities, capped at stock), then
-  // pull the authoritative merged cart back.
+  // guest lines to the server (which sums quantities, capped at current stock),
+  // then pull the authoritative merged cart back.
   mergeGuestCartOnLogin: async () => {
     const guestItems = get().items;
     for (const it of guestItems) {
       try {
         await CartService.addItem(it.id, it.quantity, it.color);
       } catch (error) {
-        // Over-stock / unavailable lines are skipped; the refetch reflects truth.
+        // Only truly out-of-stock lines reject now; the refetch reflects truth.
         console.error("Cart merge skipped a line:", error);
       }
     }

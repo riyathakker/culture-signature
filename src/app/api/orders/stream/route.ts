@@ -21,9 +21,8 @@ export async function GET() {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };
 
-      // Send initial orders immediately
       const initial = await prisma.order.findMany({
-        where: { userId },
+        where: { userId, paidAt: { not: null }, isDeleted: false },
         include: { items: { include: { product: true } } },
         orderBy: { createdAt: "desc" },
       });
@@ -35,7 +34,7 @@ export async function GET() {
         if (closed) { clearInterval(interval); return; }
         try {
           const updated = await prisma.order.findMany({
-            where: { userId, updatedAt: { gt: lastChecked } },
+            where: { userId, updatedAt: { gt: lastChecked }, paidAt: { not: null }, isDeleted: false },
             include: { items: { include: { product: true } } },
           });
           lastChecked = new Date();
