@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Star, Loader2, PenLine } from "lucide-react";
+import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { useParams } from "next/navigation";
@@ -81,49 +81,17 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
         : 0,
   }));
 
-  if (isLoading)
-    return (
-      <div className="py-10 border-t flex justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary/30" />
-      </div>
-    );
+  // Hide the whole section while loading and when the product has no reviews —
+  // the Customer Reviews block only renders once there is at least one review.
+  if (isLoading) return null;
+  if (reviews.length === 0) return null;
 
   return (
     <div className="py-5 border-t">
       <h3 className="font-heading text-2xl lg:text-3xl mb-4">{t("shop.product.details.reviews.title")}</h3>
 
-      {reviews.length === 0 ? (
-        /* ── Empty state ── */
-        <div className="py-12 lg:py-16 flex flex-col items-center gap-6 border border-dashed border-muted-foreground/20 rounded-sm text-center px-8">
-          <div className="w-14 h-14 rounded-full bg-primary/5 border border-primary/10 flex items-center justify-center">
-            <PenLine className="w-6 h-6 text-primary/40" />
-          </div>
-          <div className="space-y-2">
-            <p className="font-heading text-2xl">{t("shop.product.details.reviews.beFirst")}</p>
-            <p className="muted-italic text-muted-foreground max-w-xs">
-              {t("shop.product.details.reviews.beFirstDesc")}
-            </p>
-          </div>
-          {eligibleOrder ? (
-            <ReviewModal
-              productId={productId as string}
-              productName={productName}
-              orderId={eligibleOrder.id}
-              onSuccess={handleReviewSuccess}
-            />
-          ) : session?.user ? (
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              {t("shop.product.details.reviews.purchaseToReview")}
-            </p>
-          ) : (
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              {t("shop.product.details.reviews.signInToReview")}
-            </p>
-          )}
-        </div>
-      ) : (
-        /* ── Reviews present ── */
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+      {/* ── Reviews present ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
           {/* Rating Summary */}
           <div className="space-y-8">
             <div className="flex items-center gap-6">
@@ -198,7 +166,6 @@ export function ProductReviews({ productName = "this product" }: ProductReviewsP
             ))}
           </div>
         </div>
-      )}
     </div>
   );
 }
