@@ -11,6 +11,33 @@ import {
   type RequestedItem,
 } from "@/lib/orderPricing";
 
+// If a logged-in customer has no saved addresses yet, save the address they
+// just ordered with and mark it as their default. Best-effort: never block the
+// order if this fails.
+async function saveFirstAddressAsDefault(userId: string | null, shippingAddress: any) {
+  if (!userId || !shippingAddress) return;
+  try {
+    const existing = await prisma.address.count({ where: { userId, isDeleted: false } });
+    if (existing > 0) return;
+    await prisma.address.create({
+      data: {
+        userId,
+        firstName: shippingAddress.firstName || null,
+        lastName: shippingAddress.lastName || null,
+        street: shippingAddress.street,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        zipCode: shippingAddress.zipCode || "",
+        country: shippingAddress.country || "India",
+        phone: shippingAddress.phone || null,
+        isDefault: true,
+      },
+    });
+  } catch (error) {
+    console.error("[ORDERS_POST] failed to save default address", error);
+  }
+}
+
 export default async function handler(req: NextRequest & { userId?: string; userEmail?: string }) {
   const userId = req.userId ?? null;
   const userEmail = req.userEmail ?? null;
@@ -90,6 +117,8 @@ export default async function handler(req: NextRequest & { userId?: string; user
         where: { id: newOrderId },
         include: { items: { include: { product: true } } },
       });
+
+      await saveFirstAddressAsDefault(userId, shippingAddress);
 
       return NextResponse.json(order);
     }
@@ -229,6 +258,8 @@ export default async function handler(req: NextRequest & { userId?: string; user
       where: { id: newOrderId },
       include: { items: { include: { product: true } } },
     });
+
+    await saveFirstAddressAsDefault(userId, shippingAddress);
 
     // Fire order-confirmation emails to the customer + admin (best-effort).
     if (order) {
