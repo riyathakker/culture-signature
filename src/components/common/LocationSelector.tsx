@@ -29,6 +29,8 @@ interface LocationSelectorProps {
   /** Restrict the country dropdown to these country names. A single entry
    *  locks the country (disabled select). */
   allowedCountries?: string[];
+  /** Show the pin code / zip field. Defaults to true. */
+  showZipCode?: boolean;
 }
 
 const SELECT_CLASS =
@@ -47,6 +49,7 @@ export function LocationSelector({
   errors,
   labelClassName = "text-xs font-bold uppercase tracking-widest",
   allowedCountries,
+  showZipCode = true,
 }: LocationSelectorProps) {
   const { t } = useTranslation();
   const allCountries = Country.getAllCountries();
@@ -94,7 +97,7 @@ export function LocationSelector({
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const name = e.target.value;
     onChange("city", name);
-    lookupPinCode(name, values.country);
+    if (showZipCode) lookupPinCode(name, values.country);
   };
 
   return (
@@ -175,19 +178,21 @@ export function LocationSelector({
       </div>
 
       {/* Pin code */}
-      <div className="space-y-2">
-        <Label className={labelClassName}>
-          {t("common.location.zipCode")}
-          {fetchingPin && <Loader2 className="inline w-3 h-3 ml-1 animate-spin text-muted-foreground" />}
-        </Label>
-        <Input
-          placeholder={values.country === "India" ? t("common.location.autoFilled") : t("common.location.enterZip")}
-          value={values.zipCode}
-          onChange={(e) => onChange("zipCode", e.target.value)}
-          className="border-muted-foreground/20"
-        />
-        {errors?.zipCode && <p className="text-xs text-destructive">{errors.zipCode}</p>}
-      </div>
+      {showZipCode && (
+        <div className="space-y-2">
+          <Label className={labelClassName}>
+            {t("common.location.zipCode")}
+            {fetchingPin && <Loader2 className="inline w-3 h-3 ml-1 animate-spin text-muted-foreground" />}
+          </Label>
+          <Input
+            placeholder={values.country === "India" ? t("common.location.autoFilled") : t("common.location.enterZip")}
+            value={values.zipCode}
+            onChange={(e) => onChange("zipCode", e.target.value)}
+            className="border-muted-foreground/20"
+          />
+          {errors?.zipCode && <p className="text-xs text-destructive">{errors.zipCode}</p>}
+        </div>
+      )}
     </div>
   );
 }
