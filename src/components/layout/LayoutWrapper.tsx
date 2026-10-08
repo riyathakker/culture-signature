@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
@@ -67,7 +68,20 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       isAccount && "pt-[100px] md:pt-[115px] lg:pt-[110px] [@media(display-mode:standalone)]:!pt-0",
       showPWAHeader && "pwa-page-content",
     )}>
-      {children}
+      {isAdminPanel ? (
+        children
+      ) : (
+        // Subtle fade-up on each route change. Keyed on pathname (not search
+        // params) so applying filters on a listing page doesn't re-flash.
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+          {children}
+        </motion.div>
+      )}
     </main>
   );
 }
