@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/common/ProductCard";
+import { RevealItem } from "@/components/common/Reveal";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { ROUTES } from "@/constants/routes";
@@ -96,8 +97,10 @@ export default function SearchPage() {
           </div>
         ) : (
           <div className="grid-gallery gap-x-8 gap-y-12 animate-in fade-in duration-1000">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {products.map((product, i) => (
+              <RevealItem key={product.id} index={i}>
+                <ProductCard product={product} />
+              </RevealItem>
             ))}
           </div>
         )}
