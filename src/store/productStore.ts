@@ -2,22 +2,60 @@ import { create } from "zustand";
 import { Product } from "@/types";
 import { ProductService } from "@/services/product";
 
+export interface ShopFilters {
+  categoryIds?: string[];
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?: boolean;
+  hasDiscount?: boolean;
+  sort?: string;
+}
+
+const SHOP_PAGE_SIZE = 12;
+
+// Fetches one page of shop products from the paginated API.
+async function fetchShopPage(filters: ShopFilters, page: number) {
+  const params = new URLSearchParams();
+  params.set("page", String(page));
+  params.set("limit", String(SHOP_PAGE_SIZE));
+  if (filters.categoryIds?.length) params.set("categoryId", filters.categoryIds.join(","));
+  if (filters.search?.trim()) params.set("search", filters.search.trim());
+  if (filters.minPrice) params.set("minPrice", String(filters.minPrice));
+  if (filters.maxPrice != null) params.set("maxPrice", String(filters.maxPrice));
+  if (filters.inStock) params.set("inStock", "true");
+  if (filters.hasDiscount) params.set("hasDiscount", "true");
+  if (filters.sort) params.set("sort", filters.sort);
+
+  const res = await fetch(`/api/products?${params.toString()}`);
+  const data = await res.json();
+  return {
+    items: (Array.isArray(data?.items) ? data.items : []) as Product[],
+    total: (data?.total ?? 0) as number,
+    hasMore: Boolean(data?.hasMore),
+    priceMax: (data?.priceMax ?? 0) as number,
+  };
+}
+
 interface ProductState {
   products: Product[];
   totalProducts: number;
   newArrivals: Product[];
   featuredProducts: Product[];
-  allUserProducts: Product[];
   isLoading: boolean;
   lastFetched: number | null;
   lastFetchedNewArrivals: number | null;
   lastFetchedFeatured: number | null;
-  lastFetchedAllUser: number | null;
 
-  setProducts: (products: Product[]) => void;
-  setNewArrivals: (newArrivals: Product[]) => void;
-  setFeaturedProducts: (featuredProducts: Product[]) => void;
-  setLoading: (isLoading: boolean) => void;
+  // Shop/collections infinite-scroll slice
+  shopProducts: Product[];
+  shopTotal: number;
+  shopPage: number;
+  shopFilters: ShopFilters;
+  shopHasMore: boolean;
+  shopPriceMax: number;
+  shopLoading: boolean;      // first page (shows skeletons)
+  shopLoadingMore: boolean;  // next pages (shows a spinner)
 
   updateProduct: (product: Product) => void;
   deleteProduct: (id: string) => void;
@@ -26,7 +64,8 @@ interface ProductState {
   fetchProducts: (force?: boolean, params?: { page?: number; limit?: number; query?: string; categoryId?: string; status?: string }) => Promise<void>;
   fetchNewArrivals: (force?: boolean) => Promise<void>;
   fetchFeaturedProducts: (force?: boolean) => Promise<void>;
-  fetchAllUserProducts: (force?: boolean) => Promise<void>;
+  loadShopProducts: (filters: ShopFilters) => Promise<void>;  // page 1 (filters changed)
+  loadMoreShopProducts: () => Promise<void>;                  // next page (scroll)
 
   createProduct: (data: any) => Promise<Product>;
   updateProductById: (id: string, data: any) => Promise<Product>;
@@ -39,33 +78,19 @@ export const useProductStore = create<ProductState>((set, get) => ({
   totalProducts: 0,
   newArrivals: [],
   featuredProducts: [],
-  allUserProducts: [],
   isLoading: false,
   lastFetched: null,
   lastFetchedNewArrivals: null,
   lastFetchedFeatured: null,
-  lastFetchedAllUser: null,
 
-  setProducts: (products) =>
-    set({
-      products,
-      totalProducts: products.length,
-      lastFetched: Date.now(),
-    }),
-
-  setNewArrivals: (newArrivals) =>
-    set({
-      newArrivals,
-      lastFetchedNewArrivals: Date.now(),
-    }),
-
-  setFeaturedProducts: (featuredProducts) =>
-    set({
-      featuredProducts,
-      lastFetchedFeatured: Date.now(),
-    }),
-
-  setLoading: (isLoading) => set({ isLoading }),
+  shopProducts: [],
+  shopTotal: 0,
+  shopPage: 0,
+  shopFilters: {},
+  shopHasMore: false,
+  shopPriceMax: 0,
+  shopLoading: false,
+  shopLoadingMore: false,
 
   updateProduct: (product) =>
     set((state) => ({
@@ -193,25 +218,44 @@ export const useProductStore = create<ProductState>((set, get) => ({
     }
   },
 
-  fetchAllUserProducts: async (force = false) => {
-    const state = get();
-
-    // Cache for 5 minutes
-    if (!force && state.allUserProducts.length > 0 && state.lastFetchedAllUser && (Date.now() - state.lastFetchedAllUser < 300000)) {
-      return;
-    }
-
-    set({ isLoading: true });
-
+  // Load the first page for the current filters (called when filters change).
+  loadShopProducts: async (filters) => {
+    set({ shopLoading: true, shopFilters: filters, shopPage: 1 });
     try {
-      const res = await fetch("/api/products");
-      const data = await res.json();
-      const prodList = Array.isArray(data) ? data : [];
-      set({ allUserProducts: prodList, lastFetchedAllUser: Date.now() });
+      const data = await fetchShopPage(filters, 1);
+      set({
+        shopProducts: data.items,
+        shopTotal: data.total,
+        shopHasMore: data.hasMore,
+        shopPriceMax: data.priceMax || get().shopPriceMax,
+      });
     } catch (error) {
-      console.error("Failed to fetch all products", error);
+      console.error("Failed to load shop products", error);
+      set({ shopProducts: [], shopTotal: 0, shopHasMore: false });
     } finally {
-      set({ isLoading: false });
+      set({ shopLoading: false });
+    }
+  },
+
+  // Load the next page and append it (called on scroll).
+  loadMoreShopProducts: async () => {
+    const { shopLoading, shopLoadingMore, shopHasMore, shopPage, shopFilters } = get();
+    if (shopLoading || shopLoadingMore || !shopHasMore) return;
+
+    const nextPage = shopPage + 1;
+    set({ shopLoadingMore: true });
+    try {
+      const data = await fetchShopPage(shopFilters, nextPage);
+      set((s) => ({
+        shopProducts: [...s.shopProducts, ...data.items],
+        shopTotal: data.total,
+        shopPage: nextPage,
+        shopHasMore: data.hasMore,
+      }));
+    } catch (error) {
+      console.error("Failed to load more shop products", error);
+    } finally {
+      set({ shopLoadingMore: false });
     }
   },
 }));

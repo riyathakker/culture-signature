@@ -1,56 +1,63 @@
 "use client";
 
 import { ProductCard } from "@/components/common/ProductCard";
-import { FilterDraft } from "@/components/shop/FilterSidebar";
+import { RevealItem } from "@/components/common/Reveal";
 import { FilterDrawer } from "@/components/shop/FilterDrawer";
 import { ActiveFilterChips } from "@/components/shop/ActiveFilterChips";
 import { ShopControls } from "@/components/shop/ShopControls";
-import { useEffect, useState, useMemo } from "react";
 import { ProductSkeleton } from "@/components/shop/ProductSkeleton";
+import { useEffect, useState } from "react";
 import { useProductStore } from "@/store/productStore";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { HomePageContainer } from "@/components/common/HomePageContainer";
 import { useTranslation } from "@/context/TranslationContext";
 
+const DEFAULT_PRICE_MAX = 100000;
+
 export default function NewArrivalsPage() {
-  const { newArrivals, isLoading, fetchNewArrivals } = useProductStore();
   const { t } = useTranslation();
+  const {
+    shopProducts,
+    shopTotal,
+    shopHasMore,
+    shopPriceMax,
+    shopLoading,
+    shopLoadingMore,
+    loadShopProducts,
+    loadMoreShopProducts,
+  } = useProductStore();
+
   const [activeCategoryIds, setActiveCategoryIds] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [hasDiscountOnly, setHasDiscountOnly] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100000]);
-  const priceMax = useMemo(
-    () => newArrivals.length ? Math.ceil(Math.max(...newArrivals.map((p) => p.price)) / 1000) * 1000 : 100000,
-    [newArrivals]
-  );
-  // Clamp the upper bound to the real max so the slider's value never exceeds
-  // its own `max` (which otherwise pushes the right thumb off the track)
-  // while priceMax is still catching up to a freshly-loaded product list.
-  const clampedPriceRange: [number, number] = [priceRange[0], Math.min(priceRange[1], priceMax)];
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, DEFAULT_PRICE_MAX]);
   const [sortBy, setSortBy] = useState("newest");
 
-  useEffect(() => {
-    fetchNewArrivals();
-  }, []);
+  // Price ceiling comes from the server (max price across the catalogue).
+  const priceMax = shopPriceMax || DEFAULT_PRICE_MAX;
+  const priceLow = priceRange[0];
+  const priceHigh = Math.min(priceRange[1], priceMax);
 
-  const matchesFilters = (p: (typeof newArrivals)[number], f: FilterDraft) => {
-    if (f.categoryIds.length > 0 && !f.categoryIds.includes(String(p.category?.id ?? p.categoryId))) return false;
-    if (!(Number(p.price) >= f.price[0] && (f.price[1] >= priceMax || Number(p.price) <= f.price[1]))) return false;
-    if (f.inStock && !(p.stock > 0)) return false;
-    if (f.discount && !(p.discount && p.discount > 0)) return false;
-    return true;
+  // Filters sent to the API. New arrivals = newest first (the API's default),
+  // which the sort control can still override.
+  const filters = {
+    categoryIds: activeCategoryIds,
+    minPrice: priceLow > 0 ? priceLow : undefined,
+    maxPrice: priceHigh < priceMax ? priceHigh : undefined,
+    inStock: inStockOnly,
+    hasDiscount: hasDiscountOnly,
+    sort: sortBy,
   };
 
-  const filtered = newArrivals.filter((p) =>
-    matchesFilters(p, { categoryIds: activeCategoryIds, inStock: inStockOnly, discount: hasDiscountOnly, price: clampedPriceRange })
-  );
+  // Reload page 1 whenever the filters change (and on first mount).
+  const filtersKey = JSON.stringify(filters);
+  useEffect(() => {
+    loadShopProducts(JSON.parse(filtersKey));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtersKey]);
 
-  const sorted = [...filtered].sort((a, b) => {
-    if (sortBy === "price-low") return a.price - b.price;
-    if (sortBy === "price-high") return b.price - a.price;
-    if (sortBy === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    if (sortBy === "popularity") return (b.reviews?.length || 0) - (a.reviews?.length || 0);
-    return 0;
-  });
+  // Infinite scroll: load the next page when the sentinel nears the viewport.
+  const sentinelRef = useInfiniteScroll(shopHasMore, shopProducts.length, loadMoreShopProducts);
 
   const sharedFilterProps = {
     showCategories: true,
@@ -60,12 +67,21 @@ export default function NewArrivalsPage() {
     onInStockChange: setInStockOnly,
     hasDiscountOnly,
     onHasDiscountChange: setHasDiscountOnly,
-    priceRange: clampedPriceRange,
+    priceRange: [priceLow, priceHigh] as [number, number],
     onPriceChange: setPriceRange,
     maxPrice: priceMax,
-    filteredCount: sorted.length,
-    getFilteredCount: (draft: FilterDraft) => newArrivals.filter((p) => matchesFilters(p, draft)).length,
+    filteredCount: shopTotal,
   };
+
+  const clearFilters = () => {
+    setActiveCategoryIds([]);
+    setInStockOnly(false);
+    setHasDiscountOnly(false);
+    setPriceRange([0, priceMax]);
+  };
+
+  const hasActiveFilters =
+    activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly || priceLow > 0 || priceHigh < priceMax;
 
   return (
     <HomePageContainer
@@ -78,7 +94,7 @@ export default function NewArrivalsPage() {
           <div className="flex items-center gap-3">
             <FilterDrawer {...sharedFilterProps} />
             <p className="hidden sm:inline-block text-spaced-bold text-muted-foreground whitespace-nowrap">
-              {t("shop.showing").replace("{count}", sorted.length.toString())}
+              {t("shop.showing").replace("{count}", shopTotal.toString())}
             </p>
           </div>
           <ShopControls sortBy={sortBy} onSortChange={setSortBy} />
@@ -91,40 +107,44 @@ export default function NewArrivalsPage() {
           onInStockChange={setInStockOnly}
           hasDiscountOnly={hasDiscountOnly}
           onHasDiscountChange={setHasDiscountOnly}
-          priceRange={clampedPriceRange}
+          priceRange={[priceLow, priceHigh]}
           onPriceChange={setPriceRange}
           maxPrice={priceMax}
         />
 
-        {isLoading ? (
+        {shopLoading ? (
           <div className="grid-gallery">
             {[...Array(4)].map((_, i) => (
               <ProductSkeleton key={i} />
             ))}
           </div>
-        ) : sorted.length === 0 ? (
+        ) : shopProducts.length === 0 ? (
           <div className="py-32 text-center space-y-6">
             <p className="muted-italic text-lg">{t("home.newArrivals.empty")}</p>
-            {(activeCategoryIds.length > 0 || inStockOnly || hasDiscountOnly || clampedPriceRange[0] > 0 || clampedPriceRange[1] < priceMax) && (
-              <button
-                onClick={() => {
-                  setActiveCategoryIds([]);
-                  setInStockOnly(false);
-                  setHasDiscountOnly(false);
-                  setPriceRange([0, priceMax]);
-                }}
-                className="btn-luxury-outline cursor-pointer"
-              >
+            {hasActiveFilters && (
+              <button onClick={clearFilters} className="btn-luxury-outline cursor-pointer">
                 {t("shop.clearFilters")}
               </button>
             )}
           </div>
         ) : (
-          <div className="grid-gallery animate-in fade-in duration-700">
-            {sorted.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="grid-gallery">
+              {shopProducts.map((product, i) => (
+                <RevealItem key={product.id} index={i}>
+                  <ProductCard product={product} />
+                </RevealItem>
+              ))}
+            </div>
+
+            {shopHasMore && (
+              <div ref={sentinelRef} className="flex justify-center py-10">
+                {shopLoadingMore && (
+                  <span className="h-6 w-6 rounded-full border-2 border-muted-foreground/30 border-t-primary animate-spin" />
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </HomePageContainer>
