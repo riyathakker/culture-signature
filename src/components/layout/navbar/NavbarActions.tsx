@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { Heart, ShoppingBag, Search } from "lucide-react";
 import { IconButton } from "@/components/common/IconButton";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -59,11 +60,20 @@ export function NavbarActions() {
           <Link href={ROUTES.SHOPPING_BAG} className="hidden md:block">
             <div className="relative group">
               <IconButton icon={ShoppingBag} aria-label={t("nav.bag")} />
-              {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                  {itemCount}
-                </span>
-              )}
+              <AnimatePresence>
+                {itemCount > 0 && (
+                  <motion.span
+                    key={itemCount}
+                    initial={{ scale: 0.4, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.4, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 600, damping: 18 }}
+                    className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground"
+                  >
+                    {itemCount}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </div>
           </Link>
         </>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { Heart, Eye, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -149,7 +150,15 @@ export function ProductCard({ product, variant = "default", hideActions = false 
                       onClick={toggleWishlist}
                       className="bg-background/90 border-none backdrop-blur-sm h-10 w-10 rounded-full transition-colors"
                     >
-                      <Heart className={cn("w-4 h-4 transition-all", isWishlisted ? "fill-primary text-primary scale-110" : "text-foreground")} />
+                      <motion.span
+                        key={isWishlisted ? "on" : "off"}
+                        initial={{ scale: 0.6 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 14 }}
+                        className="inline-flex"
+                      >
+                        <Heart className={cn("w-4 h-4 transition-all", isWishlisted ? "fill-primary text-primary scale-110" : "text-foreground")} />
+                      </motion.span>
                     </Button>
                   )}
                 </div>
