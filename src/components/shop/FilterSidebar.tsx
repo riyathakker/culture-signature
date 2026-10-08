@@ -7,13 +7,6 @@ import { useEffect, useState } from "react";
 import { useCategoryStore } from "@/store/categoryStore";
 import { useTranslation } from "@/context/TranslationContext";
 
-export interface FilterDraft {
-  categoryIds: string[];
-  inStock: boolean;
-  discount: boolean;
-  price: [number, number];
-}
-
 export interface FilterSidebarProps {
   showCategories?: boolean;
   activeCategoryIds?: string[];
@@ -26,8 +19,6 @@ export interface FilterSidebarProps {
   onPriceChange?: (val: [number, number]) => void;
   maxPrice?: number;
   filteredCount?: number;
-  // Live preview count for the current draft selection (before Apply).
-  getFilteredCount?: (draft: FilterDraft) => number;
   onApply?: () => void;
 }
 
@@ -43,7 +34,6 @@ export function FilterSidebar({
   onPriceChange,
   maxPrice = 100000,
   filteredCount,
-  getFilteredCount,
   onApply,
 }: FilterSidebarProps) {
   const { t } = useTranslation();
@@ -88,15 +78,8 @@ export function FilterSidebar({
   const hasActiveFilters =
     draftFilterCount > 0 || draftPrice[0] > 0 || draftPrice[1] < maxPrice;
 
-  // Live count for the current draft; falls back to the applied count.
-  const previewCount = getFilteredCount
-    ? getFilteredCount({
-        categoryIds: draftCategoryIds,
-        inStock: draftInStock,
-        discount: draftDiscount,
-        price: draftPrice,
-      })
-    : filteredCount;
+  // Count of products matching the applied filters.
+  const previewCount = filteredCount;
 
   return (
     <aside className="w-full flex-shrink-0 space-y-8">
