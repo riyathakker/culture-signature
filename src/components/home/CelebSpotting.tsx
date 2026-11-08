@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { SectionTitle } from "@/components/common/SectionTitle";
 import { useTranslation } from "@/context/TranslationContext";
 import { usePWA } from "@/hooks/usePWA";
@@ -30,10 +31,12 @@ function DesktopMarquee({ images, onSelect }: { images: string[]; onSelect: (s: 
             onClick={() => onSelect(src)}
             className="relative w-64 h-[320px] flex-shrink-0 rounded-sm overflow-hidden group cursor-pointer"
           >
-            <img
+            <Image
               src={src}
               alt={t("home.celebSpotting.imageAlt")}
-              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+              fill
+              sizes="256px"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
@@ -128,10 +131,12 @@ function PWAScroller({ images, onSelect }: { images: string[]; onSelect: (s: str
           onClick={() => !isDragging.current && onSelect(src)}
           className="pwa-celeb-card relative w-40 h-[240px] flex-shrink-0 rounded-lg overflow-hidden"
         >
-          <img
+          <Image
             src={src}
             alt={t("home.celebSpotting.imageAlt")}
-            className="w-full h-full object-cover"
+            fill
+            sizes="160px"
+            className="object-cover"
             draggable={false}
           />
         </div>
@@ -146,25 +151,7 @@ export function CelebSpotting() {
   const { t } = useTranslation();
   const isPWA = usePWA();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [images, setImages] = useState<string[]>(DEFAULT_IMAGES);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/celebs")
-      .then((r) => r.json())
-      .then((d) => {
-        // Use the Cloudinary "celebs" folder when it has images; otherwise keep
-        // the bundled defaults so the section is never empty.
-        if (!cancelled && Array.isArray(d.images) && d.images.length > 0) {
-          setImages(d.images);
-        }
-      })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, []);
-
-  // Nothing to show (no Cloudinary images and no defaults) → hide the section.
-  if (images.length === 0) return null;
+  const images = DEFAULT_IMAGES;
 
   return (
     <>

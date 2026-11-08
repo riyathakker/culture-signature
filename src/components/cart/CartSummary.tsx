@@ -122,6 +122,21 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
     setIsFinalizing(true);
     try {
       // --- Temporary manual UPI / WhatsApp payment flow ---------------------
+      const orderResponse = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items,
+          promoCode: appliedPromo?.code,
+          shippingAddress,
+        }),
+      });
+
+      if (!orderResponse.ok) {
+        const err = await orderResponse.json().catch(() => ({}));
+        throw new Error(err.error || t("cart.summary.messages.recordOrderError"));
+      }
+
       toast.success(
         `Please pay ₹${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} via UPI to ${UPI_NUMBER_DISPLAY}, then share the payment screenshot on WhatsApp to confirm your order.`,
         { duration: 8000 }

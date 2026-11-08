@@ -26,17 +26,23 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
           <span>Home</span>
         </Link>
         {items.map((item, index) => (
-          <div key={index} className="flex items-center space-x-2">
-            <ChevronRight className="w-3 h-3 opacity-40" />
+          <div key={index} className="flex items-center space-x-2 min-w-0">
+            <ChevronRight className="w-3 h-3 opacity-40 shrink-0" />
             {item.href ? (
               <Link
                 href={item.href}
-                className="hover:text-primary transition-colors"
+                title={item.label}
+                className="hover:text-primary transition-colors truncate max-w-[120px] sm:max-w-[220px]"
               >
                 {item.label}
               </Link>
             ) : (
-              <span className="text-foreground font-medium">{item.label}</span>
+              <span
+                title={item.label}
+                className="text-foreground font-medium truncate max-w-[120px] sm:max-w-[220px]"
+              >
+                {item.label}
+              </span>
             )}
           </div>
         ))}

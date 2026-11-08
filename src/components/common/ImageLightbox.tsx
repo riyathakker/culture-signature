@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { optimizeImage } from "@/lib/imageUrl";
 import { useTranslation } from "@/context/TranslationContext";
 
 interface ImageLightboxProps {
@@ -15,6 +16,8 @@ interface ImageLightboxProps {
   images?: string[];
   /** Which index in `images` to open at (defaults to index of `src` in images, or 0) */
   initialIndex?: number;
+  /** Cap the delivered width of the inline (non-fullscreen) image, in px. */
+  width?: number;
   children?: React.ReactNode;
 }
 
@@ -25,6 +28,7 @@ export function ImageLightbox({
   imgClassName,
   images,
   initialIndex,
+  width,
   children,
 }: ImageLightboxProps) {
   const { t } = useTranslation();
@@ -81,7 +85,7 @@ export function ImageLightbox({
       className={cn("relative group cursor-zoom-in", className)}
     >
       {children ?? (
-        <img src={src} alt={alt} className={cn("w-full h-full object-cover", imgClassName)} />
+        <img src={optimizeImage(src, width ?? 800)} alt={alt} loading="lazy" className={cn("w-full h-full object-cover", imgClassName)} />
       )}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
         <div className="bg-black/30 backdrop-blur-sm rounded-full p-2">
@@ -121,7 +125,7 @@ export function ImageLightbox({
 
             {/* Main image */}
             <img
-              src={gallery[current]}
+              src={optimizeImage(gallery[current], 1600)}
               alt={alt}
               className="max-w-[90vw] max-h-[85vh] object-contain select-none animate-in zoom-in-95 duration-200"
               onClick={(e) => e.stopPropagation()}
@@ -159,7 +163,7 @@ export function ImageLightbox({
                       i === current ? "border-white opacity-100" : "border-transparent opacity-40 hover:opacity-70"
                     )}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={optimizeImage(img, 160)} alt="" loading="lazy" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>

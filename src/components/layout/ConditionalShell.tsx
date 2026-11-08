@@ -10,8 +10,10 @@ import { PWAPageHeader } from "@/components/pwa/PWAPageHeader";
 
 const AUTH_PATHS = ["/login", "/signup"];
 
+
 export function ConditionalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
   const isAuthPage = AUTH_PATHS.some((p) => pathname.startsWith(p));
   const isHome = pathname === "/";
   const isAdmin = pathname.startsWith("/admin");

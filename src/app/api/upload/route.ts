@@ -63,3 +63,33 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Cloudinary upload failed" }, { status: 500 });
   }
 }
+
+function extractPublicId(url: string): string | null {
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/);
+  return match ? match[1] : null;
+}
+
+export async function DELETE(req: Request) {
+  const session = await auth();
+  if (!session || (session.user as any).role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { url } = await req.json();
+    if (!url || typeof url !== "string" || !url.includes("res.cloudinary.com")) {
+      return NextResponse.json({ error: "Invalid Cloudinary url" }, { status: 400 });
+    }
+
+    const publicId = extractPublicId(url);
+    if (!publicId) {
+      return NextResponse.json({ error: "Could not resolve public id" }, { status: 400 });
+    }
+
+    await cloudinary.uploader.destroy(publicId);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("[UPLOAD_DELETE]", error);
+    return NextResponse.json({ error: "Cloudinary delete failed" }, { status: 500 });
+  }
+}

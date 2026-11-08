@@ -8,118 +8,88 @@ import { ProductReviews } from "@/components/product/ProductReviews";
 import { RecentlyViewed } from "@/components/product/RecentlyViewed";
 import { ProductCard } from "@/components/common/ProductCard";
 import { SectionTitle } from "@/components/common/SectionTitle";
-import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/context/TranslationContext";
 import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
 
-export function ProductPageClient() {
-  const { id } = useParams();
+export function ProductPageClient({ initialProduct }: { initialProduct: any }) {
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
-  const [product, setProduct] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
-  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const { t } = useTranslation();
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
+  // The server component already fetched this product, so shape it into the
+  // view model and render immediately — no client refetch, no loading spinner
+  // on the critical path.
+  const shaped = useMemo(() => {
+    const data = initialProduct;
+    if (!data) return null;
+    const colors = Array.isArray(data.colors) ? data.colors : [];
+    const images = (colors.length > 0 && colors[0].images?.length > 0)
+      ? colors[0].images
+      : data.images || [];
+    const product = {
+      ...data,
+      image: data.images?.[0] || "/placeholder.jpg",
+      category: data.category?.name || t("shop.product.defaultCollection"),
+      categoryId: data.categoryId,
+      colors,
+      details: {
+        description: data.description,
+        specifications: [
+          { label: t("shop.product.details.specs.category"), value: data.category?.name || t("shop.product.defaultCollection") },
+          { label: t("shop.product.details.specs.stock"), value: data.stock > 0 ? t("shop.product.details.specs.inStock") : t("shop.product.details.specs.outOfStock") },
+        ],
+        shipping: t("shop.product.details.shippingNote"),
+      },
+    };
+    return { product, images };
+  }, [initialProduct, t]);
+
+  const product = shaped?.product ?? null;
+  const [galleryImages, setGalleryImages] = useState<string[]>(shaped?.images ?? []);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+
+  // Side effects that must NOT block the product view: reset the gallery when
+  // navigating to another product, record "recently viewed", and load related
+  // products (which live below the fold).
   useEffect(() => {
-    if (!id) return;
+    if (!initialProduct) return;
     let cancelled = false;
 
-    // Fetch the product itself with a couple of retries so a transient error
-    // or Neon cold-start on refresh doesn't wrongly render "no product found".
-    // A genuine 404 stops immediately (no point retrying a missing product).
-    const fetchProduct = async () => {
-      setLoading(true);
-      let data: any = null;
+    setGalleryImages(shaped?.images ?? []);
 
-      for (let attempt = 0; attempt < 3; attempt++) {
+    addRecentlyViewed({
+      id: initialProduct.id,
+      name: initialProduct.name,
+      price: initialProduct.price,
+      discount: initialProduct.discount || 0,
+      images: initialProduct.images || [],
+      category: initialProduct.category?.name || t("shop.product.defaultCollection"),
+    });
+
+    if (initialProduct.categoryId) {
+      (async () => {
         try {
-          const res = await fetch(`/api/products/${id}`, { cache: "no-store" });
-          if (res.status === 404) {
-            if (!cancelled) { setProduct(null); setLoading(false); }
-            return;
-          }
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          data = await res.json();
-          break;
-        } catch (error) {
-          if (attempt === 2) {
-            console.error("[ProductPage] load failed after retries", error);
-            if (!cancelled) { toast.error(t("shop.product.details.loadError")); setLoading(false); }
-            return;
-          }
-          await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
-        }
-      }
-
-      if (cancelled || !data) return;
-
-      const colors = Array.isArray(data.colors) ? data.colors : [];
-      const defaultImages = (colors.length > 0 && colors[0].images?.length > 0)
-        ? colors[0].images
-        : data.images || [];
-      setGalleryImages(defaultImages);
-
-      addRecentlyViewed({
-        id: data.id,
-        name: data.name,
-        price: data.price,
-        discount: data.discount || 0,
-        images: data.images || [],
-        category: data.category?.name || t("shop.product.defaultCollection"),
-      });
-
-      setProduct({
-        ...data,
-        image: data.images?.[0] || "/placeholder.jpg",
-        category: data.category?.name || t("shop.product.defaultCollection"),
-        categoryId: data.categoryId,
-        colors,
-        details: {
-          description: data.description,
-          specifications: [
-            { label: t("shop.product.details.specs.category"), value: data.category?.name || t("shop.product.defaultCollection") },
-            { label: t("shop.product.details.specs.stock"), value: data.stock > 0 ? t("shop.product.details.specs.inStock") : t("shop.product.details.specs.outOfStock") },
-          ],
-          shipping: t("shop.product.details.shippingNote"),
-        },
-      });
-      setLoading(false);
-
-      // Related products are best-effort — never let them affect the product view.
-      if (data.categoryId) {
-        try {
-          const relRes = await fetch(`/api/products?categoryId=${data.categoryId}&limit=5`);
+          const relRes = await fetch(`/api/products?categoryId=${initialProduct.categoryId}&limit=5`);
           const relData = await relRes.json();
           if (!cancelled) {
             setRelatedProducts(
               (Array.isArray(relData) ? relData : [])
-                .filter((p: any) => p.id !== id)
+                .filter((p: any) => p.id !== initialProduct.id)
                 .slice(0, 4)
             );
           }
         } catch {
           /* ignore related-products failure */
         }
-      }
-    };
+      })();
+    }
 
-    fetchProduct();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  if (loading)
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
-      </div>
-    );
+  }, [initialProduct?.id]);
 
   if (!product)
     return (

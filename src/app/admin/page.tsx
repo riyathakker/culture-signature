@@ -24,6 +24,7 @@ import { useAdminStore } from "@/store/adminStore";
 import { Button } from "@/components/ui/button";
 import { CommonLoader } from "@/components/common/Loader";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { WaitlistLaunch } from "@/components/admin/WaitlistLaunch";
 
 export default function AdminOverview() {
   const { overview: data, isLoading, fetchOverview } = useAdminStore();
@@ -69,6 +70,8 @@ export default function AdminOverview() {
         <StatCard label="Total Customers" value={data.customers.toString()} trend={data.customersTrend} icon={Users} />
         <StatCard label="Low Stock" value={data.lowStockProducts.length.toString()} icon={Package} />
       </div>
+
+      <WaitlistLaunch />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Orders */}

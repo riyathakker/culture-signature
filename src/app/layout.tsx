@@ -38,7 +38,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Culture Signature by Jalpa Thakkar | Luxury Jewellery & Timepieces",
   description: "Culture Signature by Jalpa Thakkar — experience the pinnacle of artisanal craftsmanship and timeless elegance.",
-  manifest: "/manifest.json",
+  //  manifest: "/manifest.json", //restore when lauch
+
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -70,7 +71,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased overflow-x-hidden`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground font-sans overflow-x-hidden">
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans overflow-x-hidden" suppressHydrationWarning>
         <Providers>
           <NextTopLoader color="#95473D" height={2} showSpinner={false} />
           <ConditionalShell>

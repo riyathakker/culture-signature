@@ -7,7 +7,7 @@ export default async function handler(req: NextRequest & { userId?: string }) {
 
   try {
     const orders = await prisma.order.findMany({
-      where: { userId },
+      where: { userId, paidAt: { not: null }, isDeleted: false },
       include: {
         items: { include: { product: true } },
       },

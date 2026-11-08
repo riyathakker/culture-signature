@@ -84,7 +84,7 @@ export function MobileMenu() {
                 ))}
               </nav>
 
-              {isLoggedIn && !isAdmin && (
+              {!isAdmin && (
                 <div className="border-t pt-2">
                   <Link
                     href={ROUTES.SHOPPING_BAG}

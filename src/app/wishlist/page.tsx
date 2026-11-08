@@ -29,7 +29,7 @@ export default function WishlistPage() {
           action={{ label: t("wishlist.explore"), href: ROUTES.COLLECTIONS }}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 animate-in fade-in duration-700">
+        <div className="grid-gallery animate-in fade-in duration-700">
           {items.map((product) => (
             <ProductCard key={product.id} product={product} variant="wishlist" />
           ))}

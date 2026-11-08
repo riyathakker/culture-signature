@@ -5,10 +5,11 @@ import { authConfig } from "@/auth.config";
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const role = (req.auth?.user as any)?.role;
   const { nextUrl } = req;
   const path = nextUrl.pathname;
+
+  const isLoggedIn = !!req.auth;
+  const role = (req.auth?.user as any)?.role;
 
   const isAccountRoute = path.startsWith("/account");
   const isAdminRoute = path.startsWith("/admin");

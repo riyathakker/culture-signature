@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { Heart, Eye, Star, ShoppingBag } from "lucide-react";
+import { Heart, Eye, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartStore, CartItem } from "@/store/cartStore";
 import { toast } from "sonner";
@@ -149,7 +150,15 @@ export function ProductCard({ product, variant = "default", hideActions = false 
                       onClick={toggleWishlist}
                       className="bg-background/90 border-none backdrop-blur-sm h-10 w-10 rounded-full transition-colors"
                     >
-                      <Heart className={cn("w-4 h-4 transition-all", isWishlisted ? "fill-primary text-primary scale-110" : "text-foreground")} />
+                      <motion.span
+                        key={isWishlisted ? "on" : "off"}
+                        initial={{ scale: 0.6 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 14 }}
+                        className="inline-flex"
+                      >
+                        <Heart className={cn("w-4 h-4 transition-all", isWishlisted ? "fill-primary text-primary scale-110" : "text-foreground")} />
+                      </motion.span>
                     </Button>
                   )}
                 </div>
@@ -163,7 +172,7 @@ export function ProductCard({ product, variant = "default", hideActions = false 
             isOutOfStock ? "opacity-40" : "opacity-100"
           )}>
             <Link href={productHref} className="absolute inset-0 block">
-              <div className="absolute inset-0 transition-all duration-700 ease-in-out group-hover:scale-110">
+              <div className="absolute inset-0 transition-all duration-700 ease-in-out md:group-hover:scale-110">
                 {displayImage ? (
                   <Image src={displayImage} alt={product.name} fill className="object-cover" />
                 ) : (
@@ -181,7 +190,7 @@ export function ProductCard({ product, variant = "default", hideActions = false 
             isOutOfStock ? "opacity-50" : "opacity-100"
           )}>
             <div className="flex justify-between items-center">
-              <h3 className="font-heading text-lg group-hover:text-primary transition-colors">
+              <h3 className="font-heading text-lg md:group-hover:text-primary transition-colors">
                 {product.name}
               </h3>
               {product.rating && (
@@ -206,44 +215,6 @@ export function ProductCard({ product, variant = "default", hideActions = false 
             </div>
           </div>
         </Link>
-
-        {/* --- MOBILE ACTION BAR (outside any Link, always visible) --- */}
-        {isMobile && !isOutOfStock && !isAdmin && !hideActions && (
-          <div className="flex gap-2 pb-2">
-            {cartItem ? (
-              <QuantitySelector
-                quantity={cartItem.quantity}
-                min={1}
-                max={effStock}
-                onUpdate={(qty) => qty === 0 ? removeItem(product.id, activeColorName) : updateQuantity(product.id, qty, activeColorName)}
-                className="flex-1 bg-secondary/30 border-border/50 h-10"
-                size="sm"
-              />
-            ) : (
-              <Button
-                onClick={handleAddToCart}
-                variant="outline"
-                className="flex-1 h-10 uppercase tracking-widest text-[10px] border-border/50 gap-2"
-              >
-                <ShoppingBag className="w-3.5 h-3.5" />
-                {t("shop.product.addToCart")}
-              </Button>
-            )}
-            {variant !== "wishlist" && (
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={toggleWishlist}
-                className={cn(
-                  "h-10 w-10 border-border/50 transition-colors",
-                  isWishlisted ? "border-primary/30 bg-primary/5" : ""
-                )}
-              >
-                <Heart className={cn("w-4 h-4 transition-all", isWishlisted ? "fill-primary text-primary scale-110" : "")} />
-              </Button>
-            )}
-          </div>
-        )}
       </div>
     </>
   );

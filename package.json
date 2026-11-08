@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3002",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start -p 3002",
     "lint": "eslint",
     "cron:update-discounts": "npx tsx scripts/updateDiscounts.ts"

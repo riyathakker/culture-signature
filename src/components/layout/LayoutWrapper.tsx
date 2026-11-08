@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { useCartStore } from "@/store/cartStore";
 import { useSession } from "next-auth/react";
@@ -13,30 +14,50 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/signup");
   const isHome = pathname === "/";
   const isAccount = pathname.startsWith("/account");
-  const { fetchWishlist, clearWishlist } = useWishlistStore();
+  const {
+    fetchWishlist,
+    clearWishlist,
+    setIsAuthenticated: setWishlistAuthenticated,
+    mergeGuestWishlistOnLogin,
+    clearLocalWishlist,
+  } = useWishlistStore();
   const { fetchCart, setIsAuthenticated, mergeGuestCartOnLogin, clearLocalCart } = useCartStore();
   const { status } = useSession();
   const prevStatus = useRef(status);
 
   useEffect(() => {
     setIsAuthenticated(status === "authenticated");
+    setWishlistAuthenticated(status === "authenticated");
     if (status === "authenticated") {
-      fetchWishlist();
-      // Merge any guest cart on the actual guest→auth transition; otherwise
-      // (e.g. refresh while already logged in) just load the server cart.
+      // Merge any guest wishlist/cart on the actual guest→auth transition;
+      // otherwise (e.g. refresh while already logged in) just load the server state.
       if (prevStatus.current === "unauthenticated") {
+        mergeGuestWishlistOnLogin();
         mergeGuestCartOnLogin();
       } else {
+        fetchWishlist();
         fetchCart();
       }
     }
-    // Clear local stores when the session ends (server cart is preserved).
+    // Clear local stores when the session ends (server cart/wishlist are preserved).
     if (prevStatus.current === "authenticated" && status === "unauthenticated") {
       clearWishlist();
+      clearLocalWishlist();
       clearLocalCart();
     }
     prevStatus.current = status;
-  }, [status, fetchWishlist, fetchCart, setIsAuthenticated, clearWishlist, mergeGuestCartOnLogin, clearLocalCart]);
+  }, [
+    status,
+    fetchWishlist,
+    fetchCart,
+    setIsAuthenticated,
+    setWishlistAuthenticated,
+    clearWishlist,
+    clearLocalWishlist,
+    mergeGuestWishlistOnLogin,
+    mergeGuestCartOnLogin,
+    clearLocalCart,
+  ]);
 
   const showPWAHeader = !isAdminPanel && !isAuthPage && !isHome && !isAccount;
 
@@ -47,7 +68,20 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
       isAccount && "pt-[100px] md:pt-[115px] lg:pt-[110px] [@media(display-mode:standalone)]:!pt-0",
       showPWAHeader && "pwa-page-content",
     )}>
-      {children}
+      {isAdminPanel ? (
+        children
+      ) : (
+        // Subtle fade-up on each route change. Keyed on pathname (not search
+        // params) so applying filters on a listing page doesn't re-flash.
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+          {children}
+        </motion.div>
+      )}
     </main>
   );
 }

@@ -41,6 +41,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
               alt=""
               images={images}
               initialIndex={activeIndex}
+              width={1000}
               className="w-full h-full"
               imgClassName="w-full h-full object-cover"
             />
