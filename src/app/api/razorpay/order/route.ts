@@ -54,9 +54,12 @@ export async function POST(req: Request) {
       key_id: razorpayKeyId,
     });
   } catch (error: any) {
-    console.error("[RAZORPAY_ORDER]", error);
+    // The Razorpay SDK throws a plain { statusCode, error: { description } }
+    // object (not an Error), so error.message is always undefined here.
+    const description = error?.error?.description || error?.message;
+    console.error("[RAZORPAY_ORDER]", JSON.stringify(error));
     return NextResponse.json(
-      { error: error.message || "Failed to create payment order" },
+      { error: description || "Failed to create payment order" },
       { status: 500 }
     );
   }

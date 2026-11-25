@@ -18,7 +18,6 @@ export default function HomePage() {
       <HeroSection />
       <TrustStrip />
       <Categories />
-      <LimitedDropsSection />
       <NewArrivals />
       <FeaturedProducts />
       

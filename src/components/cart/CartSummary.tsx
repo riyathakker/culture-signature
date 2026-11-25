@@ -6,44 +6,42 @@ import { Separator } from "@/components/ui/separator";
 import { useCartStore, cartLineKey } from "@/store/cartStore";
 import { useCheckoutStore } from "@/store/checkoutStore";
 import { useAuthStore } from "@/store/authStore";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { Truck, ShieldCheck, ArrowRight, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/context/TranslationContext";
 import { ROUTES } from "@/constants/routes";
 
-// --- Razorpay (paused — see handleFinalize below) --------------------------
-// const RAZORPAY_SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
-//
-// // Inject the Razorpay checkout script once and resolve when it's ready.
-// function loadRazorpayScript(): Promise<void> {
-//   return new Promise((resolve, reject) => {
-//     if (typeof window !== "undefined" && window.Razorpay) return resolve();
-//     const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_SCRIPT_SRC}"]`);
-//     if (existing) {
-//       existing.addEventListener("load", () => resolve());
-//       existing.addEventListener("error", () => reject(new Error("Failed to load payment gateway")));
-//       return;
-//     }
-//     const script = document.createElement("script");
-//     script.src = RAZORPAY_SCRIPT_SRC;
-//     script.onload = () => resolve();
-//     script.onerror = () => reject(new Error("Failed to load payment gateway"));
-//     document.body.appendChild(script);
-//   });
-// }
+const RAZORPAY_SCRIPT_SRC = "https://checkout.razorpay.com/v1/checkout.js";
 
-// --- Temporary manual UPI / WhatsApp payment flow ---------------------------
-// Online payments are paused for now: on checkout we send the customer to
-// WhatsApp with the order details pre-filled, they pay via UPI to this
-// number, then share the payment screenshot on WhatsApp for manual
-// confirmation. Swap back to the Razorpay flow above once ready.
+// Inject the Razorpay checkout script once and resolve when it's ready.
+function loadRazorpayScript(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (typeof window !== "undefined" && window.Razorpay) return resolve();
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${RAZORPAY_SCRIPT_SRC}"]`);
+    if (existing) {
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () => reject(new Error("Failed to load payment gateway")));
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = RAZORPAY_SCRIPT_SRC;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load payment gateway"));
+    document.body.appendChild(script);
+  });
+}
+
+// --- WhatsApp fallback -------------------------------------------------------
+// If the Razorpay payment fails or is cancelled, we offer to place the order
+// as PENDING and continue the conversation (and payment) over WhatsApp
+// instead of losing the sale outright.
 const WHATSAPP_BUSINESS_NUMBER = "917878904555";
-const UPI_NUMBER_DISPLAY = "+91 78789 04555";
 
 interface OrderSummaryProps {
   variant?: "cart" | "checkout";
@@ -54,10 +52,13 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
   const { items, appliedPromo, setAppliedPromo, getDiscountAmount, clearCart } = useCartStore();
   const { shippingAddress, resetCheckout } = useCheckoutStore();
   const { openModal } = useAuthStore();
+  const router = useRouter();
   const [promoCode, setPromoCode] = useState("");
   const [isApplying, setIsApplying] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [processingStage, setProcessingStage] = useState<"verifying" | "recording" | null>(null);
+  const [showWhatsAppFallback, setShowWhatsAppFallback] = useState(false);
+  const [isWhatsAppFallbackLoading, setIsWhatsAppFallbackLoading] = useState(false);
   const { data: session } = useSession();
   const isAdmin = session?.user && (session.user as any).role === "ADMIN";
 
@@ -109,47 +110,18 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       `Shipping Details: ${shippingAddress.firstName} ${shippingAddress.lastName}, ${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}`,
       `Phone: ${shippingAddress.phone}`,
       "",
-      `I'll share the payment screenshot once the payment is done.`,
+      "Could you help me complete the payment and confirm this order?",
     ].join("\n");
   };
 
   const handleFinalize = async () => {
-    if (!shippingAddress.firstName || !shippingAddress.lastName || !shippingAddress.street || !shippingAddress.state || !shippingAddress.city || !shippingAddress.phone) {
+    if (!shippingAddress.firstName || !shippingAddress.lastName || !shippingAddress.street || !shippingAddress.state || !shippingAddress.city || !shippingAddress.zipCode || !shippingAddress.phone) {
       toast.error(t("cart.summary.messages.completeShipping"));
       return;
     }
 
     setIsFinalizing(true);
     try {
-      // --- Temporary manual UPI / WhatsApp payment flow ---------------------
-      const orderResponse = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items,
-          promoCode: appliedPromo?.code,
-          shippingAddress,
-        }),
-      });
-
-      if (!orderResponse.ok) {
-        const err = await orderResponse.json().catch(() => ({}));
-        throw new Error(err.error || t("cart.summary.messages.recordOrderError"));
-      }
-
-      toast.success(
-        `Please pay ₹${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} via UPI to ${UPI_NUMBER_DISPLAY}, then share the payment screenshot on WhatsApp to confirm your order.`,
-        { duration: 8000 }
-      );
-
-      const waLink = `https://wa.me/${WHATSAPP_BUSINESS_NUMBER}?text=${encodeURIComponent(buildWhatsAppOrderMessage())}`;
-      window.open(waLink, "_blank", "noopener,noreferrer");
-
-      await clearCart();
-      resetCheckout();
-      setIsFinalizing(false);
-
-      /* --- Razorpay flow (paused) ------------------------------------------
       const orderResponse = await fetch("/api/razorpay/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -163,7 +135,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
       });
 
       if (!orderResponse.ok) {
-        const err = await orderResponse.json();
+        const err = await orderResponse.json().catch(() => ({}));
         throw new Error(err.error || t("cart.summary.messages.paymentOrderError"));
       }
 
@@ -171,10 +143,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
       await loadRazorpayScript();
 
-      // Razorpay checkout is callback-based; wrap it in a promise that resolves
-      // with the signed payment response on success and rejects when the user
-      // dismisses the modal or the payment fails.
-      const payment = await new Promise<any>((resolve, reject) => {
+      const payment = await new Promise<RazorpayCheckoutResponse>((resolve, reject) => {
         const rzp = new window.Razorpay({
           key: key_id,
           order_id: razorpay_order_id,
@@ -188,7 +157,7 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
             contact: shippingAddress.phone,
           },
           theme: { color: "#95473D" },
-          handler: (response: any) => resolve(response),
+          handler: (response) => resolve(response),
           modal: {
             ondismiss: () => reject(new Error(t("cart.summary.messages.paymentFailed"))),
           },
@@ -223,18 +192,46 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
 
       await clearCart();
       resetCheckout();
-      fetchFeaturedProducts(true);
-      fetchNewArrivals(true);
-      fetchOrders(true);
       router.refresh();
       router.push(`/bag/checkout/success?id=${order.id}`);
-      ------------------------------------------------------------------- */
-
     } catch (error: any) {
       console.error("Finalize error:", error);
       toast.error(error.message || t("cart.summary.messages.orderError"));
+      setShowWhatsAppFallback(true);
+    } finally {
       setProcessingStage(null);
       setIsFinalizing(false);
+    }
+  };
+
+  const handleContinueViaWhatsApp = async () => {
+    setIsWhatsAppFallbackLoading(true);
+    try {
+      const orderResponse = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items,
+          promoCode: appliedPromo?.code,
+          shippingAddress,
+        }),
+      });
+
+      if (!orderResponse.ok) {
+        const err = await orderResponse.json().catch(() => ({}));
+        throw new Error(err.error || t("cart.summary.messages.recordOrderError"));
+      }
+
+      const waLink = `https://wa.me/${WHATSAPP_BUSINESS_NUMBER}?text=${encodeURIComponent(buildWhatsAppOrderMessage())}`;
+      window.open(waLink, "_blank", "noopener,noreferrer");
+
+      await clearCart();
+      resetCheckout();
+    } catch (error: any) {
+      console.error("WhatsApp fallback error:", error);
+      toast.error(error.message || t("cart.summary.messages.orderError"));
+    } finally {
+      setIsWhatsAppFallbackLoading(false);
     }
   };
 
@@ -441,6 +438,18 @@ export function OrderSummary({ variant = "cart" }: OrderSummaryProps) {
         </div>,
         document.body
       )}
+
+      <ConfirmationDialog
+        open={showWhatsAppFallback}
+        onOpenChange={setShowWhatsAppFallback}
+        onConfirm={handleContinueViaWhatsApp}
+        variant="primary"
+        title={t("cart.summary.whatsappFallback.title")}
+        description={t("cart.summary.whatsappFallback.description")}
+        confirmText={t("cart.summary.whatsappFallback.confirm")}
+        cancelText={t("cart.summary.whatsappFallback.cancel")}
+        isLoading={isWhatsAppFallbackLoading}
+      />
     </div>
   );
 }

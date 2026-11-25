@@ -216,6 +216,7 @@ export default async function handler(req: NextRequest & { userId?: string; user
           status: "PAID",
           paymentId: verification.paymentId,
           paymentOrderId: razorpay_order_id,
+          paidAt: new Date(),
         },
       });
 

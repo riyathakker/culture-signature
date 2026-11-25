@@ -161,7 +161,6 @@ export function ShippingForm() {
             onChange={(field, value) => setShippingAddress({ [field]: value })}
             labelClassName="text-spaced-bold opacity-60"
             allowedCountries={["India"]}
-            showZipCode={false}
           />
         </div>
 

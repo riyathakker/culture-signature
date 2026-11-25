@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Country, State, City } from "country-state-city";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
 import { useTranslation } from "@/context/TranslationContext";
 
 interface LocationValues {
@@ -29,8 +27,6 @@ interface LocationSelectorProps {
   /** Restrict the country dropdown to these country names. A single entry
    *  locks the country (disabled select). */
   allowedCountries?: string[];
-  /** Show the pin code / zip field. Defaults to true. */
-  showZipCode?: boolean;
 }
 
 const SELECT_CLASS =
@@ -49,7 +45,6 @@ export function LocationSelector({
   errors,
   labelClassName = "text-xs font-bold uppercase tracking-widest",
   allowedCountries,
-  showZipCode = true,
 }: LocationSelectorProps) {
   const { t } = useTranslation();
   const allCountries = Country.getAllCountries();
@@ -64,20 +59,6 @@ export function LocationSelector({
   const allCities = countryIso && stateIso
     ? City.getCitiesOfState(countryIso, stateIso)
     : [];
-
-  const [fetchingPin, setFetchingPin] = useState(false);
-
-  const lookupPinCode = async (city: string, country: string) => {
-    if (country !== "India" || !city) return;
-    setFetchingPin(true);
-    try {
-      const res = await fetch(`/api/location/pincode?city=${encodeURIComponent(city)}`);
-      const data = await res.json();
-      if (data.pinCode) onChange("zipCode", String(data.pinCode));
-    } finally {
-      setFetchingPin(false);
-    }
-  };
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const name = e.target.value;
@@ -95,9 +76,7 @@ export function LocationSelector({
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const name = e.target.value;
-    onChange("city", name);
-    if (showZipCode) lookupPinCode(name, values.country);
+    onChange("city", e.target.value);
   };
 
   return (
@@ -178,21 +157,16 @@ export function LocationSelector({
       </div>
 
       {/* Pin code */}
-      {showZipCode && (
-        <div className="space-y-2">
-          <Label className={labelClassName}>
-            {t("common.location.zipCode")}
-            {fetchingPin && <Loader2 className="inline w-3 h-3 ml-1 animate-spin text-muted-foreground" />}
-          </Label>
-          <Input
-            placeholder={values.country === "India" ? t("common.location.autoFilled") : t("common.location.enterZip")}
-            value={values.zipCode}
-            onChange={(e) => onChange("zipCode", e.target.value)}
-            className="border-muted-foreground/20"
-          />
-          {errors?.zipCode && <p className="text-xs text-destructive">{errors.zipCode}</p>}
-        </div>
-      )}
+      <div className="space-y-2">
+        <Label className={labelClassName}>{t("common.location.zipCode")}</Label>
+        <Input
+          placeholder={t("common.location.enterZip")}
+          value={values.zipCode}
+          onChange={(e) => onChange("zipCode", e.target.value)}
+          className="border-muted-foreground/20"
+        />
+        {errors?.zipCode && <p className="text-xs text-destructive">{errors.zipCode}</p>}
+      </div>
     </div>
   );
 }
