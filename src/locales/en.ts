@@ -857,6 +857,12 @@ export const en = {
       imageAlt: "Spotted in Culture Signature",
       fullscreenAlt: "Fullscreen view"
     },
+    instagram: {
+      title: "Follow Our Journey",
+      subtitle: "@culture_signature_jalpathakkar",
+      imageAlt: "Culture Signature on Instagram",
+      cta: "Follow us on Instagram"
+    },
     testimonials: {
       title: "Voices of Elegance",
       subtitle: "From Our Patrons",
