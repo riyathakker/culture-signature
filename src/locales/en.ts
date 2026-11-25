@@ -731,6 +731,12 @@ export const en = {
         expressDelivery: "White Glove Delivery",
         securePayment: "Authenticity Guaranteed"
       },
+      whatsappFallback: {
+        title: "Payment Failed",
+        description: "We couldn't process your payment. Would you like to continue your order over WhatsApp instead?",
+        confirm: "Continue via WhatsApp",
+        cancel: "Try Again"
+      },
       messages: {
         invalidCode: "Please enter a valid promotional code.",
         codeApplied: "Promotional code {code} applied!",
@@ -1048,7 +1054,6 @@ export const en = {
       enterCity: "Enter city",
       selectStateFirst: "Select a state first",
       zipCode: "Pin Code / Zip Code",
-      autoFilled: "Auto-filled from city",
       enterZip: "Enter zip code",
     },
   },

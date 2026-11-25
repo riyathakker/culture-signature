@@ -13,9 +13,7 @@ interface ShippingAddress {
 
 interface CheckoutStore {
   shippingAddress: ShippingAddress;
-  paymentMethod: "STRIPE" | "COD";
   setShippingAddress: (address: Partial<ShippingAddress>) => void;
-  setPaymentMethod: (method: "STRIPE" | "COD") => void;
   resetCheckout: () => void;
 }
 
@@ -32,11 +30,9 @@ const initialAddress: ShippingAddress = {
 
 export const useCheckoutStore = create<CheckoutStore>((set) => ({
   shippingAddress: initialAddress,
-  paymentMethod: "STRIPE",
   setShippingAddress: (address) =>
     set((state) => ({
       shippingAddress: { ...state.shippingAddress, ...address },
     })),
-  setPaymentMethod: (method) => set({ paymentMethod: method }),
-  resetCheckout: () => set({ shippingAddress: initialAddress, paymentMethod: "STRIPE" }),
+  resetCheckout: () => set({ shippingAddress: initialAddress }),
 }));
