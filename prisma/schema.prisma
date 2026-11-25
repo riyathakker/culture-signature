@@ -106,8 +106,8 @@ model Order {
   paidAt         DateTime?
   street         String?
   updatedAt      DateTime    @updatedAt
-  paymentId       String?     @unique
-  paymentOrderId  String?
+  paymentId      String?     @unique
+  paymentOrderId String?     @unique
   user           User?       @relation(fields: [userId], references: [id])
   items          OrderItem[]
 }
